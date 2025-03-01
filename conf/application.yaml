@@ -1,0 +1,54 @@
+server:
+  port: 9011
+  ssl:
+    key-store-classpath: keystore.p12
+    key-store-password: changeit
+    key-store-type: PKCS12
+    key-alias: my-ssl-cert
+  error:
+    include-message: always
+
+repository:
+  folder: repo
+
+fundvalue:
+  retrieve:
+    thread-pool:
+      size: 10
+
+whitelist:
+  hosts: *
+
+logging:
+  pattern:
+    console: "%d%-5p [vt]%CF[2]{f:%F:%L}-%m%n"
+    file: "%d%-5p [%t] %c{2}(%F:%L) - %m%n"
+  file:
+    name: log.txt
+    path: log
+
+spring:
+  graphql:
+    graphiql:
+      enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: *
+  endpoint:
+    health:
+      show-details: ALWAYS
+      show-components: ALWAYS
+    shutdown:
+      enabled: true
+    env:
+      show-values: ALWAYS
+  info:
+    java:
+      enabled: true
+    os:
+      enabled: true
+    app:
+      enabled: true
