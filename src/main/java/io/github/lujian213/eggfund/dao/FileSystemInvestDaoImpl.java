@@ -15,7 +15,7 @@ import java.util.List;
 
 @Component
 public class FileSystemInvestDaoImpl extends FileSystemDaoImpl implements InvestDao {
-    public FileSystemInvestDaoImpl(@Value("${repo.folder]") File repoFile) {
+    public FileSystemInvestDaoImpl(@Value("${repo.folder}") File repoFile) {
         super(repoFile);
     }
 
