@@ -41,7 +41,7 @@ jobs:
       if: success() || failure()    # run this step even if previous step failed
       with:
         name: JEST Tests            # Name of the check run which will be created
-        path: reports/jest-*.xml    # Path to test results
+        path: test-results/**/*.xml    # Path to test results
         reporter: jest-junit        # Format of test results
 
     # NOTE: The Gradle Wrapper is the default and recommended way to run Gradle (https://docs.gradle.org/current/userguide/gradle_wrapper.html).
