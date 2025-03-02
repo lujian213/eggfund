@@ -35,7 +35,7 @@ dependencies {
     testImplementation 'org.spockframework:spock-spring'
 }
 
-configurations.all {
+configurations.configureEach {
     exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
 }
 
