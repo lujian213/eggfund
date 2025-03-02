@@ -67,7 +67,7 @@ public class EggFundService {
     }
 
     @Operation(summary = "get all investors for a fund")
-    @GetMapping(value = "/investors/{code]", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/investors/{code}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Investor> getInvestors(@PathVariable String code) {
         return runWithExceptionHandling("get all investors error", () -> {
             fundDataService.checkFund(code);
@@ -200,7 +200,7 @@ public class EggFundService {
     }
 
     @Operation(summary = "disable invest")
-    @PostMapping(value = "/disableinvest/{id}/(investId}")
+    @PostMapping(value = "/disableinvest/{id}/{investId}")
     public Invest disableInvest(@PathVariable String id, @PathVariable String investId,
                                 @RequestParam(required = false, defaultValue = "true") boolean enabled) {
         return runWithExceptionHandling("disable/enable investor error: " + id + "," + investId,
@@ -241,7 +241,7 @@ public class EggFundService {
     }
 
     @Operation(summary = "export invests")
-    @GetMapping(value = "/exportinvests/{id}/{code]", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/exportinvests/{id}/{code}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> exportInvests(@PathVariable String id, @PathVariable String code,
                                                 @RequestParam(required = false) String from,
                                                 @RequestParam(required = false) String to,

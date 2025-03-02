@@ -1,14 +1,14 @@
 server:
   port: 9011
   ssl:
-    key-store-classpath: keystore.p12
-    key-store-password: changeit
-    key-store-type: PKCS12
-    key-alias: my-ssl-cert
+    key-store: "classpath:keystore.p12"
+    key-store-password: "changeit"
+    key-store-type: "PKCS12"
+    key-alias: "my-ssl-cert"
   error:
     include-message: always
 
-repository:
+repo:
   folder: repo
 
 fundvalue:
@@ -17,12 +17,12 @@ fundvalue:
       size: 10
 
 whitelist:
-  hosts: *
+  hosts: "*"
 
 logging:
   pattern:
-    console: "%d%-5p [vt]%CF[2]{f:%F:%L}-%m%n"
-    file: "%d%-5p [%t] %c{2}(%F:%L) - %m%n"
+    console: "%d %-5p [%t] %C{2} (%F:%L) -%m%n"
+    file: "%d %-5p [%t] %C{2} (%F:%L) -%m%n"
   file:
     name: log.txt
     path: log
@@ -36,7 +36,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: *
+        include: "*"
   endpoint:
     health:
       show-details: ALWAYS
@@ -52,3 +52,7 @@ management:
       enabled: true
     app:
       enabled: true
+webproxy:
+  type:
+  port: 8080
+  host: localhost

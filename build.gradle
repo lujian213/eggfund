@@ -55,14 +55,6 @@ jacocoTestReport {
     dependsOn test
 }
 
-sourceSets {
-    test {
-        resources {
-            srcDirs = ['conf']
-        }
-    }
-}
-
 tasks.withType(Test).configureEach {
     useJUnitPlatform()
 }
@@ -94,10 +86,9 @@ tasks.register('install') {
             into './dist'
         }
 
-        println '>>>copy bin and conf and repo'
+        println '>>>copy bin and export'
         copy {
             from('.') {
-                include 'conf/**'
                 include 'export/**'
             }
             into 'dist'
