@@ -1,5 +1,5 @@
 FROM alpine/java:17.0.12-jre
-MAINTAINER lujian213.github.io
-COPY ./dist ./eggfund
+COPY ./dist/lib/eggfund-1.0.0.jar eggfund-1.0.0.jar
 RUN echo "all ready"
-CMD ["eggfund/bin/eggfund.sh"]
+EXPOSE 9011
+ENTRYPOINT ["java", "-jar", "eggfund-1.0.0.jar"]
