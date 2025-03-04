@@ -182,7 +182,7 @@ var apidata={ content:"<table class='w782 comm lsjz'>\
     def "loadFundValue"() {
         given:
         def service = Spy(AsyncActionService) {
-            1 * extractFundRTValue(_) >> [new FundValue("2024-11-11", 1.0d, 1.0d, 0.01d),
+            1 * extractFundValue(_) >> [new FundValue("2024-11-11", 1.0d, 1.0d, 0.01d),
                                           new FundValue("2024-11-12", 1.1d, 1.1d, 0.02d)]
         }
         def content = "some content"
