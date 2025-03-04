@@ -47,7 +47,7 @@ public class FundDataService implements FundValueListener {
 
     private static final Logger log = LoggerFactory.getLogger(FundDataService.class);
     private static final String FUND_INFO_URL = "https://fund.eastmoney.com/pingzhongdata/%s.js?v-%s";
-    private static final Pattern FSNAME_PATTERN = Pattern.compile(" .* fS_name\\s *= \\s*\"([^\"]*)\" .* ");
+    private static final Pattern FSNAME_PATTERN = Pattern.compile(".*fS_name\\s*=\\s*\"([^\"]*)\".*");
     final Map<String, Map<String, List<FundValue>>> fundValueMap = new HashMap<>();
     Map<String, FundInfo> fundInfoMap = new HashMap<>();
     final Map<String, FundRTValueHistory> fundRTValueHistoryMap = new ConcurrentHashMap<>();

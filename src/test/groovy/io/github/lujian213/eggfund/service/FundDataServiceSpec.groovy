@@ -130,16 +130,15 @@ class FundDataServiceSpec extends Specification {
         codes == ["1000", "1001", "1002"] as Set
     }
 
-    //TODO
-//    def "extractFundName" () {
-//        given:
-//        def service = new FundDataService()
-//        def content = """\
-///** * 测试数据 * @type {arry} *//*2025-03-03 21:28:39*/var ishb=false;/*基金或股票信息*/var fS_name = "华夏国证半导体芯片ETF联接C";var fS_code = "008888";/*原费率*/var fund_sourceRate="0.00";/*现费率*/var fund_Rate="0.00";/*最小申购金额*/var fund_minsg="10";/*基金持仓股票代码*/var stockCodes=[];/*基金持仓债券代码*/var zqCodes = "0197491,0197491,0196311,0196311,0197061";/*基金持仓股票代码(新市场号)*/var stockCodesNew =[];/*基金持仓债券代码（新市场号）
-//        """
-//        expect:
-//        service.extractFundName(content) == "华夏国证半导体芯片ETF联接C"
-//    }
+    def "extractFundName" () {
+        given:
+        def service = new FundDataService()
+        def content = """\
+/** * 测试数据 * @type {arry} *//*2025-03-03 21:28:39*/var ishb=false;/*基金或股票信息*/var fS_name = "华夏国证半导体芯片ETF联接C";var fS_code = "008888";/*原费率*/var fund_sourceRate="0.00";/*现费率*/var fund_Rate="0.00";/*最小申购金额*/var fund_minsg="10";/*基金持仓股票代码*/var stockCodes=[];/*基金持仓债券代码*/var zqCodes = "0197491,0197491,0196311,0196311,0197061";/*基金持仓股票代码(新市场号)*/var stockCodesNew =[];/*基金持仓债券代码（新市场号）\
+        """
+        expect:
+        service.extractFundName(content) == "华夏国证半导体芯片ETF联接C"
+    }
     def "extractFundName with bad content"() {
         given:
         def service = new FundDataService()
