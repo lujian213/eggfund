@@ -58,6 +58,23 @@ jobs:
       with:
         node-version: '20.x'
 
+  docker-build:
+    runs-on: ubuntu-latest
+    needs: java-build
+    steps:
+      - name: Login to dockerhub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push to dockerhub
+        uses: docker/build-push-action@v5
+        with:
+          context:
+          push: true
+          tags: lujian213/eggfund:latest
+
   dependency-submission:
     runs-on: ubuntu-latest
     needs: [java-build, node-build]
