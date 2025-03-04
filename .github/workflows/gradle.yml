@@ -61,7 +61,7 @@ jobs:
     - name: Build and push to dockerhub
       uses: docker/build-push-action@v5
       with:
-        context:
+        context: ${{ github.workspace }}
         push: true
         tags: lujian213/eggfund:latest
 
