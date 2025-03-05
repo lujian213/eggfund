@@ -1,0 +1,8 @@
+[libraries]
+spock-bom = 'org.spockframework:spock-bom:2.4-M5-groovy-4.0'
+groovy-bom = 'org.apache.groovy:groovy-bom:4.0.24'
+junit-bom = 'org.junit:junit-bom:5.8.2'
+spring-boot-dependencies = 'org.springframework.boot:spring-boot-dependencies:3.4.1'
+springdoc-openapi = 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
+selenium = 'org.seleniumhq.selenium:selenium-java:3.6.0'
+jtidy = 'com.google.code.maven-play-plugin.net.sf.jtidy:jtidy:r938'

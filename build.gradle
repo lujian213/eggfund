@@ -14,21 +14,22 @@ java {
 }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
-    implementation platform('org.springframework.boot:spring-boot-dependencies:3.4.1')
+    testImplementation platform(libs.junit.bom)
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    implementation platform(libs.spring.boot.dependencies)
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-log4j2'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
-    implementation 'org.seleniumhq.selenium:selenium-java:3.6.0'
-    implementation 'com.google.code.maven-play-plugin.net.sf.jtidy:jtidy:r938'
+    implementation libs.springdoc.openapi
+    implementation libs.selenium
+    implementation libs.jtidy
     implementation 'org.springframework.boot:spring-boot-starter-graphql'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
-    testImplementation platform('org.apache.groovy:groovy-bom:4.0.24')
+    testImplementation platform(libs.groovy.bom)
     testImplementation 'org.apache.groovy:groovy'
-    testImplementation platform('org.spockframework:spock-bom:2.4-M5-groovy-4.0')
+    testImplementation platform(libs.spock.bom)
     testImplementation 'org.spockframework:spock-core'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.graphql:spring-graphql-test'
