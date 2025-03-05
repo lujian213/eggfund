@@ -251,7 +251,7 @@ public class EggFundService {
             String content = Constants.MAPPER.writeValueAsString(invests);
             return ResponseEntity.ok()
                     .contentType(MediaType.APPLICATION_JSON)
-                    .header("Content-Disposition", "attachment; filename-invests.json;")
+                    .header("Content-Disposition", "attachment; filename=invests.json;")
                     .body(content);
         });
     }
