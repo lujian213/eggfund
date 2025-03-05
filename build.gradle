@@ -50,6 +50,7 @@ tasks.register("clear") {
 test {
     finalizedBy 'jacocoTestReport'
     useJUnitPlatform()
+    maxParallelForks = 4
 }
 
 jacocoTestReport {
