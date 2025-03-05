@@ -47,7 +47,7 @@ public class AsyncActionService {
     private static final String FUND_VALUE_URL = "https://fundf10.eastmoney.com/F10DataApi.aspx?type=lsjz&code=%s&page=1&per=30&sdate=%s&edate=%s";
     private static final Pattern TABLE_PATTERN = Pattern.compile("[^<]*(<table.*</table>).*");
     private static final String FUND_RT_VALUE_URL = "https://fundgz.1234567.com.cn/js/%s.js?v=%s";
-    private static final Pattern FUND_RT_VALUE_PATTERN = Pattern.compile(".* \"gsz\":\"([^\"]+)\" .* \"gszzl\":\"([\"]+)\".*\"gztime\":\"([^\"]+)\".*");
+    private static final Pattern FUND_RT_VALUE_PATTERN = Pattern.compile(".*\"gsz\":\"([^\"]+)\".*\"gszzl\":\"([^\"]+)\".*\"gztime\":\"([^\"]+)\".*");
 
     private FundDao fundDao;
     private Timer updateFundRTValueTimer;

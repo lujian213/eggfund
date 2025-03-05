@@ -86,21 +86,20 @@ var apidata={ content:"<table class='w782 comm lsjz'>\
         fundValueList.size() == 30
     }
 
-    // TODO
-//    def "extractFundRTValue"() {
-//        def service = new AsyncActionService()
-//        def content = """\
-//jsonpgz({"fundcode":"008888","name":"华夏国证半导体芯片ETF联接C","jzrq":"2025-03-03","dwjz":"1.1447","gsz":"1.1660","gszzl":"1.86","gztime":"2025-03-04 15:00"});\
-//"""
-//        when:
-//        def fundRTValue = service.extractFundRTValue(content, "008888")
-//        then:
-//        with(fundRTValue) {
-//            time == "2025-03-04 15:00"
-//            unitValue == 1.1660d
-//            increaseRate == 1.86 / 100d
-//        }
-//    }
+    def "extractFundRTValue"() {
+        def service = new AsyncActionService()
+        def content = """\
+jsonpgz({"fundcode":"008888","name":"华夏国证半导体芯片ETF联接C","jzrq":"2025-03-03","dwjz":"1.1447","gsz":"1.1660","gszzl":"1.86","gztime":"2025-03-04 15:00"});\
+"""
+        when:
+        def fundRTValue = service.extractFundRTValue(content, "008888")
+        then:
+        with(fundRTValue) {
+            time == "2025-03-04 15:00"
+            unitValue == 1.1660d
+            increaseRate == 1.86 / 100d
+        }
+    }
 
     def "extractFundRTValue with exception"() {
         given:
