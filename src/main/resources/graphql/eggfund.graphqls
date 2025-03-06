@@ -1,0 +1,169 @@
+type FundInfo {
+    id: String!
+    name: String!
+    etf: Boolean!
+    priority: Int!
+    url: String
+    category: String
+    alias: String
+}
+
+input FundInfoInput {
+    id: String!
+    etf: Boolean = false
+    priority: Int = 0
+    url: String
+    category: String
+    alias: String
+}
+
+type Investor {
+    id: String!
+    name: String!
+    icon: String
+}
+
+type FundValue {
+    day: String!
+    unitValue: Float!
+    accumulatedValue: Float!
+    increaseRate: Float!
+}
+
+type FundRTValue {
+    day: String!
+    unitValue: Float!
+    accumulatedValue: Float!
+    increaseRate: Float!
+    time: String!
+}
+
+type FundRTValueMapEntry {
+    key: String!
+    value: FundRTValue
+}
+
+type Invest {
+    day: String!
+    type: String!
+    id: String!
+    code: String!
+    share: Float!
+    unitPrice: Float!
+    fee: Float!
+    userIndex: Int!
+    enabled: Boolean!
+    batch: Int!
+    comments: String
+    amount: Float!
+}
+
+input InvestInput {
+    day: String!
+    id: String
+    type: String = "trade"
+    code: String!
+    share: Float!
+    unitPrice: Float = -1
+    fee: Float = 0
+    enabled: Boolean = true
+    batch: Int = 0
+    comments: String
+}
+
+type InvestSummaryItem {
+    day: String!
+    type: String
+    quota: Float!
+    price: Float!
+    increaseRate: Float!
+    fee: Float!
+    investAmt: Float!
+    var: Float!
+    earning: Float!
+    index: Float!
+    batch: Float!
+    enabled: Boolean!
+    investId: String
+    comments: String
+    price_2pct: Float!
+    price_minus2pct: Float!
+}
+
+type PriceTableItem {
+    rate: Float!
+    price: Float!
+}
+
+type InvestSummary {
+    totalShortQuota: Float!
+    totalLongQuota: Float!
+    totalShortAmt: Float!
+    totalLongAmt: Float!
+    netAmt: Float!
+    netQuota: Float!
+    estPrice: Float!
+    raiseRate: Float!
+    lastUnitValue: Float!
+    lastFundDate: String!
+    predictedValue: Float!
+    totalFee: Float!
+    earning: Float!
+    earningRate: Float!
+    grossEarning: Float!
+    grossEarningRate: Float!
+    averagePrice: Float!
+    averageUnitValue: Float!
+    items: [InvestSummaryItem]!
+    estPriceTableItems: [PriceTableItem]!
+    totalDividendAmt: Float!
+}
+
+type InvestAudit {
+    day: String!
+    oldInvest: Invest
+    newInvest: Invest
+}
+
+type InvestorSummary {
+    totalShortAmt: Float!
+    totalLongAmt: Float!
+    netAmt: Float!
+    predictedValue: Float!
+    totalFee: Float!
+    earning: Float!
+    earningRate: Float!
+    grossEarning: Float!
+    grossEarningRate: Float!
+    investSummaryList: [InvestSummary]!
+}
+
+# The Root Query for the application
+type Query {
+    getAllFunds: [FundInfo]
+    getAllUserInvestedFunds(id: String!): [FundInfo]
+    getAllInvestors: [Investor]
+    getInvestorsByFund(code: String!): [Investor]
+    getFundValues(code: String!, from: String, to: String): [FundValue]
+    getFundRTValue(codes: String!): [FundRTValueMapEntry]
+    getFundRTValueHistory(code: String!): [FundRTValue]
+    getInvests(id: String!, code: String!, from: String, to:String, batch: Int = -1): [Invest]
+    generateInvestSummary(id: String!, code: String!, from: String, to: String, batch: Int = -1, raiseRate: Float = 0): InvestSummary!
+    getInvestAudits(date: String): [InvestAudit]
+    generateInvestorSummary(id: String!, from: String, to: String): InvestorSummary!
+}
+
+# The Root Mutation for the application
+type Mutation {
+    addNewFund(fundInfo: FundInfoInput!): FundInfo!
+    addNewInvestor(id: String!, name: String!, icon: String): Investor!
+    addNewInvest(id: String!, code: String!, invests: [InvestInput]!): [Invest]!
+    updateFund(fundInfo: FundInfoInput!): FundInfo!
+    updateFundValues(code: String!, from: String!, to: String!): Boolean!
+    updateInvestor(id: String!, name: String!, icon: String): Investor!
+    updateInvest(id: String!, invest: InvestInput!): Invest!
+    deleteInvest(id: String!, investId: String!): Boolean!
+    deleteInvestor(id: String!): Boolean!
+    deleteFund(code: String!): Boolean!
+    disableInvest(id: String!, investId: String!, enabled: Boolean = false): Invest!
+}
