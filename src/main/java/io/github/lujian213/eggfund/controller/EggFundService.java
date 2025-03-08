@@ -17,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
@@ -46,6 +48,20 @@ public class EggFundService {
     @Autowired
     public void setFundDataService(FundDataService fundDataService) {
         this.fundDataService = fundDataService;
+    }
+
+    @Operation(summary = "get current user")
+    @GetMapping(value = "/loginUser", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Authentication getCurrentUser(Authentication authentication) {
+        log.info("User {} with role {} is calling.", authentication.getName(), authentication.getAuthorities());
+        return authentication;
+    }
+
+    @Operation(summary = "get admin user")
+    @GetMapping(value = "/adminUser", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostAuthorize("hasRole('ADMIN')")
+    public Authentication getAdminUser(Authentication authentication) {
+        return getCurrentUser(authentication);
     }
 
     @Operation(summary = "get all funds")

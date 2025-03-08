@@ -26,6 +26,8 @@ dependencies {
     implementation libs.jtidy
     implementation 'org.springframework.boot:spring-boot-starter-graphql'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.security:spring-security-test'
 
     testImplementation platform(libs.groovy.bom)
     testImplementation 'org.apache.groovy:groovy'

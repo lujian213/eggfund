@@ -1,5 +1,8 @@
 package io.github.lujian213.eggfund.controller
 
+import io.github.lujian213.eggfund.config.SecurityConfig
+import org.springframework.security.test.context.support.WithMockUser
+import org.springframework.test.context.ContextConfiguration
 import spock.lang.Specification
 import io.github.lujian213.eggfund.exception.EggFundException
 import io.github.lujian213.eggfund.model.*
@@ -18,6 +21,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 
 @WebMvcTest(EggFundService)
+@ContextConfiguration(classes = [SecurityConfig.class, EggFundService.class])
+@WithMockUser(roles="USER")
 class EggFundServiceTestSpec extends Specification {
 
     @SpringBean
@@ -318,4 +323,16 @@ class EggFundServiceTestSpec extends Specification {
                 .andExpect(content().json(Constants.MAPPER.writeValueAsString(invests)))
     }
 
+    def "testLoginUser with user Login"() {
+        expect:
+        this.mockMvc.perform(get("/loginUser")).andExpect(status().isOk())
+        this.mockMvc.perform(get("/adminUser")).andExpect(status().is4xxClientError())
+    }
+
+    @WithMockUser(roles = ["ADMIN"])
+    def "testLoginUser with admin Login"() {
+        expect:
+        this.mockMvc.perform(get("/loginUser")).andExpect(status().isOk())
+        this.mockMvc.perform(get("/adminUser")).andExpect(status().isOk())
+    }
 }

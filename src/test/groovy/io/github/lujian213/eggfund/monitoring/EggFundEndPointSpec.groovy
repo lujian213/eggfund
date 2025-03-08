@@ -1,5 +1,6 @@
 package io.github.lujian213.eggfund.monitoring
 
+import io.github.lujian213.eggfund.config.SecurityConfig
 import io.github.lujian213.eggfund.model.FundInfo
 import io.github.lujian213.eggfund.model.FundRTValue
 import io.github.lujian213.eggfund.service.FundDataService
@@ -12,6 +13,8 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAu
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.security.test.context.support.WithMockUser
+import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.web.servlet.MockMvc
 import spock.lang.Specification
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
@@ -19,6 +22,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @WebMvcTest(EggFundEndPoint)
+@ContextConfiguration(classes = [SecurityConfig.class, EggFundEndPoint.class])
+@WithMockUser(roles="USER")
 /**
  * https://github.com/spring-projects/spring-boot/issues/40574
  */
