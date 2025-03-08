@@ -98,6 +98,7 @@ jobs:
           username: ${{ secrets.DEPLOY_USERNAME }}
           password: ${{ secrets.DEPLOY_PASSWORD }}
           source: ${{ github.workspace }}/dist/lib/eggfund-1.0.0.jar
+          overwrite: true
           strip_components: 4
           target: /eggfund_deploy
 
