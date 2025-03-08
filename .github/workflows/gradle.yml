@@ -75,7 +75,7 @@ jobs:
       - name: Retrieve saved eggfund jar
         uses: actions/download-artifact@v4
         with:
-          name: docker-artifact
+          name: eggfund-jar
           path: dist/lib/eggfund-1.0.0.jar
       - name: Login to dockerhub
         uses: docker/login-action@v3
