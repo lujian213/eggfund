@@ -76,6 +76,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: eggfund-jar
+          path: dist/lib
       - run: ls -l dist/lib
       - name: Login to dockerhub
         uses: docker/login-action@v3
