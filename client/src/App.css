@@ -1,0 +1,26 @@
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: rgb(95, 94, 94);
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgb(207, 203, 203);
+  outline: 1px solid slategrey;
+  border-radius: 20px;
+}
+
+.custom-theme-light ::-webkit-scrollbar-track {
+  background-color: rgb(207, 203, 203);
+  box-shadow: inset 0 0 6px rgba(206, 206, 206, 0.3);
+}
+
+.custom-theme-light ::-webkit-scrollbar-thumb {
+  background-color: rgb(207, 203, 203);
+  outline: 1px solid rgb(207, 214, 221);
+  border-radius: 20px;
+}
