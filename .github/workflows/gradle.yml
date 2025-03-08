@@ -48,40 +48,48 @@ jobs:
       uses: cicirello/jacoco-badge-generator@v2
       with:
         jacoco-csv-file: build/reports/jacoco/test/jacocoTestReport.csv
-    - name: Login to dockerhub
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKERHUB_USER_NAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-    - name: Build and push to dockerhub
-      uses: docker/build-push-action@v5
-      with:
-        context: ${{ github.workspace }}
-        push: true
-        tags: lujian213/eggfund:latest
-
-    - name: copy file via ssh password
-      uses: appleboy/scp-action@v0.1.7
-      with:
-        host: ${{ secrets.DEPLOY_HOSTNAME }}
-        username: ${{ secrets.DEPLOY_USERNAME }}
-        password: ${{ secrets.DEPLOY_PASSWORD }}
-        source: ${{ github.workspace }}/dist/lib/eggfund-1.0.0.jar
-        strip-components: 4
-        target: /eggfund
   node-build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - name: Use Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20.x'
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+  package-and-deploy:
+    runs-on: ubuntu-latest
+    needs: [java-build, node-build]
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
+
+    steps:
+      - name: Login to dockerhub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USER_NAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push to dockerhub
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ github.workspace }}
+          push: true
+          tags: lujian213/eggfund:latest
+
+      - name: copy file via ssh password
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.DEPLOY_HOSTNAME }}
+          username: ${{ secrets.DEPLOY_USERNAME }}
+          password: ${{ secrets.DEPLOY_PASSWORD }}
+          source: ${{ github.workspace }}/dist/lib/eggfund-1.0.0.jar
+          strip-components: 4
+          target: /eggfund
 
   dependency-submission:
     runs-on: ubuntu-latest
-    needs: [java-build, node-build]
     permissions:
       contents: write
 
