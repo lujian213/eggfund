@@ -61,6 +61,14 @@ jobs:
         push: true
         tags: lujian213/eggfund:latest
 
+    - name: copy file via ssh password
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ secrets.DEPLOY_HOSTNAME }}
+        username: ${{ secrets.DEPLOY_USERNAME }}
+        password: ${{ secrets.DEPLOY_PASSWORD }}
+        source: ${{ github.workspace }}/dist/lib/eggfund-1.0.0.jar
+        target: /eggfund
   node-build:
     runs-on: ubuntu-latest
     steps:
