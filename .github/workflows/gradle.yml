@@ -61,7 +61,7 @@ jobs:
       with:
         name: eggfund-jar
         path: dist/lib/eggfund-1.0.0.jar
-        retention-days: 1
+        compression-level: 9
   package-and-deploy:
     runs-on: ubuntu-latest
     needs: [node-and-java-build]
