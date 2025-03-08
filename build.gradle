@@ -54,7 +54,13 @@ test {
     useJUnitPlatform()
     maxParallelForks = 4
 }
-
+sourceSets {
+    main {
+        resources {
+            srcDir 'client/build'
+        }
+    }
+}
 jacocoTestReport {
     dependsOn test
     reports {
