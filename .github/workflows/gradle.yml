@@ -62,8 +62,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20.x'
-      - run: npm i -legacy-peer-deps
-      - run: npm run build
+      - run: |
+          cd client
+          npm i -legacy-peer-deps
+          npm run build
   package-and-deploy:
     runs-on: ubuntu-latest
     needs: [java-build, node-build]
