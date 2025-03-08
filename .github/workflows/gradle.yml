@@ -68,6 +68,7 @@ jobs:
         username: ${{ secrets.DEPLOY_USERNAME }}
         password: ${{ secrets.DEPLOY_PASSWORD }}
         source: ${{ github.workspace }}/dist/lib/eggfund-1.0.0.jar
+        tar_dereference: true
         target: /eggfund
   node-build:
     runs-on: ubuntu-latest
