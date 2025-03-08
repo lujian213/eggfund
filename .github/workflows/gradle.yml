@@ -99,7 +99,7 @@ jobs:
           password: ${{ secrets.DEPLOY_PASSWORD }}
           source: ${{ github.workspace }}/dist/lib/eggfund-1.0.0.jar
           strip_components: 4
-          target: /eggfund
+          target: /eggfund_deploy
 
   dependency-submission:
     runs-on: ubuntu-latest
