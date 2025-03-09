@@ -53,6 +53,6 @@ management:
     app:
       enabled: true
 webproxy:
-  type: HTTP
+  type:
   port: 8080
   host: localhost
