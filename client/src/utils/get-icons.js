@@ -6,8 +6,8 @@ import Icon4 from "../assets/vibrent_10.png";
 export const icons = [Icon1, Icon2, Icon3, Icon4];
 
 export default function CustomAvatar(props) {
-  const { id, styles } = props;
+  const { id, style } = props;
   const avatar = icons[id];
 
-  return <img src={avatar} styles={styles} alt="avatar" />;
+  return <img src={avatar} style={style} alt="avatar" />;
 }
