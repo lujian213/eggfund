@@ -9,7 +9,7 @@ const style = {
   position: "absolute",
   top: "50%",
   left: "50%",
-  transform: "translate (-50%, -50%)",
+  transform: "translate(-50%, -50%)",
   width: 600,
   boxshadow: 24,
   background: (theme) => theme.palette.background.sidebar,

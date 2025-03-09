@@ -7,6 +7,7 @@ import org.springframework.test.context.TestPropertySource
 
 @SpringBootTest(classes = WebProxyConfig)
 @TestPropertySource(properties = [
+        "webproxy.type=HTTP",
         "webproxy.host=proxyhost",
         "webproxy.port=8080"
 ])

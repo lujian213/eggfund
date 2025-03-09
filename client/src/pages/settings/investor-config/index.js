@@ -1,21 +1,15 @@
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import {  investorsQuery } from "../../../store/selector";
+import { investorsQuery } from "../../../store/selector";
 import { refreshInvestorState } from "../../../store/atom";
 import { useState } from "react";
-import {
-  Box,
-  Chip,
-  Divider,
-  IconButton,
-  Stack,
-} from "@mui/material";
+import { Box, Chip, Divider, IconButton, Stack } from "@mui/material";
 import axios from "axios";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ConfirmModal from "../../../components/confirm-modal";
 import InvestorModal from "./investor-mdoal";
-import {icons} from '../../../utils/get-icons';
+import CustomAvatar from "../../../utils/get-icons";
 
 export default function InvestorConfig() {
   const investors = useRecoilValue(investorsQuery);
@@ -59,7 +53,6 @@ export default function InvestorConfig() {
       }}
     >
       {investors?.map((investor) => {
-        const UserIcon = icons[investor.icon || 0];
         return (
           <Chip
             sx={{
@@ -68,11 +61,11 @@ export default function InvestorConfig() {
               },
             }}
             icon={
-              <UserIcon
+              <CustomAvatar
+                id={investor.icon || 0}
                 style={{
                   height: "24px",
                   width: "24px",
-                  fill: "#000",
                 }}
               />
             }
