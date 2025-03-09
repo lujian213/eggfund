@@ -7,7 +7,8 @@ export const icons = [Icon1, Icon2, Icon3, Icon4];
 
 export default function CustomAvatar(props) {
   const { id, style } = props;
-  const avatar = icons[id];
+  const index = Number(id);
+  const avatar = icons[index];
 
   return <img src={avatar} style={style} alt="avatar" />;
 }
