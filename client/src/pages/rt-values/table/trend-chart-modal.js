@@ -8,7 +8,7 @@ const style = {
   position: "absolute",
   top: "50%",
   left: "50%",
-  transform: "translate (-50%, -50%)",
+  transform: "translate(-50%, -50%)",
   width: "90vw",
   boxshadow: 24,
   background: (theme) => theme.palette.background.sidebar,
