@@ -93,7 +93,7 @@ export default function Funds() {
               key={item.id}
               label={item.alias || item.name}
               color="primary"
-              variant={selectedFunds === item.id ? "filled" : "outlined"}
+              variant={selectedFunds.includes(item.id) ? "filled" : "outlined"}
               clickable={true}
               onClick={() => handleClick(item.id, item.name, item.alias)}
             />

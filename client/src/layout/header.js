@@ -10,7 +10,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import PaletteIcon from '@mui/icons-material/Palette';
+import PaletteIcon from "@mui/icons-material/Palette";
 
 export default function Header() {
   const setTheme = useSetRecoilState(themeState);
@@ -100,30 +100,30 @@ export default function Header() {
                 ml: -0.5,
                 mr: 1,
               },
-              '&:before': {
-                content: '"',
-                display: 'block',
-                position: 'absolute',
+              "&:before": {
+                content: '""',
+                display: "block",
+                position: "absolute",
                 top: 0,
                 right: 14,
                 width: 10,
                 height: 10,
-                bgcolor: 'background.paper',
-                transform: 'translate(-50%) rotate(45deg)',
+                bgcolor: "background.paper",
+                transform: "translate(-50%) rotate(45deg)",
                 zIndex: 0,
-              }
+              },
             },
           }}
-          transformOrigin={{horizontal: 'right', vertical: 'top'}}
-          anchorOrigin={{horizontal: 'right', vertical: "bottom"}}
+          transformOrigin={{ horizontal: "right", vertical: "top" }}
+          anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
         >
-            {
-                ["Dark", "Purple", "Lightblue", "Pink"].map(theme => {
-                    return <MenuItem key="theme" onClick={() => handleThemeChange(theme)}>
-                        {theme}
-                    </MenuItem>
-                })
-            }
+          {["Dark", "Purple", "Lightblue", "Pink"].map((theme) => {
+            return (
+              <MenuItem key="theme" onClick={() => handleThemeChange(theme)}>
+                {theme}
+              </MenuItem>
+            );
+          })}
         </Menu>
       </Stack>
     </Box>

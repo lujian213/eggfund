@@ -49,7 +49,7 @@ export default function CategoryList({ handleDrawerOpen }) {
   const handleInvestorChange = async (id) => {
     setSelectedInvestor(id);
     setSelected(null);
-    setCategoryType("Investor");
+    setCategoryType("investor");
     try {
       const response = await axios.get(`/funds/${id}`);
       const data = response.data || [];

@@ -24,7 +24,7 @@ export default function Details() {
       }}
     >
       <DetailsTable handleModalOpen={handleModalOpen} />
-      <DetialsModal open={openModal} handleClose={handleModalClose} />
+      <DetailsModal open={openModal} handleClose={handleModalClose} />
     </Box>
   );
 }
@@ -41,8 +41,8 @@ const style = {
   p: 4,
 };
 
-function DetialsModal(props) {
-  const [open, handleClose] = props;
+function DetailsModal(props) {
+  const {open, handleClose} = props;
 
   return (
     <Modal

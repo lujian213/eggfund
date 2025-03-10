@@ -76,7 +76,7 @@ export default function TotalDetails(props) {
           sx={{
             display: "flex",
             gap: 2,
-            flexhrap: "wrap",
+            flexWrap: "wrap",
           }}
         >
           <Box sx={itemStyle}>

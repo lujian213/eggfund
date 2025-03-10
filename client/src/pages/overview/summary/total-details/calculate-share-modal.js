@@ -13,7 +13,7 @@ const style = {
 };
 
 export default function CalculateShareModal(props) {
-  const [open, price, handleClose] = props;
+  const { open, price, handleClose } = props;
   const [amount, setAmount] = useState(0);
 
   const calculatedShare = Math.floor(amount / price);

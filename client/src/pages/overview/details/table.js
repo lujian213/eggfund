@@ -21,7 +21,7 @@ export default function DetailsTable({ handleModalOpen }) {
   useEffect(() => {
     if (summary) {
       const items = summary.items || [];
-      const sortedItem = items.tosorted((a, b) => {
+      const sortedItem = items.toSorted((a, b) => {
         if (a.day === b.day) {
           return a.batch - b.batch;
         }
