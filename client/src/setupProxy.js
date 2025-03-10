@@ -4,7 +4,7 @@ module.exports = function (app) {
     app.use(
         "/investor",
         createProxyMiddleware({
-            target: 'test',
+            target: 'https://103.200.29.147:9011/',
             changeOrigin: true,
             secure: false,
         })
@@ -12,7 +12,7 @@ module.exports = function (app) {
     app.use(
         "/invest",
         createProxyMiddleware({
-            target: 'test',
+            target: 'https://103.200.29.147:9011/',
             changeOrigin: true,
             secure: false,
         })
@@ -20,7 +20,7 @@ module.exports = function (app) {
     app.use(
         "/fund",
         createProxyMiddleware({
-            target: 'test',
+            target: 'https://103.200.29.147:9011/',
             changeOrigin: true,
             secure: false,
         })
@@ -28,7 +28,7 @@ module.exports = function (app) {
     app.use(
         "/value",
         createProxyMiddleware({
-            target: 'test',
+            target: 'https://103.200.29.147:9011/',
             changeOrigin: true,
             secure: false,
         })
@@ -36,7 +36,7 @@ module.exports = function (app) {
     app.use(
         "/summary",
         createProxyMiddleware({
-            target: 'test',
+            target: 'https://103.200.29.147:9011/',
             changeOrigin: true,
             secure: false,
         })
@@ -44,7 +44,7 @@ module.exports = function (app) {
     app.use(
         "/values",
         createProxyMiddleware({
-            target: 'test',
+            target: 'https://103.200.29.147:9011/',
             changeOrigin: true,
             secure: false,
         })
@@ -52,7 +52,7 @@ module.exports = function (app) {
     app.use(
         "/invests",
         createProxyMiddleware({
-            target: 'test',
+            target: 'https://103.200.29.147:9011/',
             changeOrigin: true,
             secure: false,
         })
@@ -60,7 +60,7 @@ module.exports = function (app) {
     app.use(
         "/investors",
         createProxyMiddleware({
-            target: 'test',
+            target: 'https://103.200.29.147:9011/',
             changeOrigin: true,
             secure: false,
         })
@@ -68,7 +68,7 @@ module.exports = function (app) {
     app.use(
         "/funds",
         createProxyMiddleware({
-            target: 'test',
+            target: 'https://103.200.29.147:9011/',
             changeOrigin: true,
             secure: false,
         })
@@ -76,7 +76,7 @@ module.exports = function (app) {
     app.use(
         "/rtvalues",
         createProxyMiddleware({
-            target: 'test',
+            target: 'https://103.200.29.147:9011/',
             changeOrigin: true,
             secure: false,
         })
@@ -84,7 +84,7 @@ module.exports = function (app) {
     app.use(
         "/disableinvest",
         createProxyMiddleware({
-            target: 'test',
+            target: 'https://103.200.29.147:9011/',
             changeOrigin: true,
             secure: false,
         })
@@ -92,7 +92,7 @@ module.exports = function (app) {
     app.use(
         "/uploadinvests",
         createProxyMiddleware({
-            target: 'test',
+            target: 'https://103.200.29.147:9011/',
             changeOrigin: true,
             secure: false,
         })
@@ -100,7 +100,7 @@ module.exports = function (app) {
     app.use(
         "/exportinvests",
         createProxyMiddleware({
-            target: 'test',
+            target: 'https://103.200.29.147:9011/',
             changeOrigin: true,
             secure: false,
         })

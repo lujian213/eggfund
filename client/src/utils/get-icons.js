@@ -10,5 +10,7 @@ export default function CustomAvatar(props) {
   const index = Number(id);
   const avatar = icons[index];
 
-  return <img src={avatar} style={style} alt="avatar" />;
+  return (
+    <img src={avatar} style={{ borderRadius: "50%", ...style }} alt="avatar" />
+  );
 }
