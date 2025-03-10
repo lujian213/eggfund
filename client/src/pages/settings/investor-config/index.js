@@ -25,7 +25,7 @@ export default function InvestorConfig() {
     setInvestorModal((pre) => ({
       ...pre,
       open: true,
-      mod: "add",
+      mode: "add",
     }));
   };
 
@@ -33,7 +33,7 @@ export default function InvestorConfig() {
     setInvestorModal((pre) => ({
       ...pre,
       open: true,
-      mod: "edit",
+      mode: "edit",
       data: investor,
     }));
   };

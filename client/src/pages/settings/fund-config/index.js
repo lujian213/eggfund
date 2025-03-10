@@ -33,7 +33,7 @@ export default function FundConfig() {
     setFundModal((pre) => ({
       ...pre,
       open: true,
-      mod: "add",
+      mode: "add",
       data: { etf: false },
     }));
   };
@@ -43,7 +43,7 @@ export default function FundConfig() {
     setFundModal((pre) => ({
       ...pre,
       open: true,
-      mod: "edit",
+      mode: "edit",
       data: { code: id, etf, priority, ...rest },
     }));
   };
