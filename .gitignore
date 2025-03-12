@@ -1,0 +1,8 @@
+/.gradle/
+/.idea/
+/build/
+/dist/
+/log/
+/out/
+/repo/
+/docker-compose.yml
