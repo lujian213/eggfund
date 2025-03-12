@@ -19,29 +19,27 @@ class FIFOClearanceAlgSpec extends Specification {
         def result = alg.clear(itemList)
 
         then:
-        result.size() == 5
+        result.size() == 4
         with (result[0]) {
             day == "2025-02-01"
-            quota == 800
-            !enabled
-        }
-        with (result[1]) {
-            day == "2025-02-01"
             quota == 200
+            liquidatedQuota == 800
             enabled
         }
-        with (result[2]) {
+        with (result[1]) {
             day == "2025-02-02"
             !type
         }
-        with (result[3]) {
+        with (result[2]) {
             day == "2025-02-03"
             quota == 500
+            liquidatedQuota == 0
             enabled
         }
-        with (result[4]) {
+        with (result[3]) {
             day == "2025-02-04"
-            quota == -800
+            quota == 0
+            liquidatedQuota == -800
             !enabled
         }
     }
@@ -58,10 +56,11 @@ class FIFOClearanceAlgSpec extends Specification {
         def result = alg.clear(itemList)
 
         then:
-        result.size() == 5
+        result.size() == 4
         with (result[0]) {
             day == "2025-02-01"
-            quota == 1000
+            quota == 0
+            liquidatedQuota == 1000
             !enabled
         }
         with (result[1]) {
@@ -70,23 +69,17 @@ class FIFOClearanceAlgSpec extends Specification {
         }
         with (result[2]) {
             day == "2025-02-03"
-            quota == 200
-            fee == 2
-            CommonUtil.isZero(investAmt - invest.getAmount()/ 5 * 2, 0.001)
-            CommonUtil.isZero(earning - item.getEarning()/ 5 * 2, 0.001)
-            !enabled
-        }
-        with (result[3]) {
-            day == "2025-02-03"
             quota == 300
-            fee == 3
+            liquidatedQuota == 200
+            fee == 5
             CommonUtil.isZero(investAmt - invest.getAmount()/ 5 * 3, 0.001)
             CommonUtil.isZero(earning - item.getEarning()/ 5 * 3, 0.001)
             enabled
         }
-        with (result[4]) {
+        with (result[3]) {
             day == "2025-02-04"
-            quota == -1200
+            quota == 0
+            liquidatedQuota == -1200
             !enabled
         }
     }
@@ -104,7 +97,8 @@ class FIFOClearanceAlgSpec extends Specification {
         result.size() == 4
         with (result[0]) {
             day == "2025-02-01"
-            quota == 1000
+            quota == 0
+            liquidatedQuota == 1000
             !enabled
         }
         with (result[1]) {
@@ -113,12 +107,14 @@ class FIFOClearanceAlgSpec extends Specification {
         }
         with (result[2]) {
             day == "2025-02-03"
-            quota == 500
+            quota == 0
+            liquidatedQuota == 500
             !enabled
         }
         with (result[3]) {
             day == "2025-02-04"
-            quota == -1500
+            quota == 0
+            liquidatedQuota == -1500
             !enabled
         }
     }
@@ -133,10 +129,11 @@ class FIFOClearanceAlgSpec extends Specification {
         def result = alg.clear(itemList)
 
         then:
-        result.size() == 5
+        result.size() == 4
         with (result[0]) {
             day == "2025-02-01"
-            quota == 1000
+            quota == 0
+            liquidatedQuota == 1000
             !enabled
         }
         with (result[1]) {
@@ -145,18 +142,15 @@ class FIFOClearanceAlgSpec extends Specification {
         }
         with (result[2]) {
             day == "2025-02-03"
-            quota == 500
+            quota == 0
+            liquidatedQuota == 500
             !enabled
         }
         with (result[3]) {
             day == "2025-02-04"
-            quota == -1500
-            !enabled
-        }
-        with (result[4]) {
-            day == "2025-02-04"
             quota == -100
-            enabled
+            liquidatedQuota == -1500
+            !enabled
         }
     }
 
@@ -171,15 +165,17 @@ class FIFOClearanceAlgSpec extends Specification {
         def result = alg.clear(itemList)
 
         then:
-        result.size() == 6
+        result.size() == 5
         with (result[0]) {
             day == "2025-01-31"
             quota == 700
+            liquidatedQuota == 0
             enabled
         }
         with (result[1]) {
             day == "2025-02-01"
-            quota == 1000
+            quota == 0
+            liquidatedQuota == 1000
             !enabled
         }
         with (result[2]) {
@@ -188,18 +184,15 @@ class FIFOClearanceAlgSpec extends Specification {
         }
         with (result[3]) {
             day == "2025-02-03"
-            quota == 500
+            quota == 0
+            liquidatedQuota == 500
             !enabled
         }
         with (result[4]) {
             day == "2025-02-04"
-            quota == -1500
-            !enabled
-        }
-        with (result[5]) {
-            day == "2025-02-04"
             quota == -100
-            enabled
+            liquidatedQuota == -1500
+            !enabled
         }
     }
 
@@ -215,10 +208,11 @@ class FIFOClearanceAlgSpec extends Specification {
         def result = alg.clear(itemList)
 
         then:
-        result.size() == 7
+        result.size() == 6
         with (result[0]) {
             day == "2025-02-01"
-            quota == 1000
+            quota == 0
+            liquidatedQuota == 1000
             !enabled
         }
         with (result[1]) {
@@ -227,27 +221,26 @@ class FIFOClearanceAlgSpec extends Specification {
         }
         with (result[2]) {
             day == "2025-02-03"
-            quota == 500
+            quota == 0
+            liquidatedQuota == 500
             !enabled
         }
         with (result[3]) {
             day == "2025-02-04"
-            quota == -1400
+            quota == 0
+            liquidatedQuota == -1400
             !enabled
         }
         with (result[4]) {
             day == "2025-02-05"
-            quota == 400
-            !enabled
-        }
-        with (result[5]) {
-            day == "2025-02-05"
             quota == 500
+            liquidatedQuota == 400
             enabled
         }
-        with (result[6]) {
+        with (result[5]) {
             day == "2025-02-06"
-            quota == -500
+            quota == 0
+            liquidatedQuota == -500
             !enabled
         }
     }

@@ -1,8 +1,7 @@
 package io.github.lujian213.eggfund.clearance;
 
+import io.github.lujian213.eggfund.model.Invest;
 import io.github.lujian213.eggfund.model.InvestSummaryItem;
-import io.github.lujian213.eggfund.model.InvestSummaryItemExt;
-import io.github.lujian213.eggfund.utils.CommonUtil;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -28,23 +27,14 @@ public class FIFOClearanceAlg implements ClearanceAlg {
     protected List<InvestSummaryItem> clearBatch(List<InvestSummaryItem> items) {
         List<InvestSummaryItem> ret = new ArrayList<>();
         for (InvestSummaryItem item : items) {
-            InvestSummaryItemExt currentItem = new InvestSummaryItemExt(item);
+            InvestSummaryItem currentItem = new InvestSummaryItem(item);
             currentItem.setEnabled(true);
-            if (item.getType() == null || item.getQuota() > 0) {
+            if (!Invest.TYPE_TRADE.equals(currentItem.getType()) || currentItem.getQuota() > 0) {
                 ret.add(currentItem);
             } else {
                 doClear(ret, currentItem);
             }
         }
-        List<InvestSummaryItemExt> toBeAddedList = new ArrayList<>();
-        for (InvestSummaryItem item : ret) {
-            InvestSummaryItemExt extItem = (InvestSummaryItemExt) item;
-            if (extItem.getQuota() > 0 && extItem.isEnabled() && extItem.getQuota() != extItem.leftQuota()) {
-                toBeAddedList.add(new InvestSummaryItemExt(extItem).setQuota(extItem.leftQuota()));
-                extItem.setQuota(extItem.getQuota() - extItem.leftQuota()).setEnabled(false);
-            }
-        }
-        ret.addAll(toBeAddedList);
         return ret;
     }
 
@@ -52,28 +42,18 @@ public class FIFOClearanceAlg implements ClearanceAlg {
         return Comparator.comparing(InvestSummaryItem::getDay).thenComparing(InvestSummaryItem::getIndex);
     }
 
-    protected void doClear(List<InvestSummaryItem> itemList, InvestSummaryItemExt currentItem) {
+    protected void doClear(List<InvestSummaryItem> itemList, InvestSummaryItem currentItem) {
         List<InvestSummaryItem> tempItemList = new ArrayList<>(itemList);
-        Iterator<InvestSummaryItem> it = tempItemList.stream().
-                sorted(getComparator()).iterator();
+        Iterator<InvestSummaryItem> it = tempItemList.stream().sorted(getComparator()).iterator();
         while (it.hasNext()) {
-            InvestSummaryItemExt item = (InvestSummaryItemExt) it.next();
-            if (item.leftQuota() > 0) {
-                double left = item.clear(currentItem.leftQuota());
-                if (left > 0 || CommonUtil.isZero(left, 0.001)) {
-                    currentItem.setLeftQuota(0);
-                    currentItem.setEnabled(false);
+            InvestSummaryItem item = it.next();
+            if (item.isEnabled()) {
+                item.liquidate(currentItem);
+                if (!currentItem.isEnabled()) {
                     break;
-                } else {
-                    currentItem.setLeftQuota(left);
                 }
             }
         }
-        if (currentItem.leftQuota() < 0 && !CommonUtil.isZero(currentItem.leftQuota(), 0.001)) {
-            itemList.add(new InvestSummaryItemExt(currentItem).
-                    setQuota(currentItem.getQuota() - currentItem.leftQuota()).setEnabled(false));
-            currentItem.setQuota(currentItem.leftQuota());
-        }
-        itemList.add(currentItem);
+        itemList.add(currentItem.setEnabled(false));
     }
 }

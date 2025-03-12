@@ -1,5 +1,6 @@
 package io.github.lujian213.eggfund.model
 
+import io.github.lujian213.eggfund.utils.CommonUtil
 import spock.lang.Specification
 
 
@@ -105,6 +106,57 @@ class InvestSummaryItemSpec extends Specification {
             getInvestId() == null
             Math.abs(getPrice_2pct() - 1.3 * 1.02) < 0.0001
             Math.abs(getPrice_minus2pct() - 1.3 * 0.98) < 0.0001
+        }
+    }
+
+    def "liquidate"() {
+        when:
+        def item1 = new InvestSummaryItem(new Invest(id: "buy1", share: buyShare, unitPrice: 10, type: Invest.TYPE_TRADE, batch: 0, day: "2025-02-01"), 12)
+        def item3 = new InvestSummaryItem(new Invest(id: "sell1", share: sellShare, unitPrice: 10.3, type: Invest.TYPE_TRADE, batch: 0, day: "2025-02-04"), 12)
+        item1.liquidate(item3)
+        then:
+        with(item1) {
+            quota == buyQuota
+            liquidatedQuota == buyLiquidatedQuota
+            enabled == buyEnabled
+        }
+        with(item3) {
+            quota == sellQuota
+            liquidatedQuota == sellLiquidatedQuota
+            enabled == sellEnabled
+        }
+
+        where:
+        buyShare | sellShare | buyQuota | buyLiquidatedQuota | buyEnabled | sellQuota | sellLiquidatedQuota | sellEnabled
+        1000     | -1400     | 0        | 1000               | false      | -400      | -1000               | true
+        1500     | -1400     | 100      | 1400               | true       | 0         | -1400               | false
+        1400     | -1400     | 0        | 1400               | false      | 0         | -1400               | false
+    }
+
+    def "liquidate with exception"() {
+        when:
+        def item1 = new InvestSummaryItem(new Invest(id: "buy1", share: 1500, unitPrice: 10, type: Invest.TYPE_TRADE, batch: 0, day: "2025-02-01"), 12)
+        def item3 = new InvestSummaryItem(new Invest(id: "sell1", share: -1400, unitPrice: 10.3, type: Invest.TYPE_TRADE, batch: 0, day: "2025-02-04"), 12)
+        item3.liquidate(item1)
+        then:
+        thrown(IllegalArgumentException)
+    }
+
+    def "liquidate on non-trade item"() {
+        when:
+        def item1 = new InvestSummaryItem(new FundValue(day: "2025-02-02", unitValue: 10.1), null, 12)
+        def item3 = new InvestSummaryItem(new Invest(id: "sell1", share: -1400, unitPrice: 10.3, type: Invest.TYPE_TRADE, batch: 0, day: "2025-02-04"), 12)
+        item1.liquidate(item3)
+        then:
+        with(item1) {
+            quota == 0
+            liquidatedQuota == 0
+            enabled
+        }
+        with(item3) {
+            quota == -1400
+            liquidatedQuota == 0
+            enabled
         }
     }
 }
