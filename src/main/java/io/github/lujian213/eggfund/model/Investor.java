@@ -1,5 +1,7 @@
 package io.github.lujian213.eggfund.model;
 
+import jakarta.annotation.Nonnull;
+
 import java.util.Objects;
 
 public class Investor {
@@ -10,9 +12,12 @@ public class Investor {
     public Investor() {
     }
 
-    public Investor(String id, String name, String icon) {
-        this.id = id;
-        this.name = name;
+    public Investor(@Nonnull String id, @Nonnull String name, String icon) {
+        if (id.trim().isEmpty() || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("id and name should not be empty");
+        }
+        this.id = id.trim();
+        this.name = name.trim();
         this.icon = icon;
     }
 
