@@ -5,16 +5,16 @@ import jakarta.annotation.Nullable;
 
 public class InvestSummaryItem extends LocalDateRelated<InvestSummaryItem> {
     private String type;
-    private double quota;
+    protected double quota;
     private double price;
     private double increaseRate;
-    private double fee;
-    private double investAmt;
+    protected double fee;
+    protected double investAmt;
     private double _var;
-    private double earning;
+    protected double earning;
     private int index = 0;
     private int batch = 0;
-    private boolean enabled = true;
+    protected boolean enabled = true;
     private String investId;
     private String comments;
 
@@ -35,6 +35,23 @@ public class InvestSummaryItem extends LocalDateRelated<InvestSummaryItem> {
     public InvestSummaryItem(@Nonnull Invest invest, double estPrice) {
         super(invest.getDay());
         copyFrom(invest, estPrice);
+    }
+
+    public InvestSummaryItem(InvestSummaryItem item) {
+        super(item.getDay());
+        this.type = item.type;
+        this.quota = item.quota;
+        this.price = item.price;
+        this.increaseRate = item.increaseRate;
+        this.fee = item.fee;
+        this.investAmt = item.investAmt;
+        this._var = item._var;
+        this.earning = item.earning;
+        this.index = item.index;
+        this.batch = item.batch;
+        this.enabled = item.enabled;
+        this.investId = item.investId;
+        this.comments = item.comments;
     }
 
     protected void copyFrom(Invest invest, double estPrice) {
