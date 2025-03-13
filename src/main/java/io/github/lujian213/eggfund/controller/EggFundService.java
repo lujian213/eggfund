@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/")
 @Tag(name = "EggFund Service", description = "EggFUnd Service")
 public class EggFundService {
