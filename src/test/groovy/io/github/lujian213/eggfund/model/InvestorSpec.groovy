@@ -25,7 +25,25 @@ class InvestorSpec extends Specification {
             setIcon("icon3")
         }
     }
+    def "constructor"() {
+        when:
+        def investor = new Investor("Alex ", " Alex Smith", "icon1")
+        then:
+        with(investor) {
+            name == "Alex Smith"
+            id == "Alex"
+        }
 
+        when:
+        new Investor("", "name", null)
+        then:
+        thrown(IllegalArgumentException)
+
+        when:
+        new Investor("id", "", null)
+        then:
+        thrown(IllegalArgumentException)
+    }
     def "Update"() {
         when:
         investor1.update(investor2)

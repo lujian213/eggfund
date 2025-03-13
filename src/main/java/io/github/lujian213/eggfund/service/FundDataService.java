@@ -258,7 +258,7 @@ public class FundDataService implements FundValueListener {
         }
     }
 
-    @Scheduled(cron = "0 */3 9-15 * * MON-FRI")
+    @Scheduled(cron = "0 */3 9-15 * * MON-FRI", zone = "${zone.id:Asia/Shanghai}")
     public void updateFundRTValues() {
         log.info("Scheduled task started at {}", LocalDateTime.now());
         try {
