@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useSetRecoilState } from "recoil";
 import { refreshSummaryState } from "../../../store/atom";
-import { Box, Button, Modal, Stack } from "@mui/material";
+import { Box, Button, Card, CardContent, Modal, Stack } from "@mui/material";
 import DetailsTable from "./table";
 
 export default function Details() {
@@ -23,7 +23,11 @@ export default function Details() {
         flexBasis: "100%",
       }}
     >
-      <DetailsTable handleModalOpen={handleModalOpen} />
+      <Card sx={{ flexGrow: 1, height: "100%" }}>
+        <CardContent sx={{ height: "100%" }}>
+          <DetailsTable handleModalOpen={handleModalOpen} />
+        </CardContent>
+      </Card>
       <DetailsModal open={openModal} handleClose={handleModalClose} />
     </Box>
   );
@@ -42,7 +46,7 @@ const style = {
 };
 
 function DetailsModal(props) {
-  const {open, handleClose} = props;
+  const { open, handleClose } = props;
 
   return (
     <Modal
@@ -51,14 +55,14 @@ function DetailsModal(props) {
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
-        <Stack sx={style} spacing={2}>
-            <Box sx={{flex: 1}}>
-                <DetailsTable />
-            </Box>
-            <Box sx={{alignSelf: 'flex-end'}}>
-                <Button onClick={handleClose}>Close</Button>
-            </Box>
-        </Stack>
+      <Stack sx={style} spacing={2}>
+        <Box sx={{ flex: 1 }}>
+          <DetailsTable />
+        </Box>
+        <Box sx={{ alignSelf: "flex-end" }}>
+          <Button onClick={handleClose}>Close</Button>
+        </Box>
+      </Stack>
     </Modal>
   );
 }

@@ -12,6 +12,8 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
 jobs:
   node-and-java-build:
@@ -20,6 +22,8 @@ jobs:
       contents: read
       checks: write
       pull-requests: write
+      pages: write
+      id-token: write
 
     steps:
     - uses: actions/checkout@v4
@@ -62,6 +66,34 @@ jobs:
         name: eggfund-jar
         path: dist/lib/eggfund-1.0.0.jar
         compression-level: 9
+    - name: Setup Pages
+      uses: actions/configure-pages@v5
+    - name: Build with Jekyll
+      uses: actions/jekyll-build-pages@v1
+      with:
+        source: ./client/build/static
+        destination: ./_site
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
+
+  # Deployment job
+  deploy-pages:
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
+      pages: write
+      id-token: write
+#    environment:
+#      name: github-pages
+#      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: node-and-java-build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
   package-and-deploy:
     runs-on: ubuntu-latest
     needs: [node-and-java-build]

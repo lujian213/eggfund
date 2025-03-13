@@ -56,7 +56,7 @@ export default function DetailsTable({ handleModalOpen }) {
       field: "type",
       headerName: "",
       maxWidth: 60,
-      cellenderer: TypeRenderer,
+      cellRenderer: TypeRenderer,
       cellStyle: {
         display: "flex",
         justifyContent: "center",
@@ -80,8 +80,8 @@ export default function DetailsTable({ handleModalOpen }) {
     {
       field: "price",
       flex: 1,
-      cellenderer: PriceRenderer,
-      cellrendererParams: { prices, themeType },
+      cellRenderer: PriceRenderer,
+      cellRendererParams: { prices, themeType },
     },
     {
       field: "increaseRate",
@@ -136,7 +136,7 @@ export default function DetailsTable({ handleModalOpen }) {
     {
       field: "enabled",
       flex: 1,
-      cellenderer: ActionsRenderer,
+      cellRenderer: ActionsRenderer,
       cellRendererParams: { handleUpdateRowStyles },
     },
   ];
@@ -198,7 +198,7 @@ function ActionsRenderer({ value, data, handleUpdateRowStyles }) {
   const [checked, setChecked] = useState(value);
 
   const handleChange = async (event) => {
-    setChecked(event.target.value);
+    setChecked(event.target.checked);
     handleUpdateRowStyles(investId, event.target.checked);
     await axios.post(`/disableinvest/${selectedInvestor}/${investId}`, null, {
       params: {
