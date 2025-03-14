@@ -8,6 +8,11 @@ import java.util.stream.Collectors;
 
 public class FIFOClearanceAlg implements ClearanceAlg {
     @Override
+    public String getAlgName() {
+        return "FIFO";
+    }
+
+    @Override
     public List<InvestSummaryItem> clear(List<InvestSummaryItem> items) {
         Map<Integer, List<InvestSummaryItem>> batchMap = items.stream().collect(Collectors.groupingBy(
                         InvestSummaryItem::getBatch,

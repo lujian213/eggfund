@@ -1,5 +1,6 @@
 package io.github.lujian213.eggfund.model
 
+import io.github.lujian213.eggfund.utils.CommonUtil
 import io.github.lujian213.eggfund.utils.Constants
 import spock.lang.Specification
 import java.time.LocalDate
@@ -100,6 +101,16 @@ class InvestSummarySpec extends Specification {
             Math.abs(getAveragePrice() - 1.2982) < 0.0001
             Math.abs(getTotalFee() - 293.74) < 0.0001
             Math.abs(getRaiseRate() - 0.0067) < 0.0001
+            CommonUtil.isZero(grossEarning - earning - totalFee, 0.001)
+            CommonUtil.isZero(grossEarningRate - grossEarning/totalLongAmt, 0.001)
+            clearanceMap.size() == 3
+            fundId == "001548"
+            estPriceTable.size() == 8
+            estPriceTableItems.size() == 8
+            totalDividendAmt == 0
+            clearanceMap['FIFO']
+            clearanceMap['FILO']
+            clearanceMap['HVFO']
         }
     }
 }

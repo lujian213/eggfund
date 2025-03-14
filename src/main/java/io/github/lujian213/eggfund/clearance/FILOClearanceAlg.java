@@ -6,6 +6,11 @@ import java.util.Comparator;
 
 public class FILOClearanceAlg extends FIFOClearanceAlg {
     @Override
+    public String getAlgName() {
+        return "FILO";
+    }
+
+    @Override
     protected Comparator<InvestSummaryItem> getComparator() {
         return Comparator.comparing(InvestSummaryItem::getDay).reversed().
                 thenComparing(Comparator.comparing(InvestSummaryItem::getIndex).reversed());

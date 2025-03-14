@@ -6,6 +6,11 @@ import java.util.Comparator;
 
 public class HVFOClearanceAlg extends FIFOClearanceAlg {
     @Override
+    public String getAlgName() {
+        return "HVFO";
+    }
+
+    @Override
     protected Comparator<InvestSummaryItem> getComparator() {
         return Comparator.comparing(InvestSummaryItem::getPrice).reversed();
     }
