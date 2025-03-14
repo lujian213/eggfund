@@ -12,6 +12,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("squid:S112")
 public class LocalWebElement implements WebElement {
     private static XPathFactory fac = XPathFactory.newInstance();
     private static final String XPATH_PREFIX = "By.xpath: ";

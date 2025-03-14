@@ -32,6 +32,7 @@ import java.util.Map;
 @CrossOrigin
 @RequestMapping("/")
 @Tag(name = "EggFund Service", description = "EggFUnd Service")
+@SuppressWarnings({"squid:S112", "squid:S100"})
 public class EggFundService {
     public interface ThrowingRunnable<T> {
         T run() throws Throwable;

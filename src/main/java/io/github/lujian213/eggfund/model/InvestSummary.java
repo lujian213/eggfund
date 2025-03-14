@@ -1,8 +1,6 @@
 package io.github.lujian213.eggfund.model;
 
 import io.github.lujian213.eggfund.clearance.ClearanceAlg;
-import io.github.lujian213.eggfund.clearance.FIFOClearanceAlg;
-import io.github.lujian213.eggfund.clearance.FILOClearanceAlg;
 import io.github.lujian213.eggfund.exception.EggFundException;
 import io.github.lujian213.eggfund.utils.Constants;
 import org.slf4j.Logger;

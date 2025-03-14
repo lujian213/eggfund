@@ -30,7 +30,7 @@ public class SecurityConfig {
     @Bean
     @ConditionalOnProperty(name = "spring.security.enable", havingValue = "true", matchIfMissing = true)
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests((requests) -> requests.anyRequest().authenticated());
+        http.authorizeHttpRequests(requests -> requests.anyRequest().authenticated());
         http.csrf(CsrfConfigurer::disable);
         http.formLogin(withDefaults());
         http.httpBasic(withDefaults());
@@ -41,7 +41,7 @@ public class SecurityConfig {
     @Bean
     @ConditionalOnMissingBean(name = "defaultSecurityFilterChain")
     SecurityFilterChain disableSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests((requests) -> requests.anyRequest().permitAll());
+        http.authorizeHttpRequests(requests -> requests.anyRequest().permitAll());
         http.csrf(CsrfConfigurer::disable);
         log.info("Spring Security Disabled.");
         return http.build();

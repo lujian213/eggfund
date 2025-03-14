@@ -4,6 +4,7 @@ import io.github.lujian213.eggfund.utils.CommonUtil;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
+@SuppressWarnings({"squid:S100", "squid:S116"})
 public class InvestSummaryItem extends LocalDateRelated<InvestSummaryItem> {
     private String type;
     private double quota;
