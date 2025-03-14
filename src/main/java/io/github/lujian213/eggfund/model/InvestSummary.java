@@ -1,5 +1,8 @@
 package io.github.lujian213.eggfund.model;
 
+import io.github.lujian213.eggfund.clearance.ClearanceAlg;
+import io.github.lujian213.eggfund.clearance.FIFOClearanceAlg;
+import io.github.lujian213.eggfund.clearance.FILOClearanceAlg;
 import io.github.lujian213.eggfund.exception.EggFundException;
 import io.github.lujian213.eggfund.utils.Constants;
 import org.slf4j.Logger;
@@ -30,6 +33,7 @@ public class InvestSummary {
     private double totalFee = 0;
     private final List<InvestSummaryItem> items = new ArrayList<>();
     private final Map<Double, Double> estPriceTable = new LinkedHashMap<>();
+    private final Map<String, List<InvestSummaryItem>> clearanceMap = new LinkedHashMap<>();
 
     InvestSummary() {
         //for testing friendly
@@ -69,6 +73,7 @@ public class InvestSummary {
         totalDividendAmt = Math.abs(totalDividendAmt);
 
         prepareItems(fundInfo, invests, fundValues);
+        prepareClearanceMap(items);
         estPriceTable.put(-0.05, lastFundValue.getUnitValue() * 0.95);
         estPriceTable.put(-0.04, lastFundValue.getUnitValue() * 0.96);
         estPriceTable.put(-0.02, lastFundValue.getUnitValue() * 0.98);
@@ -77,6 +82,10 @@ public class InvestSummary {
         estPriceTable.put(0.02, lastFundValue.getUnitValue() * 1.02);
         estPriceTable.put(0.04, lastFundValue.getUnitValue() * 1.04);
         estPriceTable.put(0.05, lastFundValue.getUnitValue() * 1.05);
+    }
+
+    void prepareClearanceMap(List<InvestSummaryItem> items) {
+        ClearanceAlg.ALL_ALGS.forEach(alg -> clearanceMap.put(alg.getAlgName(), alg.clear(items)));
     }
 
     List<FundValue> prepareFundValues(List<FundValue> originFundValues, LocalDate endDate, FundRTValue rtValue) {
@@ -134,7 +143,6 @@ public class InvestSummary {
 
     public double getTotalShortAmt() {
         return totalShortAmt;
-
     }
 
     public double getTotalLongAmt() {
@@ -213,6 +221,10 @@ public class InvestSummary {
 
     public List<InvestSummaryItem> getItems() {
         return items;
+    }
+
+    public Map<String, List<InvestSummaryItem>> getClearanceMap() {
+        return clearanceMap;
     }
 
     public Map<Double, Double> getEstPriceTable() {
