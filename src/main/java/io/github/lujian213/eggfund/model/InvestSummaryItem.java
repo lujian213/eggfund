@@ -1,11 +1,13 @@
 package io.github.lujian213.eggfund.model;
 
+import io.github.lujian213.eggfund.utils.CommonUtil;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
 public class InvestSummaryItem extends LocalDateRelated<InvestSummaryItem> {
     private String type;
     private double quota;
+    private double liquidatedQuota;
     private double price;
     private double increaseRate;
     private double fee;
@@ -37,10 +39,29 @@ public class InvestSummaryItem extends LocalDateRelated<InvestSummaryItem> {
         copyFrom(invest, estPrice);
     }
 
+    public InvestSummaryItem(InvestSummaryItem item) {
+        super(item.getDay());
+        this.type = item.type;
+        this.quota = item.quota;
+        this.liquidatedQuota = item.liquidatedQuota;
+        this.price = item.price;
+        this.increaseRate = item.increaseRate;
+        this.fee = item.fee;
+        this.investAmt = item.investAmt;
+        this._var = item._var;
+        this.earning = item.earning;
+        this.index = item.index;
+        this.batch = item.batch;
+        this.enabled = item.enabled;
+        this.investId = item.investId;
+        this.comments = item.comments;
+    }
+
     protected void copyFrom(Invest invest, double estPrice) {
         this.type = invest.getType();
         this.price = invest.getUnitPrice();
         this.quota = invest.getShare();
+        this.liquidatedQuota = 0;
         this.fee = invest.getFee();
         this.batch = invest.getBatch();
         this.investAmt = invest.getAmount();
@@ -58,6 +79,10 @@ public class InvestSummaryItem extends LocalDateRelated<InvestSummaryItem> {
         return quota;
     }
 
+    public double getLiquidatedQuota() {
+        return liquidatedQuota;
+    }
+
     public double getPrice() {
         return price;
     }
@@ -71,7 +96,10 @@ public class InvestSummaryItem extends LocalDateRelated<InvestSummaryItem> {
     }
 
     public double getInvestAmt() {
-        return investAmt;
+        if (quota + liquidatedQuota == 0) {
+            return 0;
+        }
+        return investAmt / (quota + liquidatedQuota) * quota;
     }
 
     public double getVar() {
@@ -79,7 +107,10 @@ public class InvestSummaryItem extends LocalDateRelated<InvestSummaryItem> {
     }
 
     public double getEarning() {
-        return earning;
+        if (quota + liquidatedQuota == 0) {
+            return 0;
+        }
+        return earning / (quota + liquidatedQuota) * quota;
     }
 
     public double getPrice_2pct() {
@@ -92,6 +123,11 @@ public class InvestSummaryItem extends LocalDateRelated<InvestSummaryItem> {
 
     public boolean isEnabled() {
         return enabled;
+    }
+
+    public InvestSummaryItem setEnabled(boolean enabled) {
+        this.enabled = enabled;
+        return this;
     }
 
     public double getPrice_minus2pct() {
@@ -114,22 +150,49 @@ public class InvestSummaryItem extends LocalDateRelated<InvestSummaryItem> {
         return comments;
     }
 
+    public void liquidate(InvestSummaryItem sellItem) {
+        if (!Invest.TYPE_TRADE.equals(sellItem.type) || sellItem.quota >= 0) {
+            throw new IllegalArgumentException("liquidate quota should be negative");
+        }
+        if (!Invest.TYPE_TRADE.equals(type) || !enabled || quota <= 0) {
+            return;
+        }
+        double diff = quota + sellItem.quota;
+        if (diff > 0) {
+            liquidatedQuota += -sellItem.quota;
+            quota -= -sellItem.quota;
+            sellItem.liquidatedQuota += sellItem.quota;
+            sellItem.quota = 0;
+            sellItem.enabled = false;
+        } else {
+            sellItem.liquidatedQuota -= quota;
+            sellItem.quota += quota;
+            if (CommonUtil.isZero(diff, 0.001)) {
+                sellItem.enabled = false;
+            }
+            liquidatedQuota += quota;
+            quota = 0;
+            enabled = false;
+        }
+    }
+
     @Override
     public String toString() {
         return "InvestSummaryItem{" +
                 "type='" + type + '\'' +
                 ", quota=" + quota +
+                ", liquidatedQuota=" + liquidatedQuota +
                 ", price=" + price +
                 ", increaseRate=" + increaseRate +
                 ", fee=" + fee +
                 ", investAmt=" + investAmt +
-                ", var=" + _var +
+                ", _var=" + _var +
                 ", earning=" + earning +
                 ", index=" + index +
                 ", batch=" + batch +
                 ", enabled=" + enabled +
-                ", investId='" + investId + '\"' +
-                ", comments='" + comments + '\"' +
+                ", investId='" + investId + '\'' +
+                ", comments='" + comments + '\'' +
                 '}';
     }
 }
