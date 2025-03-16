@@ -6,18 +6,19 @@ import io.github.lujian213.eggfund.model.InvestAudit
 import io.github.lujian213.eggfund.utils.Constants
 import java.time.LocalDate
 
-class FileSystemInvestAuditDaoImplSpec extends Specification {
+class FileSystemInvestAuditDaoImplSpec extends FileSystemDaoSpec {
 
     FileSystemInvestAuditDaoImpl dao
 
     def setup() {
-        dao = Spy(FileSystemInvestAuditDaoImpl, constructorArgs: [new File("dummyAuditFolder")]) {
+        dao = Spy(FileSystemInvestAuditDaoImpl, constructorArgs: [testDir]) {
             getTodaysDate() >> LocalDate.of(2025, 2, 1).format(Constants.DATE_FORMAT2)
         }
     }
 
-    def cleanup() {
-        new File("dummyAuditFolder").deleteDir()
+    @Override
+    File getTestDir() {
+        new File("dummyAuditFolder")
     }
 
     def "saveInvestAudits & loadInvestAudits"() {
@@ -30,7 +31,7 @@ class FileSystemInvestAuditDaoImplSpec extends Specification {
         def auditList = dao.loadInvestAudits("20250201")
         auditList.size() == 2
         when:
-        dao = new FileSystemInvestAuditDaoImpl(new File("dummyFolder"))
+        dao = new FileSystemInvestAuditDaoImpl(testDir)
         then:
         !dao.loadInvestAudits(dao.getTodaysDate())
     }
