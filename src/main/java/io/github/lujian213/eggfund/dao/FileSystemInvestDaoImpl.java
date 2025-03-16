@@ -3,6 +3,7 @@ package io.github.lujian213.eggfund.dao;
 import io.github.lujian213.eggfund.model.Invest;
 import io.github.lujian213.eggfund.model.Investor;
 import io.github.lujian213.eggfund.utils.Constants;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -15,8 +16,16 @@ import java.util.List;
 
 @Component
 public class FileSystemInvestDaoImpl extends FileSystemDaoImpl implements InvestDao {
+
+    FileUserDetailsManager fileUserDetailsManager;
+
     public FileSystemInvestDaoImpl(@Value("${repo.folder}") File repoFile) {
         super(repoFile);
+    }
+
+    @Autowired
+    public void setFileUserDetailsManager(FileUserDetailsManager fileUserDetailsManager) {
+        this.fileUserDetailsManager = fileUserDetailsManager;
     }
 
     @Override
@@ -41,6 +50,7 @@ public class FileSystemInvestDaoImpl extends FileSystemDaoImpl implements Invest
     public void saveInvestors(Collection<Investor> investors) throws IOException {
         File investFile = new File(repoFile, Constants.INVESTORS_FILE_NAME);
         Constants.MAPPER.writeValue(investFile, investors);
+        fileUserDetailsManager.saveUsers(investors);
     }
 
     @Override

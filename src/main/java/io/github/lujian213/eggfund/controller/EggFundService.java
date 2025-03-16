@@ -31,7 +31,7 @@ import java.util.Map;
 @RestController
 @CrossOrigin
 @RequestMapping("/")
-@Tag(name = "EggFund Service", description = "EggFUnd Service")
+@Tag(name = "EggFund Service", description = "EggFund Service")
 @SuppressWarnings({"squid:S112", "squid:S100"})
 public class EggFundService {
     public interface ThrowingRunnable<T> {

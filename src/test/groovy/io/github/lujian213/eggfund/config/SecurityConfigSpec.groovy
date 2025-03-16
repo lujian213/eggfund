@@ -1,5 +1,6 @@
 package io.github.lujian213.eggfund.config
 
+import io.github.lujian213.eggfund.dao.FileUserDetailsManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy
@@ -8,7 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import spock.lang.Specification
 
-@SpringBootTest(classes = SecurityConfig)
+@SpringBootTest(classes = [SecurityConfig, FileUserDetailsManager])
 class SecurityConfigSpec extends Specification {
 
     @Autowired
@@ -26,7 +27,7 @@ class SecurityConfigSpec extends Specification {
         userDetailsService
         passwordEncoder
         roleHierarchy
-        userDetailsService.loadUserByUsername("user") != null
+        userDetailsService.loadUserByUsername("admin") != null
     }
 
 

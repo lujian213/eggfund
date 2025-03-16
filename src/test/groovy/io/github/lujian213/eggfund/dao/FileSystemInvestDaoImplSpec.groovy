@@ -35,6 +35,7 @@ class FileSystemInvestDaoImplSpec extends Specification {
         }
         def investors = [investor1, investor2]
         when:
+        dao.setFileUserDetailsManager(Mock(FileUserDetailsManager))
         dao.saveInvestors(investors)
         then:
         def investorList = dao.loadInvestors()

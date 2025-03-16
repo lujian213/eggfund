@@ -12,11 +12,8 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -45,14 +42,6 @@ public class SecurityConfig {
         http.csrf(CsrfConfigurer::disable);
         log.info("Spring Security Disabled.");
         return http.build();
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService() {
-        InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-        manager.createUser(User.withUsername("user").password("$2a$10$yYeZXkmIopBfkksZctLuSubeE1CNg9.S50SNiNKjLedALE9cQ/ABG").roles("USER").build());
-        manager.createUser(User.withUsername("admin").password("$2a$10$yYeZXkmIopBfkksZctLuSubeE1CNg9.S50SNiNKjLedALE9cQ/ABG").roles("ADMIN").build());
-        return manager;
     }
 
     @Bean
