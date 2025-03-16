@@ -8,11 +8,11 @@ class FileSystemInvestDaoImplSpec extends Specification {
     FileSystemInvestDaoImpl dao
 
     def setup() {
-        dao = new FileSystemInvestDaoImpl(new File("dummyFolder"))
+        dao = new FileSystemInvestDaoImpl(new File("dummyInvestFolder"))
     }
 
     def cleanup() {
-        new File("dummyFolder").deleteDir()
+        new File("dummyInvestFolder").deleteDir()
     }
 
     def "getInvestFileName"() {

@@ -9,11 +9,11 @@ class FileSystemFundDaoImplSpec extends Specification {
     FileSystemFundDaoImpl dao
 
     def setup() {
-        dao = new FileSystemFundDaoImpl(new File("dummyFolder"))
+        dao = new FileSystemFundDaoImpl(new File("dummyFundFolder"))
     }
 
     def cleanup() {
-        new File("dummyFolder").deleteDir()
+        new File("dummyFundFolder").deleteDir()
     }
 
     def "GetFundValueFile"() {
