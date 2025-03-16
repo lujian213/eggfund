@@ -11,13 +11,13 @@ class FileSystemInvestAuditDaoImplSpec extends Specification {
     FileSystemInvestAuditDaoImpl dao
 
     def setup() {
-        dao = Spy(FileSystemInvestAuditDaoImpl, constructorArgs: [new File("dummyFolder")]) {
+        dao = Spy(FileSystemInvestAuditDaoImpl, constructorArgs: [new File("dummyAuditFolder")]) {
             getTodaysDate() >> LocalDate.of(2025, 2, 1).format(Constants.DATE_FORMAT2)
         }
     }
 
     def cleanup() {
-        new File("dummyFolder").deleteDir()
+        new File("dummyAuditFolder").deleteDir()
     }
 
     def "saveInvestAudits & loadInvestAudits"() {
