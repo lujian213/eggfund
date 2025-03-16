@@ -6,3 +6,6 @@
 /out/
 /repo/
 /docker-compose.yml
+/.clj-kondo/
+.vscode/settings.json
+.lsp/
