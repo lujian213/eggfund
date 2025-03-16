@@ -13,6 +13,7 @@ import org.openqa.selenium.WebElement;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+@SuppressWarnings("squid:S112")
 public class TableHelper {
     public static class ColumnDataExtractor<T> {
         private String colName;

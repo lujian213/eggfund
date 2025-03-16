@@ -19,6 +19,7 @@ import java.security.cert.X509Certificate;
 import java.util.Collections;
 
 @Configuration
+@SuppressWarnings({"squid:S112", "squid:S4830"})
 public class RestTemplateConfig {
     @Bean
     public RestTemplate restTemplate(Proxy proxy) {
@@ -85,7 +86,7 @@ public class RestTemplateConfig {
             }
         }};
         try {
-            SSLContext sc = SSLContext.getInstance("SSL");
+            SSLContext sc = SSLContext.getInstance("TLSv1.2");
             sc.init(null, trustAllCerts, new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
         } catch (Exception e) {

@@ -29,8 +29,10 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/")
 @Tag(name = "EggFund Service", description = "EggFUnd Service")
+@SuppressWarnings({"squid:S112", "squid:S100"})
 public class EggFundService {
     public interface ThrowingRunnable<T> {
         T run() throws Throwable;
