@@ -1,21 +1,20 @@
 package io.github.lujian213.eggfund.dao
 
 import io.github.lujian213.eggfund.model.Investor
+import io.github.lujian213.eggfund.utils.Constants
 import org.springframework.security.core.userdetails.UsernameNotFoundException
-import io.github.lujian213.eggfund.utils.Constants;
-import spock.lang.Specification
 
-
-class FileUserDetailsManagerSpec extends Specification {
+class FileUserDetailsManagerSpec extends FileSystemDaoSpec {
 
     FileUserDetailsManager targetClass
 
     def setup() {
-        targetClass = new FileUserDetailsManager(new File("dummyFolder"))
+        targetClass = new FileUserDetailsManager(testDir)
     }
 
-    def cleanup() {
-        new File("dummyFolder").deleteDir()
+    @Override
+    File getTestDir() {
+        new File("dummyUserFolder")
     }
 
     def "has built-in admin user"() {
@@ -30,7 +29,7 @@ class FileUserDetailsManagerSpec extends Specification {
         when:
         targetClass.saveUsers(List.of(investor))
         then:
-        new File("dummyFolder", Constants.USERS_FILE_NAME).isFile()
+        new File(testDir, Constants.USERS_FILE_NAME).isFile()
         targetClass.loadUserByUsername("Alex") != null
         targetClass.loadUserByUsername("admin") != null
     }
@@ -41,5 +40,4 @@ class FileUserDetailsManagerSpec extends Specification {
         then:
         thrown(UsernameNotFoundException)
     }
-
 }
