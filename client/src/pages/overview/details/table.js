@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { summaryQuery } from "../../../store/selector";
 import AggridWrapper from "../../../components/aggrid-wrapper";
-import { Box, Switch } from "@mui/material";
+import { Box, Button, ButtonGroup, Stack, Switch } from "@mui/material";
 import { selectedInvestorState, themeState } from "../../../store/atom";
 import {
   formatNumber,
@@ -12,16 +12,42 @@ import axios from "axios";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 
+const detialsList = [
+  {
+    key: "items",
+    label: "Default",
+  },
+  {
+    key: "FIFO",
+    label: "FIFO",
+  },
+  {
+    key: "FILO",
+    label: "FILO",
+  },
+  {
+    key: "HVFO",
+    label: "HVFO",
+  },
+];
+
 export default function DetailsTable({ handleModalOpen }) {
   const summary = useRecoilValue(summaryQuery);
   const theme = useRecoilValue(themeState);
   const gridRef = useRef();
   const [datasource, setDatasource] = useState([]);
+  const [selectedDataType, setSelectedDataType] = useState("items");
 
   useEffect(() => {
     if (summary) {
-      const items = summary.items || [];
-      const sortedItem = items.toSorted((a, b) => {
+      const { items, clearanceMap } = summary;
+      let data = [];
+      if (selectedDataType === "items" && items) {
+        data = [...items];
+      } else {
+        data = clearanceMap[selectedDataType] || [];
+      }
+      const sortedItem = data.toSorted((a, b) => {
         if (a.day === b.day) {
           return a.batch - b.batch;
         }
@@ -29,7 +55,7 @@ export default function DetailsTable({ handleModalOpen }) {
       });
       setDatasource(sortedItem);
     }
-  }, [summary]);
+  }, [summary, selectedDataType]);
 
   const themeType =
     theme === "Lightblue" || theme === "Pink" ? "light" : "dark";
@@ -137,7 +163,7 @@ export default function DetailsTable({ handleModalOpen }) {
       field: "enabled",
       flex: 1,
       cellRenderer: ActionsRenderer,
-      cellRendererParams: { handleUpdateRowStyles },
+      cellRendererParams: { handleUpdateRowStyles, selectedDataType },
     },
   ];
 
@@ -152,14 +178,29 @@ export default function DetailsTable({ handleModalOpen }) {
   };
 
   return (
-    <AggridWrapper
-      ref={gridRef}
-      rowData={JSON.parse(JSON.stringify(datasource))}
-      columnDefs={colDefs}
-      defaultColDef={defaultColDef}
-      getRowStyle={getRowStyle}
-      onRowDoubleClicked={handleModalOpen}
-    />
+    <Stack sx={{ height: "100%" }}>
+      <ButtonGroup aria-label="Basic button group">
+        {detialsList.map((item) => (
+          <Button
+            key={item.key}
+            variant={selectedDataType === item.key ? "contained" : "outlined"}
+            onClick={() => setSelectedDataType(item.key)}
+          >
+            {item.label}
+          </Button>
+        ))}
+      </ButtonGroup>
+      <Box sx={{ flexGrow: 1, height: "100%" }}>
+        <AggridWrapper
+          ref={gridRef}
+          rowData={JSON.parse(JSON.stringify(datasource))}
+          columnDefs={colDefs}
+          defaultColDef={defaultColDef}
+          getRowStyle={getRowStyle}
+          onRowDoubleClicked={handleModalOpen}
+        />
+      </Box>
+    </Stack>
   );
 }
 
@@ -192,7 +233,12 @@ function TypeRenderer({ value }) {
   );
 }
 
-function ActionsRenderer({ value, data, handleUpdateRowStyles }) {
+function ActionsRenderer({
+  value,
+  data,
+  handleUpdateRowStyles,
+  selectedDataType,
+}) {
   const { investId } = data;
   const selectedInvestor = useRecoilValue(selectedInvestorState);
   const [checked, setChecked] = useState(value);
@@ -211,6 +257,7 @@ function ActionsRenderer({ value, data, handleUpdateRowStyles }) {
 
   return (
     <Switch
+      disabled={selectedDataType !== "items"}
       checked={checked}
       onChange={handleChange}
       inputProps={{ "aria-label": "controlled" }}

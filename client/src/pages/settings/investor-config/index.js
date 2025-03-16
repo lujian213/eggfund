@@ -19,7 +19,10 @@ export default function InvestorConfig() {
     data: null,
     mode: "add",
   });
-  const [confirmModal, setConfirmModal] = useState(false);
+  const [confirmModal, setConfirmModal] = useState({
+    open: false,
+    investor: null,
+  });
 
   const handleAdd = () => {
     setInvestorModal((pre) => ({
@@ -80,15 +83,12 @@ export default function InvestorConfig() {
                 <IconButton size="small" onClick={() => handleEdit(investor)}>
                   <EditIcon color="primary" />
                 </IconButton>
-                <IconButton size="small" onClick={() => setConfirmModal(true)}>
+                <IconButton size="small" onClick={() => setConfirmModal({
+                  open: true,
+                  investor: investor,
+                })}>
                   <DeleteIcon color="error" />
                 </IconButton>
-                <ConfirmModal
-                  open={confirmModal}
-                  handleClose={() => setConfirmModal(false)}
-                  handleSubmit={() => handleDelete(investor)}
-                  message="Are you sure you want to delete this item?"
-                />
               </Stack>
             }
             variant={"outlined"}
@@ -107,6 +107,15 @@ export default function InvestorConfig() {
         mode={investorModal.mode}
         handleClose={() => setInvestorModal((pre) => ({ ...pre, open: false }))}
         handleSubmit={() => console.log("submit")}
+      />
+      <ConfirmModal
+        open={confirmModal.open}
+        handleClose={() => setConfirmModal({
+          open: false,
+          investor: null,
+        })}
+        handleSubmit={() => handleDelete(confirmModal.investor)}
+        message="Are you sure you want to delete this item?"
       />
     </Stack>
   );

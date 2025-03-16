@@ -12,12 +12,12 @@ import {
   Typography,
 } from "@mui/material";
 import axios from "axios";
-import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
-import StoreIcon from '@mui/icons-material/Store';
-import DeleteIcon from '@mui/icons-material/Delete';
-import ConfirmModal from '../../../components/confirm-modal';
-import FundModal from './fund-modal';
+import AddIcon from "@mui/icons-material/Add";
+import EditIcon from "@mui/icons-material/Edit";
+import StoreIcon from "@mui/icons-material/Store";
+import DeleteIcon from "@mui/icons-material/Delete";
+import ConfirmModal from "../../../components/confirm-modal";
+import FundModal from "./fund-modal";
 
 export default function FundConfig() {
   const funds = useRecoilValue(fundsQuery);
@@ -27,7 +27,10 @@ export default function FundConfig() {
     data: null,
     mode: "add",
   });
-  const [confirmModal, setConfirmModal] = useState(false);
+  const [confirmModal, setConfirmModal] = useState({
+    open: false,
+    fund: null,
+  });
 
   const handleAdd = () => {
     setFundModal((pre) => ({
@@ -101,16 +104,13 @@ export default function FundConfig() {
                   </IconButton>
                   <IconButton
                     size="small"
-                    onClick={() => setConfirmModal(true)}
+                    onClick={() => setConfirmModal({
+                      open: true,
+                      fund: fund,
+                    })}
                   >
                     <DeleteIcon color="error" />
                   </IconButton>
-                  <ConfirmModal
-                    open={confirmModal}
-                    handleClose={() => setConfirmModal(false)}
-                    handleSubmit={() => handleDelete(fund)}
-                    message="Are you sure you want to delete this item?"
-                  />
                 </Stack>
               }
               variant={"outlined"}
@@ -130,6 +130,15 @@ export default function FundConfig() {
         mode={fundModal.mode}
         handleClose={() => setFundModal((pre) => ({ ...pre, open: false }))}
         handleSubmit={() => console.log("submit")}
+      />
+      <ConfirmModal
+        open={confirmModal.open}
+        handleClose={() => setConfirmModal({
+          open: false,
+          fund: null,
+        })}
+        handleSubmit={() => handleDelete(confirmModal.fund)}
+        message="Are you sure you want to delete this item?"
       />
     </Stack>
   );
