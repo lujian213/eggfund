@@ -13,6 +13,8 @@ import AggridWrapper from "../../../components/aggrid-wrapper";
 
 const drawerWidth = 1200;
 
+const BASE_URL = process.env.REACT_APP_BASE_URL;
+
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
@@ -28,7 +30,7 @@ export default function TotalSummaryDrawer(props) {
 
   useEffect(() => {
     const fetchDatasource = async () => {
-      const response = await axios.post(`/summary/${investor}`);
+      const response = await axios.post(`${BASE_URL}/summary/${investor}`);
       const result = response.data;
       const { investSummaryList, ...rest } = result;
       const data = [

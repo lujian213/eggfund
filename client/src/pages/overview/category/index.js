@@ -13,6 +13,8 @@ import SummarizeIcon from "@mui/icons-material/Summarize";
 import CustomAvatar from "../../../utils/get-icons";
 import axios from "axios";
 
+const BASE_URL = process.env.REACT_APP_BASE_URL;
+
 export default function CategoryList({ handleDrawerOpen }) {
   const funds = useRecoilValue(fundsQuery);
   const investors = useRecoilValue(investorsQuery);
@@ -51,7 +53,7 @@ export default function CategoryList({ handleDrawerOpen }) {
     setSelected(null);
     setCategoryType("investor");
     try {
-      const response = await axios.get(`/funds/${id}`);
+      const response = await axios.get(`${BASE_URL}/funds/${id}`);
       const data = response.data || [];
       setFundsOfInvestorCategory(data);
     } catch (error) {

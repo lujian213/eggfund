@@ -11,12 +11,14 @@ import {
   selectedInvestorState,
 } from "./atom";
 
+const BASE_URL = process.env.REACT_APP_BASE_URL;
+
 export const fundsQuery = selector({
   key: "fundsQuery",
   get: async ({ get }) => {
     get(refreshFundState);
     try {
-      const response = await axios.get("/funds");
+      const response = await axios.get(`${BASE_URL}/funds`);
       const funds = response.data || [];
       return funds;
     } catch (e) {
@@ -30,7 +32,7 @@ export const investorsQuery = selector({
   get: async ({ get }) => {
     get(refreshInvestorState);
     try {
-      const response = await axios.get("/investors");
+      const response = await axios.get(`${BASE_URL}/investors`);
       const investors = response.data || [];
       return investors;
     } catch (e) {
@@ -45,7 +47,7 @@ export const investorsForFundQuery = selector({
     const selectedFund = get(selectedFundState);
     if (!selectedFund) return [];
     try {
-      const response = await axios.get(`/investors/${selectedFund}`);
+      const response = await axios.get(`${BASE_URL}/investors/${selectedFund}`);
       const investors = response.data || [];
       return investors;
     } catch (e) {
@@ -61,7 +63,7 @@ export const valuesQuery = selector({
   key: "valuesQuery",
   get: async ({ get }) => {
     try {
-      const response = await axios.get("/values");
+      const response = await axios.get(`${BASE_URL}/values`);
       const values = response.data || [];
       return values;
     } catch (e) {
@@ -88,7 +90,7 @@ export const investsQuery = selector({
     if (selectedFund === null || selectedInvestor === null) return [];
     try {
       const response = await axios.get(
-        `/invests/${selectedInvestor}/${selectedFund}`,
+        `${BASE_URL}/invests/${selectedInvestor}/${selectedFund}`,
         null,
         {
           params: paramsWithoutEmptyValue,
@@ -121,7 +123,7 @@ export const summaryQuery = selector({
     if (!selectedFund || !selectedInvestor) return null;
     try {
       const response = await axios.post(
-        `/summary/${selectedInvestor}/${selectedFund}`,
+        `${BASE_URL}/summary/${selectedInvestor}/${selectedFund}`,
         null,
         {
           params: paramsWithoutEmptyValue,
@@ -142,7 +144,7 @@ export const rtValuesQuery = selector({
     get(autoRefreshRtvaluesState);
     if (!selectedFunds || selectedFunds.length === 0) return [];
     try {
-      const response = await axios.get("/rtvalues", {
+      const response = await axios.get(`${BASE_URL}/rtvalues`, {
         params: {
           codes: selectedFunds.join(","),
         },

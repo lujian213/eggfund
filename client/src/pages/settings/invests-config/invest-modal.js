@@ -32,6 +32,9 @@ const style = {
   background: (theme) => theme.palette.background.sidebar,
   p: 4,
 };
+
+const BASE_URL = process.env.REACT_APP_BASE_URL;
+
 export default function InvestModal(props) {
   const { open, handleSubmit, handleClose, data, mode, maxBatch } = props;
   const funds = useRecoilValue(fundsQuery);
@@ -79,7 +82,7 @@ export default function InvestModal(props) {
     let response;
     if (mode === "add") {
       response = await axios.put(
-        `/invest/${selectedInvestor}/${selectedFund}`,
+        `${BASE_URL}/invest/${selectedInvestor}/${selectedFund}`,
         [
           {
             code: selectedFund,
@@ -88,7 +91,7 @@ export default function InvestModal(props) {
         ]
       );
     } else {
-      response = await axios.post(`/invest/${selectedInvestor}`, {
+      response = await axios.post(`${BASE_URL}/invest/${selectedInvestor}`, {
         code: selectedFund,
         ...form,
       });

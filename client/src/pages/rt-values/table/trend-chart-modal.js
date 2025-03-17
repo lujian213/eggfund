@@ -15,6 +15,8 @@ const style = {
   p: 4,
 };
 
+const BASE_URL = process.env.REACT_APP_BASE_URL;
+
 export default function TrendChartModal(props) {
   const { open, data, handleClose } = props;
   const { code, fundName } = data || {};
@@ -22,7 +24,7 @@ export default function TrendChartModal(props) {
 
   useEffect(() => {
     const fetchDatasource = async () => {
-      const response = await axios.get(`/values/${code}`, {
+      const response = await axios.get(`${BASE_URL}/values/${code}`, {
         params: {
           code,
         },

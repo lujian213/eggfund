@@ -2,12 +2,14 @@ import { selector } from "recoil";
 import { refreshInvestsState, searchFormState, selectedFundState, selectedInvestorState } from "./atom";
 import axios from "axios";
 
+const BASE_URL = process.env.REACT_APP_BASE_URL;
+
 export const investorsForFundQuery = selector({
     key: 'settingsinvestorsForFundQuery',
     get: async ({get}) => {
         const selectedFund = get(selectedFundState);
         if(selectedFund === null) return [];
-        const response = await axios.get(`/investors/${selectedFund}`);
+        const response = await axios.get(`${BASE_URL}/investors/${selectedFund}`);
         const investors = response.data || [];
         return investors
     }
@@ -27,7 +29,7 @@ export const investsQuery = selector({
             return acc
         }, {})
         if(selectedFund === null || selectedInvestor === null) return [];
-        const response = await axios.get(`/invests/${selectedInvestor}/${selectedFund}`, {
+        const response = await axios.get(`${BASE_URL}/invests/${selectedInvestor}/${selectedFund}`, {
             params: paramsWithoutEmptyValue
         });
         const invests = response.data || [];

@@ -27,6 +27,8 @@ import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import LoopIcon from "@mui/icons-material/Loop";
 import CustomAvatar from "../../../utils/get-icons";
 
+const BASE_URL = process.env.REACT_APP_BASE_URL;
+
 export default function BasicInfo() {
   const investors = useRecoilValue(investorsForFundQuery);
   const [selected, setSelected] = useRecoilState(selectedInvestorState);
@@ -122,7 +124,7 @@ export default function BasicInfo() {
   const handleRefresh = async (event) => {
     event.stopPropagation();
     event.preventDefault();
-    const response = await axios.get("/rtvalues", {
+    const response = await axios.get(`${BASE_URL}/rtvalues`, {
       params: {
         codes: selectedFund,
       },

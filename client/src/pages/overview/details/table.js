@@ -31,6 +31,8 @@ const detialsList = [
   },
 ];
 
+const BASE_URL = process.env.REACT_APP_BASE_URL;
+
 export default function DetailsTable({ handleModalOpen }) {
   const summary = useRecoilValue(summaryQuery);
   const theme = useRecoilValue(themeState);
@@ -251,7 +253,7 @@ function ActionsRenderer({
   const handleChange = async (event) => {
     setChecked(event.target.checked);
     handleUpdateRowStyles(investId, event.target.checked);
-    await axios.post(`/disableinvest/${selectedInvestor}/${investId}`, null, {
+    await axios.post(`${BASE_URL}/disableinvest/${selectedInvestor}/${investId}`, null, {
       params: {
         enabled: event.target.checked,
       },
