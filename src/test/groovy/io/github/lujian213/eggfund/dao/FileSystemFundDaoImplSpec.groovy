@@ -4,23 +4,24 @@ import spock.lang.Specification
 import io.github.lujian213.eggfund.model.FundInfo
 import io.github.lujian213.eggfund.model.FundValue
 
-class FileSystemFundDaoImplSpec extends Specification {
+class FileSystemFundDaoImplSpec extends FileSystemDaoSpec {
 
     FileSystemFundDaoImpl dao
 
     def setup() {
-        dao = new FileSystemFundDaoImpl(new File("dummyFolder"))
+        dao = new FileSystemFundDaoImpl(testDir)
     }
 
-    def cleanup() {
-        new File("dummyFolder").deleteDir()
+    @Override
+    File getTestDir() {
+        new File("dummyFundFolder")
     }
 
     def "GetFundValueFile"() {
         when:
         def result = dao.getFundValueFile(code, month)
         then:
-        result == new File("dummyFolder", fileName)
+        result == new File(testDir, fileName)
         where:
         code   | month    | fileName
         "1000" | "202501" | "1000-202501.json"
@@ -121,7 +122,7 @@ class FileSystemFundDaoImplSpec extends Specification {
         def fundValueList = dao.loadFundValues("1000").get("202501")
         fundValueList.size() == 1
         dao.deleteFundValues("1000")
-        !new File("dummyFolder", "1000-202501 json").exists()
+        !new File(testDir, "1000-202501 json").exists()
     }
 
     def "loadFundValues - loadEmptyList"() {

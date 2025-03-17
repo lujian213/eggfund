@@ -4,15 +4,16 @@ import io.github.lujian213.eggfund.model.Invest
 import io.github.lujian213.eggfund.model.Investor
 import spock.lang.Specification
 
-class FileSystemInvestDaoImplSpec extends Specification {
+class FileSystemInvestDaoImplSpec extends FileSystemDaoSpec {
     FileSystemInvestDaoImpl dao
 
     def setup() {
-        dao = new FileSystemInvestDaoImpl(new File("dummyFolder"))
+        dao = new FileSystemInvestDaoImpl(testDir)
     }
 
-    def cleanup() {
-        new File("dummyFolder").deleteDir()
+    @Override
+    File getTestDir() {
+        new File("dummyInvestFolder")
     }
 
     def "getInvestFileName"() {
@@ -20,8 +21,8 @@ class FileSystemInvestDaoImplSpec extends Specification {
         dao.getInvestFile(investId) == result
         where:
         investId | result
-        "Alex"   | new File("dummyFolder", "invest_Alex.json")
-        "Bob"    | new File("dummyFolder", "invest_Bob.json")
+        "Alex"   | new File(testDir, "invest_Alex.json")
+        "Bob"    | new File(testDir, "invest_Bob.json")
     }
 
     def "saveInvestors & loadInvestors"() {
