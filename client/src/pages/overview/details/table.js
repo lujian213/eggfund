@@ -104,6 +104,11 @@ export default function DetailsTable({ handleModalOpen }) {
       valueGetter: (p) => formatNumber(p.data.quota),
     },
     {
+      field: "liquidatedQuota",
+      flex: 1,
+      valueGetter: (p) => formatNumber(p.data.liquidatedQuota),
+    },
+    {
       field: "price",
       flex: 1,
       cellRenderer: PriceRenderer,
