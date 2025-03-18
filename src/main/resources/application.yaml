@@ -1,5 +1,6 @@
 server:
   port: 9011
+  address: 127.0.0.1
 #  ssl:
 #    key-store: "classpath:keystore.p12"
 #    key-store-password: "changeit"
