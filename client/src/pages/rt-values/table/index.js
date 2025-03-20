@@ -31,6 +31,8 @@ export default function RtValuesTable() {
           const findItem = rtValues.find((data) => data.code === item.code);
           if (!findItem) return item;
           return { ...item, ...findItem };
+        }).toSorted((a, b) => {
+          return a.increaseRate - b.increaseRate;
         });
       });
     }, 0);

@@ -83,7 +83,7 @@ export default function CategoryList({ handleDrawerOpen }) {
         </Tooltip>
       ))}
       <Chip
-        label={"Ohters"}
+        label={"Others"}
         color="primary"
         variant={selected === "__others__" ? "filled" : "outlined"}
         clickable={true}

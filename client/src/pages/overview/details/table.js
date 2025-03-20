@@ -12,37 +12,18 @@ import axios from "axios";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 
-const detialsList = [
-  {
-    key: "items",
-    label: "Default",
-  },
-  {
-    key: "FIFO",
-    label: "FIFO",
-  },
-  {
-    key: "FILO",
-    label: "FILO",
-  },
-  {
-    key: "HVFO",
-    label: "HVFO",
-  },
-];
-
 const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 export default function DetailsTable({ handleModalOpen }) {
   const summary = useRecoilValue(summaryQuery);
+  const { items, clearanceMap } = summary;
   const theme = useRecoilValue(themeState);
   const gridRef = useRef();
   const [datasource, setDatasource] = useState([]);
   const [selectedDataType, setSelectedDataType] = useState("items");
 
   useEffect(() => {
-    if (summary) {
-      const { items, clearanceMap } = summary;
+    if (items && clearanceMap) {
       let data = [];
       if (selectedDataType === "items" && items) {
         data = [...items];
@@ -57,7 +38,7 @@ export default function DetailsTable({ handleModalOpen }) {
       });
       setDatasource(sortedItem);
     }
-  }, [summary, selectedDataType]);
+  }, [selectedDataType, items, clearanceMap]);
 
   const themeType =
     theme === "Lightblue" || theme === "Pink" ? "light" : "dark";
@@ -187,13 +168,20 @@ export default function DetailsTable({ handleModalOpen }) {
   return (
     <Stack sx={{ height: "100%" }}>
       <ButtonGroup aria-label="Basic button group">
-        {detialsList.map((item) => (
+        <Button
+          key={'items'}
+          variant={selectedDataType === 'items' ? "contained" : "outlined"}
+          onClick={() => setSelectedDataType('items')}
+        >
+          Default
+        </Button>
+        {Object.keys(clearanceMap || {}).map((key) => (
           <Button
-            key={item.key}
-            variant={selectedDataType === item.key ? "contained" : "outlined"}
-            onClick={() => setSelectedDataType(item.key)}
+            key={key}
+            variant={selectedDataType === key ? "contained" : "outlined"}
+            onClick={() => setSelectedDataType(key)}
           >
-            {item.label}
+            {key}
           </Button>
         ))}
       </ButtonGroup>
@@ -253,11 +241,15 @@ function ActionsRenderer({
   const handleChange = async (event) => {
     setChecked(event.target.checked);
     handleUpdateRowStyles(investId, event.target.checked);
-    await axios.post(`${BASE_URL}/disableinvest/${selectedInvestor}/${investId}`, null, {
-      params: {
-        enabled: event.target.checked,
-      },
-    });
+    await axios.post(
+      `${BASE_URL}/disableinvest/${selectedInvestor}/${investId}`,
+      null,
+      {
+        params: {
+          enabled: event.target.checked,
+        },
+      }
+    );
   };
 
   if (!investId) return null;
