@@ -1,10 +1,11 @@
 server:
   port: 9011
-  ssl:
-    key-store: "classpath:keystore.p12"
-    key-store-password: "changeit"
-    key-store-type: "PKCS12"
-    key-alias: "my-ssl-cert"
+  address: 127.0.0.1
+#  ssl:
+#    key-store: "classpath:keystore.p12"
+#    key-store-password: "changeit"
+#    key-store-type: "PKCS12"
+#    key-alias: "my-ssl-cert"
   error:
     include-message: always
 

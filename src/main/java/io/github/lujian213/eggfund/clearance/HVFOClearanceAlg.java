@@ -7,7 +7,7 @@ import java.util.Comparator;
 public class HVFOClearanceAlg extends FIFOClearanceAlg {
     @Override
     public String getAlgName() {
-        return "HVFO";
+        return "HPFO";
     }
 
     @Override
