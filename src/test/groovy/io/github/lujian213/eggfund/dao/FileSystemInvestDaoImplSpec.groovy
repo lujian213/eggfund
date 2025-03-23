@@ -2,7 +2,7 @@ package io.github.lujian213.eggfund.dao
 
 import io.github.lujian213.eggfund.model.Invest
 import io.github.lujian213.eggfund.model.Investor
-import spock.lang.Specification
+import io.github.lujian213.eggfund.utils.Constants
 
 class FileSystemInvestDaoImplSpec extends FileSystemDaoSpec {
     FileSystemInvestDaoImpl dao
@@ -36,28 +36,31 @@ class FileSystemInvestDaoImplSpec extends FileSystemDaoSpec {
         }
         def investors = [investor1, investor2]
         when:
-        dao.setFileUserDetailsManager(Mock(FileUserDetailsManager))
         dao.saveInvestors(investors)
         then:
         def investorList = dao.loadInvestors()
-        investorList.size() == 2
+        investorList.size() == 3
         with(investorList[0]) {
             getId() == "Alex"
             getName() == "Alex Smith"
             getIcon() == "icon1"
+            getRoles() == List.of(Constants.DEFAULT_ROLE)
         }
         with(investorList[1]) {
             getId() == "Bob"
             getName() == "Bob Smith"
             getIcon() == "icon2"
+            getRoles() == List.of(Constants.DEFAULT_ROLE)
         }
     }
 
-    def "loadInvestors - loadEmptyList"() {
+    def "loadInvestors - has build-in admin"() {
         when:
         def investorList = dao.loadInvestors()
         then:
-        investorList.size() == 0
+        investorList.size() == 1
+        investorList.get(0).id == Constants.ADMIN
+        investorList.get(0).roles == List.of(Constants.ADMIN)
     }
 
     def "saveInvests & loadInvests"() {

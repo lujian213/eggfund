@@ -12,7 +12,6 @@ public final class Constants {
 
     public static final String FUNDS_FILE_NAME = "funds.json";
     public static final String INVESTORS_FILE_NAME = "investors.json";
-    public static final String USERS_FILE_NAME = "users.json";
     public static final String INVEST_FILE_NAME_PATTERN = "invest_%s.json";
     public static final String INVEST_AUDIT_FILE_NAME_PATTERN = "audit_%s.json";
     public static final ObjectMapper MAPPER = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
@@ -24,4 +23,6 @@ public final class Constants {
     public static final DateTimeFormatter MINUTE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZONE_ID);
     public static final String DEFAULT_AABB = "$2a$10$yYeZXkmIopBfkksZctLuSubeE1CNg9.S50SNiNKjLedALE9cQ/ABG";
     public static final String DEFAULT_ROLE = "USER";
+    public static final String ADMIN = "ADMIN";
+    public static final String HIDE_PASSWORD = "***";
 }

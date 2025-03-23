@@ -21,6 +21,8 @@ type Investor {
     id: String!
     name: String!
     icon: String
+    password: String
+    roles: [String]
 }
 
 type FundValue {
@@ -160,7 +162,7 @@ type Mutation {
     addNewInvest(id: String!, code: String!, invests: [InvestInput]!): [Invest]!
     updateFund(fundInfo: FundInfoInput!): FundInfo!
     updateFundValues(code: String!, from: String!, to: String!): Boolean!
-    updateInvestor(id: String!, name: String!, icon: String): Investor!
+    updateInvestor(id: String!, name: String!, icon: String, password: String): Investor!
     updateInvest(id: String!, invest: InvestInput!): Invest!
     deleteInvest(id: String!, investId: String!): Boolean!
     deleteInvestor(id: String!): Boolean!

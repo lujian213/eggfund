@@ -160,6 +160,7 @@ public class InvestService {
                 Map<String, Investor> newInvestorMap = new HashMap<>(investorMap);
                 newInvestorMap.put(investor.getId(), investor);
                 investDao.saveInvestors(newInvestorMap.values());
+                investorMap = newInvestorMap;
                 existingInvestor.update(investor);
                 return existingInvestor;
             } catch (IOException e) {

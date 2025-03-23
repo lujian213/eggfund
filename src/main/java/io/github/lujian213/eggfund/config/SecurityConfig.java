@@ -24,8 +24,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -62,7 +60,11 @@ public class SecurityConfig {
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)) // 关键修改2：禁用默认登录页重定向
                 )
-                .httpBasic(withDefaults());
+                .httpBasic(httpBasic -> httpBasic
+                        .authenticationEntryPoint((request, response, authException) ->
+                                // 返回401且不添加WWW-Authenticate头, 解决 Swagger 在认证失败后持续弹出输入框
+                                response.sendError(HttpStatus.UNAUTHORIZED.value(), "Unauthorized")
+                        ));
         return http.build();
     }
 

@@ -1,37 +1,32 @@
 package io.github.lujian213.eggfund.dao
 
 import io.github.lujian213.eggfund.model.Investor
+import io.github.lujian213.eggfund.service.InvestService
 import io.github.lujian213.eggfund.utils.Constants
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UsernameNotFoundException
+import spock.lang.Specification
 
-class FileUserDetailsManagerSpec extends FileSystemDaoSpec {
+import static io.github.lujian213.eggfund.utils.Constants.ADMIN
+
+class FileUserDetailsManagerSpec extends Specification {
 
     FileUserDetailsManager targetClass
+    InvestService investService;
 
     def setup() {
-        targetClass = new FileUserDetailsManager(testDir)
+        targetClass = new FileUserDetailsManager()
+        investService = Mock(InvestService) {
+            getAllInvestors() >> List.of(new Investor(ADMIN, ADMIN, null, Constants.DEFAULT_AABB, List.of(ADMIN)))
+        }
+        targetClass.setInvestService(investService)
     }
 
-    @Override
-    File getTestDir() {
-        new File("dummyUserFolder")
-    }
-
-    def "has built-in admin user"() {
+    def "read user from InvestService"() {
         expect:
-        targetClass.users != null
         targetClass.loadUserByUsername("admin") != null
-    }
-
-    def "add investor to file and can effective immediately"() {
-        given:
-        def investor = new Investor("Alex", "Alex Smith", "icon1")
-        when:
-        targetClass.saveUsers(List.of(investor))
-        then:
-        new File(testDir, Constants.USERS_FILE_NAME).isFile()
-        targetClass.loadUserByUsername("Alex") != null
-        targetClass.loadUserByUsername("admin") != null
+        targetClass.loadUserByUsername("ADMIN") != null
+        targetClass.loadUserByUsername("ADMIN").authorities == Set.of(new SimpleGrantedAuthority("ROLE_" + ADMIN))
     }
 
     def "throw UsernameNotFoundException when user not found"() {

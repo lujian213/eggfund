@@ -99,8 +99,8 @@ public class EggFundController {
     }
 
     @MutationMapping
-    public Investor updateInvestor(@Argument String id, @Argument String name, @Argument String icon) {
-        return eggFundService.updateInvestor(id, name, icon);
+    public Investor updateInvestor(@Argument String id, @Argument String name, @Argument String icon, @Argument String password) {
+        return eggFundService.updateInvestor(id, name, icon, password);
     }
 
     @MutationMapping
