@@ -5,13 +5,21 @@ import { useEffect, useMemo, useState } from "react";
 import moment from "moment";
 import InsightsIcon from "@mui/icons-material/Insights";
 import QueryStatsIcon from "@mui/icons-material/QueryStats";
-import { IconButton, Stack, Tooltip } from "@mui/material";
+import {
+  IconButton,
+  Stack,
+  Tooltip,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import AggridWrapper from "../../../components/aggrid-wrapper";
 import { formatNumberByPercent } from "../../../utils/process-number";
 import TrendChartModal from "./trend-chart-modal";
 import RealtimeTrendChartModal from "./realtime-trend-chart";
 
 export default function RtValuesTable() {
+  const theme = useTheme();
+  const isLarge = useMediaQuery(theme.breakpoints.up("md"));
   const rtValues = useRecoilValue(rtValuesState);
   const [datasource, setDatasource] = useRecoilState(datasourceState);
   const [trendChartModal, setTrendChartModal] = useState({
@@ -27,77 +35,111 @@ export default function RtValuesTable() {
     if (!rtValues || rtValues.length === 0) return;
     setTimeout(() => {
       setDatasource((pre) => {
-        return pre.map((item) => {
-          const findItem = rtValues.find((data) => data.code === item.code);
-          if (!findItem) return item;
-          return { ...item, ...findItem };
-        }).toSorted((a, b) => {
-          return a.increaseRate - b.increaseRate;
-        });
+        return pre
+          .map((item) => {
+            const findItem = rtValues.find((data) => data.code === item.code);
+            if (!findItem) return item;
+            return { ...item, ...findItem };
+          })
+          .toSorted((a, b) => {
+            return a.increaseRate - b.increaseRate;
+          });
       });
     }, 0);
   }, [setDatasource, rtValues]);
 
-  const colDefs = useMemo(
-    () => [
-      {
-        headerName: "",
-        width: 120,
-        cellRenderer: ActionRenderer,
-        cellRendererParams: { setTrendChartModal, setRealtimeTrendChartModal },
-      },
-      {
-        field: "code",
-        flex: 1,
-      },
-      {
-        field: "fundName",
-        flex: 1,
-        valueGetter: (p) => (p.data.alias ? p.data.alias : p.data.fundName),
-      },
-      {
-        field: "category",
-        flex: 1,
-      },
-      {
-        field: "day",
-        flex: 1,
-        valueGetter: (p) => (p.data.day ? p.data.day : "-"),
-        cellStyle: (params) => {
-          if (params.value !== moment().format("YYYY-MM-DD")) {
-            return { backgroundColor: "darkgrey" };
-          }
-          return null;
+  const colDefs = useMemo(() => {
+    if (isLarge) {
+      return [
+        {
+          headerName: "",
+          width: 120,
+          cellRenderer: ActionRenderer,
+          cellRendererParams: {
+            setTrendChartModal,
+            setRealtimeTrendChartModal,
+          },
         },
-      },
-      {
-        field: "unitValue",
-        flex: 1,
-        valueGetter: (p) => (p.data.unitValue ? p.data.unitValue : "-"),
-      },
-      {
-        field: "increaseRate",
-        flex: 1,
-        cellRenderer: RateRenderer,
-        cellStyle: (params) => {
-          const backgroundColor =
-            Math.abs(params.value) > 0.01 ? "gold" : "transparent";
-          if (params.value < 0) {
-            return { color: "green", backgroundColor };
-          } else if (params.value > 0) {
-            return { color: "red", backgroundColor };
-          }
-          return null;
+        {
+          field: "code",
+          flex: 1,
         },
-      },
-      {
-        field: "time",
-        flex: 1,
-        valueGetter: (p) => (p.data.time ? p.data.time : "-"),
-      },
-    ],
-    []
-  );
+        {
+          field: "fundName",
+          flex: 1,
+          valueGetter: (p) => (p.data.alias ? p.data.alias : p.data.fundName),
+        },
+        {
+          field: "category",
+          flex: 1,
+        },
+        {
+          field: "day",
+          flex: 1,
+          valueGetter: (p) => (p.data.day ? p.data.day : "-"),
+          cellStyle: (params) => {
+            if (params.value !== moment().format("YYYY-MM-DD")) {
+              return { backgroundColor: "darkgrey" };
+            }
+            return null;
+          },
+        },
+        {
+          field: "unitValue",
+          flex: 1,
+          valueGetter: (p) => (p.data.unitValue ? p.data.unitValue : "-"),
+        },
+        {
+          field: "increaseRate",
+          flex: 1,
+          cellRenderer: RateRenderer,
+          cellStyle: (params) => {
+            const backgroundColor =
+              Math.abs(params.value) > 0.01 ? "gold" : "transparent";
+            if (params.value < 0) {
+              return { color: "green", backgroundColor };
+            } else if (params.value > 0) {
+              return { color: "red", backgroundColor };
+            }
+            return null;
+          },
+        },
+        {
+          field: "time",
+          flex: 1,
+          valueGetter: (p) => (p.data.time ? p.data.time : "-"),
+        },
+      ];
+    } else {
+      return [
+        {
+          field: "fundName",
+          flex: 1,
+          valueGetter: (p) => (p.data.alias ? p.data.alias : p.data.fundName),
+        },
+        {
+          field: "increaseRate",
+          flex: 1,
+          cellRenderer: RateRenderer,
+          cellStyle: (params) => {
+            const backgroundColor =
+              Math.abs(params.value) > 0.01 ? "gold" : "transparent";
+            if (params.value < 0) {
+              return { color: "green", backgroundColor };
+            } else if (params.value > 0) {
+              return { color: "red", backgroundColor };
+            }
+            return null;
+          },
+        },
+        {
+          field: "time",
+          flex: 1,
+          valueGetter: (p) => (p.data.time ? p.data.time : "-"),
+        },
+      ];
+    }
+  }, [isLarge]);
 
   return (
     <Stack style={{ flex: 1 }}>

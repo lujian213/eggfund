@@ -21,6 +21,7 @@ export default function Details() {
     <Box
       style={{
         flexBasis: "100%",
+        minHeight: 500,
       }}
     >
       <Card sx={{ flexGrow: 1, height: "100%" }}>
