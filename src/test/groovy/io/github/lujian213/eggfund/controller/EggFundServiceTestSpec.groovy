@@ -59,7 +59,7 @@ class EggFundServiceTestSpec extends Specification {
         then:
         mockMvc.perform(get("/investors"))
                 .andExpect(status().isOk())
-                .andExpect(content().json("[{\"id\":\"user1\",\"name\":\"test\",\"icon\":null,\"password\":\"***\",\"roles\":[\"USER\"]}]"))
+                .andExpect(content().json(Constants.MAPPER.writeValueAsString(investorList)))
     }
 
     def "testGetInvestors"() {
@@ -73,7 +73,7 @@ class EggFundServiceTestSpec extends Specification {
         then:
         mockMvc.perform(get("/investors/10000"))
                 .andExpect(status().isOk())
-                .andExpect(content().json("""[{"id":"user1","name":"test","icon":null,"password":"***","roles":["USER"]}]"""))
+                .andExpect(content().json(Constants.MAPPER.writeValueAsString(investorList)))
         mockMvc.perform(get("/investors/10001"))
                 .andExpect(status().isNotFound())
     }
@@ -182,7 +182,7 @@ class EggFundServiceTestSpec extends Specification {
         mockMvc.perform(put("/investor").param("id", "user1").param("name", "test"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(content().json("""{"id":"user1","name":"test","icon":null,"password":"***","roles":["USER"]}"""))
+                .andExpect(content().json(Constants.MAPPER.writeValueAsString(investor)))
     }
 
     @WithMockUser(roles = ["ADMIN"])
@@ -217,7 +217,7 @@ class EggFundServiceTestSpec extends Specification {
         then:
         mockMvc.perform(post("/investor/user1").param("name", "test1").param("password", "password"))
                 .andExpect(status().isOk())
-                .andExpect(content().json("""{"id":"user1","name":"test","icon":null,"password":"***","roles":["USER"]}"""))
+                .andExpect(content().json(Constants.MAPPER.writeValueAsString(investor)))
     }
 
     @WithMockUser(username = "invest1")
@@ -339,7 +339,7 @@ class EggFundServiceTestSpec extends Specification {
         def investorList = [new Investor("user1", "test", null)]
         investService.getAllInvestors() >> investorList
         expect:
-        this.mockMvc.perform(get("/api/loginUser")).andExpect(status().isOk())
+        this.mockMvc.perform(get("/loginUser")).andExpect(status().isOk())
     }
 
     def "should return forbidden if not admin"() {

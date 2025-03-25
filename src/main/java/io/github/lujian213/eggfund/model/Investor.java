@@ -1,13 +1,11 @@
 package io.github.lujian213.eggfund.model;
 
-import io.github.lujian213.eggfund.utils.Constants;
 import jakarta.annotation.Nonnull;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Investor implements Cloneable {
+public class Investor {
     private String id;
     private String name;
     private String icon;
@@ -18,7 +16,7 @@ public class Investor implements Cloneable {
     }
 
     public Investor(@Nonnull String id, @Nonnull String name, String icon) {
-        this(id, name, icon, Constants.DEFAULT_AABB, List.of(Constants.DEFAULT_ROLE));
+        this(id, name, icon, id, List.of("USER"));
     }
 
     public Investor(@Nonnull String id, @Nonnull String name, String icon, String password, List<String> roles) {
@@ -32,6 +30,13 @@ public class Investor implements Cloneable {
         this.roles = roles;
     }
 
+    public Investor(Investor investor) {
+        this.id = investor.id;
+        this.name = investor.name;
+        this.icon = investor.icon;
+        this.password = "***";
+        this.roles = investor.roles;
+    }
 
     public String getId() {
         return id;
@@ -65,11 +70,6 @@ public class Investor implements Cloneable {
         this.password = password;
     }
 
-    public Investor withHidePassword() {
-        this.password = Constants.HIDE_PASSWORD;
-        return this;
-    }
-
     public List<String> getRoles() {
         return roles;
     }
@@ -97,19 +97,13 @@ public class Investor implements Cloneable {
     }
 
     @Override
-    public Investor clone() {
-        try {
-            return (Investor) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError();
-        }
-    }
-
-    public static  List<Investor> deepClone(List<Investor> original) {
-        List<Investor> cloned = new ArrayList<>(original.size());
-        for (Investor item : original) {
-            cloned.add(item.clone());
-        }
-        return cloned;
+    public String toString() {
+        return "Investor{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", icon='" + icon + '\'' +
+                ", password='" + "[PROTECTED]" + '\'' +
+                ", roles=" + roles +
+                '}';
     }
 }

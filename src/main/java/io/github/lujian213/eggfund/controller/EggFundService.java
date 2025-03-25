@@ -19,13 +19,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -55,13 +53,9 @@ public class EggFundService {
     }
 
     @Operation(summary = "get login user")
-    @GetMapping(value = "/api/loginUser", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/loginUser", produces = MediaType.APPLICATION_JSON_VALUE)
     public Investor getLoginUser(Authentication authentication) {
-        return runWithExceptionHandling("get login user error", () -> {
-            String investorId = authentication.getName();
-            List<Investor> clone = deepClone(investService.getAllInvestors());
-            return clone.stream().map(Investor::withHidePassword).filter(investor -> investor.getId().equals(investorId)).findFirst().orElseThrow();
-        });
+        return runWithExceptionHandling("get login user error", () -> investService.checkInvestor(authentication.getName()));
     }
 
     @Operation(summary = "get all funds")
@@ -79,10 +73,7 @@ public class EggFundService {
     @Operation(summary = "get all investors")
     @GetMapping(value = "/investors", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Investor> getAllInvestors() {
-        return runWithExceptionHandling("get all investors error", () -> {
-            List<Investor> clone = deepClone(investService.getAllInvestors());
-            return clone.stream().map(Investor::withHidePassword).toList();
-        });
+        return runWithExceptionHandling("get all investors error", () -> investService.getAllInvestors());
     }
 
     @Operation(summary = "get all investors for a fund")
@@ -90,8 +81,7 @@ public class EggFundService {
     public List<Investor> getInvestors(@PathVariable String code) {
         return runWithExceptionHandling("get all investors error", () -> {
             fundDataService.checkFund(code);
-            List<Investor> clone = deepClone(investService.getInvestors(code));
-            return clone.stream().map(Investor::withHidePassword).toList();
+            return investService.getInvestors(code);
         });
     }
 
@@ -149,10 +139,7 @@ public class EggFundService {
     @PreAuthorize("hasRole('ADMIN')")
     public Investor addNewInvestor(@RequestParam String id, @RequestParam String name, @RequestParam(required = false) String icon) {
         return runWithExceptionHandling("add new investor error: " + id,
-                () -> {
-                    Investor clone = investService.addNewInvestor(new Investor(FileNameUtil.makeValidFileName(id), name, icon)).clone();
-                    return clone.withHidePassword();
-                });
+                () -> investService.addNewInvestor(new Investor(FileNameUtil.makeValidFileName(id), name, icon)));
     }
 
     @Operation(summary = "add new invests")
@@ -188,10 +175,7 @@ public class EggFundService {
     @PreAuthorize("#id== authentication.name")
     public Investor updateInvestor(@PathVariable String id, @RequestParam String name,
                                    @RequestParam(required = false) String icon, @RequestParam(required = false) String password) {
-        return runWithExceptionHandling("update investor error: " + id, () -> {
-            Investor clone = investService.updateInvestor(new Investor(id, name, icon, new BCryptPasswordEncoder().encode(password), List.of(Constants.DEFAULT_ROLE))).clone();
-            return clone.withHidePassword();
-        });
+        return runWithExceptionHandling("update investor error: " + id, () -> investService.updateInvestor(new Investor(id, name, icon, password, null)));
     }
 
     @Operation(summary = "update invest")
@@ -307,13 +291,5 @@ public class EggFundService {
         } else {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
-    }
-
-    public static List<Investor> deepClone(List<Investor> original) {
-        List<Investor> cloned = new ArrayList<>(original.size());
-        for (Investor item : original) {
-            cloned.add(item.clone());
-        }
-        return cloned;
     }
 }

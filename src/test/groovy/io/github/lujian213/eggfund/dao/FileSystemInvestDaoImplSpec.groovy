@@ -3,12 +3,17 @@ package io.github.lujian213.eggfund.dao
 import io.github.lujian213.eggfund.model.Invest
 import io.github.lujian213.eggfund.model.Investor
 import io.github.lujian213.eggfund.utils.Constants
+import org.springframework.security.crypto.password.PasswordEncoder
 
 class FileSystemInvestDaoImplSpec extends FileSystemDaoSpec {
     FileSystemInvestDaoImpl dao
+    def passwordEncoder
 
     def setup() {
         dao = new FileSystemInvestDaoImpl(testDir)
+        dao.passwordEncoder = Mock(PasswordEncoder) {
+            encode(_) >> "encoded"
+        }
     }
 
     @Override
@@ -44,13 +49,13 @@ class FileSystemInvestDaoImplSpec extends FileSystemDaoSpec {
             getId() == "Alex"
             getName() == "Alex Smith"
             getIcon() == "icon1"
-            getRoles() == List.of(Constants.DEFAULT_ROLE)
+            getRoles() == List.of("USER")
         }
         with(investorList[1]) {
             getId() == "Bob"
             getName() == "Bob Smith"
             getIcon() == "icon2"
-            getRoles() == List.of(Constants.DEFAULT_ROLE)
+            getRoles() == List.of("USER")
         }
     }
 
@@ -59,8 +64,8 @@ class FileSystemInvestDaoImplSpec extends FileSystemDaoSpec {
         def investorList = dao.loadInvestors()
         then:
         investorList.size() == 1
-        investorList.get(0).id == Constants.ADMIN
-        investorList.get(0).roles == List.of(Constants.ADMIN)
+        investorList.get(0).id == "admin"
+        investorList.get(0).roles == List.of("admin")
     }
 
     def "saveInvests & loadInvests"() {

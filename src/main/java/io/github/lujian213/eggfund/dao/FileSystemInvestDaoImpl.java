@@ -3,20 +3,28 @@ package io.github.lujian213.eggfund.dao;
 import io.github.lujian213.eggfund.model.Invest;
 import io.github.lujian213.eggfund.model.Investor;
 import io.github.lujian213.eggfund.utils.Constants;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-import static io.github.lujian213.eggfund.utils.Constants.ADMIN;
-
 @Component
 public class FileSystemInvestDaoImpl extends FileSystemDaoImpl implements InvestDao {
 
+    public static final String ADMIN = "admin";
+    private PasswordEncoder passwordEncoder;
+
     public FileSystemInvestDaoImpl(@Value("${repo.folder}") File repoFile) {
         super(repoFile);
+    }
+
+    @Autowired
+    public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -29,19 +37,20 @@ public class FileSystemInvestDaoImpl extends FileSystemDaoImpl implements Invest
             ret = new ArrayList<>();
         }
         complementIfMissing(ret);
+        saveInvestors(ret);
         return  ret;
     }
 
     private void complementIfMissing(List<Investor> investors) {
         Optional<Investor> admin = investors.stream().filter(investor -> ADMIN.equals(investor.getId())).findFirst();
         if (admin.isEmpty()) {
-            investors.add(new Investor(ADMIN, ADMIN, null, Constants.DEFAULT_AABB, List.of(ADMIN)));
+            investors.add(new Investor(ADMIN, ADMIN, null, passwordEncoder.encode(ADMIN), List.of(ADMIN)));
         }
         investors.stream()
                 .filter(investor -> investor.getPassword() == null)
                 .forEach(investor -> {
-                    investor.setPassword(Constants.DEFAULT_AABB);
-                    investor.setRoles(List.of(Constants.DEFAULT_ROLE));
+                    investor.setPassword(passwordEncoder.encode(investor.getId()));
+                    investor.setRoles(List.of("USER"));
                 });
     }
 

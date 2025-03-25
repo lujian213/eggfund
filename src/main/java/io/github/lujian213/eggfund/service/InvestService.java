@@ -10,12 +10,18 @@ import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -30,6 +36,7 @@ public class InvestService {
     private InvestDao investDao;
     private InvestAuditDao investAuditDao;
     private FundDataService fundDataService;
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     public void setInvestDao(InvestDao investDao) {
@@ -44,6 +51,11 @@ public class InvestService {
     @Autowired
     public void setFundDataService(FundDataService fundDataService) {
         this.fundDataService = fundDataService;
+    }
+
+    @Autowired
+    public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
     }
 
     @PostConstruct
@@ -123,7 +135,7 @@ public class InvestService {
         synchronized (this) {
             List<Investor> ret = new ArrayList<>(investorMap.values());
             ret.sort(Comparator.comparing(Investor::getName));
-            return ret;
+            return ret.stream().map(Investor::new).toList();
         }
     }
 
@@ -132,7 +144,7 @@ public class InvestService {
             List<Investor> ret = new ArrayList<>();
             investMap.forEach((investor, invests) -> invests.values().stream().filter(invest -> invest.getCode().equals(code)).findAny().ifPresent(invest -> ret.add(investor)));
             ret.sort(Comparator.comparing(Investor::getName));
-            return ret;
+            return ret.stream().map(Investor::new).toList();
         }
     }
 
@@ -143,10 +155,13 @@ public class InvestService {
             }
             try {
                 Map<String, Investor> newInvestorMap = new HashMap<>(investorMap);
-                newInvestorMap.put(investor.getId(), investor);
+                // Set default password and roles
+                Investor newInvestor = new Investor(investor.getId(), investor.getName(), investor.getIcon(), passwordEncoder.encode(investor.getId()), List.of("USER"));
+                newInvestorMap.put(investor.getId(), newInvestor);
                 investDao.saveInvestors(newInvestorMap.values());
-                investorMap.put(investor.getId(), investor);
-                return investor;
+                investorMap.put(investor.getId(), newInvestor);
+                // hide password
+                return new Investor(investor);
             } catch (IOException e) {
                 throw new EggFundException("add new investor error: " + investor.getId(), e);
             }
@@ -158,14 +173,33 @@ public class InvestService {
             Investor existingInvestor = checkInvestor(investor.getId());
             try {
                 Map<String, Investor> newInvestorMap = new HashMap<>(investorMap);
-                newInvestorMap.put(investor.getId(), investor);
+                Investor newInvestor = mergeInvestor(investor, existingInvestor);
+                newInvestorMap.put(investor.getId(), newInvestor);
                 investDao.saveInvestors(newInvestorMap.values());
-                investorMap = newInvestorMap;
-                existingInvestor.update(investor);
-                return existingInvestor;
+                investorMap.put(investor.getId(), newInvestor);
+                return new Investor(existingInvestor);
             } catch (IOException e) {
                 throw new EggFundException("update investor error: " + investor.getId(), e);
             }
+        }
+    }
+
+    private Investor mergeInvestor(Investor newInvestor, Investor existingInvestor) {
+        // Update standard fields
+        updateIfNotNull(newInvestor.getName(), existingInvestor::setName);
+        updateIfNotNull(newInvestor.getIcon(), existingInvestor::setIcon);
+        updateIfNotNull(newInvestor.getRoles(), existingInvestor::setRoles);
+
+        if (newInvestor.getPassword() != null) {
+            existingInvestor.setPassword(passwordEncoder.encode(newInvestor.getPassword()));
+        }
+
+        return existingInvestor;
+    }
+
+    private static <T> void updateIfNotNull(T newValue, Consumer<T> setter) {
+        if (newValue != null) {
+            setter.accept(newValue);
         }
     }
 
@@ -370,14 +404,32 @@ public class InvestService {
         }
     }
 
-    protected Investor checkInvestor(String investorId) {
+    public Investor checkInvestor(String investorId) {
         synchronized (investorMap) {
             Investor investor = investorMap.get(investorId);
             if (investor == null) {
                 throw new EggFundException("Investor not found: " + investorId);
             }
-            return investor;
+            return new Investor(investor);
         }
+    }
+
+    public Optional<UserDetails> getUser(String investorId) {
+        return Optional.ofNullable(investorMap.get(investorId)).map(this::convertToSpringUser);
+    }
+
+    private UserDetails convertToSpringUser(Investor investor) {
+        return new User(
+                investor.getId(),
+                investor.getPassword(),
+                mapRolesToAuthorities(investor.getRoles())
+        );
+    }
+
+    private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<String> roles) {
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
+                .toList();
     }
 
     protected String genInvestId(String investorId, String code) {

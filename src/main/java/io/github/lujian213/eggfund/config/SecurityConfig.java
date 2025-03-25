@@ -13,10 +13,10 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -34,32 +34,17 @@ public class SecurityConfig {
     @ConditionalOnProperty(name = "spring.security.enable", havingValue = "true", matchIfMissing = true)
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(requests -> requests
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/api/login").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .csrf(CsrfConfigurer::disable)
-                .formLogin(form -> form
-                        .loginProcessingUrl("/api/login")
-                        .successHandler((request, response, authentication) -> {
-                            response.setStatus(HttpStatus.OK.value());
-                            response.getWriter().write("{\"message\": \"Login success\"}");
-                        })
-                        .failureHandler((request, response, authentication) -> {
-                            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                            response.getWriter().write("{\"message\": \"Invalid credentials\"}");
-                        })
-                        .permitAll()
-                )
+                .formLogin(FormLoginConfigurer::disable)
                 .logout(logout -> logout
-                        .logoutUrl("/api/logout")
                         .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler())
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
                 )
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)) // 关键修改2：禁用默认登录页重定向
-                )
                 .httpBasic(httpBasic -> httpBasic
                         .authenticationEntryPoint((request, response, authException) ->
                                 // 返回401且不添加WWW-Authenticate头, 解决 Swagger 在认证失败后持续弹出输入框
@@ -92,7 +77,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
     @Bean
