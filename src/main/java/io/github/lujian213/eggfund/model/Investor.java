@@ -16,7 +16,7 @@ public class Investor {
     }
 
     public Investor(@Nonnull String id, @Nonnull String name, String icon) {
-        this(id, name, icon, id, List.of("USER"));
+        this(id, name, icon, id, List.of("user"));
     }
 
     public Investor(@Nonnull String id, @Nonnull String name, String icon, String password, List<String> roles) {

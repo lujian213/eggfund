@@ -1,6 +1,7 @@
 package io.github.lujian213.eggfund.controller
 
 import io.github.lujian213.eggfund.config.SecurityConfig
+import org.springframework.security.test.context.support.WithAnonymousUser
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ContextConfiguration
 import spock.lang.Specification
@@ -333,19 +334,22 @@ class EggFundServiceTestSpec extends Specification {
                 .andExpect(content().json(Constants.MAPPER.writeValueAsString(invests)))
     }
 
-    @WithMockUser(username = "user1")
-    def "testLoginUser with user Login"() {
-        given:
-        def investorList = [new Investor("user1", "test", null)]
-        investService.getAllInvestors() >> investorList
+    @WithAnonymousUser
+    def "return 401 without user Login"() {
         expect:
-        this.mockMvc.perform(get("/loginUser")).andExpect(status().isOk())
+        this.mockMvc.perform(get("/loginUser"))
+                .andExpect(status().is(401))
+    }
+
+    def "testLoginUser with user Login"() {
+        expect:
+        this.mockMvc.perform(get("/loginUser"))
+                .andExpect(status().isOk())
     }
 
     def "should return forbidden if not admin"() {
         when:
         def fundInfo = new FundInfo("10000", "test")
-        fundDataService.addNewFund(fundInfo) >> fundInfo
         then:
         mockMvc.perform(put("/fund/10000").contentType(MediaType.APPLICATION_JSON_VALUE).content(Constants.MAPPER.writeValueAsString(fundInfo)))
                 .andExpect(status().isForbidden())
@@ -355,12 +359,8 @@ class EggFundServiceTestSpec extends Specification {
     def "should return forbidden if not self"() {
         when:
         def investList = [new Invest(day: "2020-01-01", code: "10000", userIndex: 1, id: "invest1")]
-        def fundInfo = new FundInfo("10000", "test")
-        fundDataService.checkFund("10000") >> fundInfo
-        investService.addInvests("user1", fundInfo, investList, false) >> investList
         then:
-        mockMvc.perform(put("/invest/user1/10000").contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(Constants.MAPPER.writeValueAsString(investList)))
+        mockMvc.perform(put("/invest/user1/10000").contentType(MediaType.APPLICATION_JSON_VALUE).content(Constants.MAPPER.writeValueAsString(investList)))
                 .andExpect(status().isForbidden())
     }
 

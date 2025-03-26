@@ -49,13 +49,13 @@ class FileSystemInvestDaoImplSpec extends FileSystemDaoSpec {
             getId() == "Alex"
             getName() == "Alex Smith"
             getIcon() == "icon1"
-            getRoles() == List.of("USER")
+            getRoles() == List.of("user")
         }
         with(investorList[1]) {
             getId() == "Bob"
             getName() == "Bob Smith"
             getIcon() == "icon2"
-            getRoles() == List.of("USER")
+            getRoles() == List.of("user")
         }
     }
 

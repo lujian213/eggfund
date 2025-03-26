@@ -50,7 +50,7 @@ public class FileSystemInvestDaoImpl extends FileSystemDaoImpl implements Invest
                 .filter(investor -> investor.getPassword() == null)
                 .forEach(investor -> {
                     investor.setPassword(passwordEncoder.encode(investor.getId()));
-                    investor.setRoles(List.of("USER"));
+                    investor.setRoles(List.of("user"));
                 });
     }
 

@@ -156,7 +156,7 @@ public class InvestService {
             try {
                 Map<String, Investor> newInvestorMap = new HashMap<>(investorMap);
                 // Set default password and roles
-                Investor newInvestor = new Investor(investor.getId(), investor.getName(), investor.getIcon(), passwordEncoder.encode(investor.getId()), List.of("USER"));
+                Investor newInvestor = new Investor(investor.getId(), investor.getName(), investor.getIcon(), passwordEncoder.encode(investor.getId()), List.of("user"));
                 newInvestorMap.put(investor.getId(), newInvestor);
                 investDao.saveInvestors(newInvestorMap.values());
                 investorMap.put(investor.getId(), newInvestor);
