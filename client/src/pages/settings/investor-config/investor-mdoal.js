@@ -21,6 +21,8 @@ const style = {
   background: (theme) => theme.palette.background.sidebar,
   p: 4,
 };
+const BASE_URL = process.env.REACT_APP_BASE_URL;
+
 export default function InvestorModal(props) {
   const { open, handleSubmit, handleClose, data, mode } = props;
   const refetchInvestor = useSetRecoilState(refreshInvestorState);
@@ -33,11 +35,11 @@ export default function InvestorModal(props) {
   const confirm = async () => {
     let response;
     if (mode === "add") {
-      response = await axios.put(`/investor`, null, {
+      response = await axios.put(`${BASE_URL}/investor`, null, {
         params: form,
       });
     } else {
-      response = await axios.post(`/investor/${form.id}`, null, {
+      response = await axios.post(`${BASE_URL}/investor/${form.id}`, null, {
         params: {
           name: form.name,
           icon: form.icon,

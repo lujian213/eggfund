@@ -11,6 +11,8 @@ import ConfirmModal from "../../../components/confirm-modal";
 import InvestorModal from "./investor-mdoal";
 import CustomAvatar from "../../../utils/get-icons";
 
+const BASE_URL = process.env.REACT_APP_BASE_URL;
+
 export default function InvestorConfig() {
   const investors = useRecoilValue(investorsQuery);
   const refetchInvestors = useSetRecoilState(refreshInvestorState);
@@ -42,7 +44,7 @@ export default function InvestorConfig() {
   };
 
   const handleDelete = async (investor) => {
-    await axios.delete(`/investor/${investor.id}`);
+    await axios.delete(`${BASE_URL}/investor/${investor.id}`);
     refetchInvestors((pre) => pre + 1);
   };
 

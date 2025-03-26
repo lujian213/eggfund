@@ -1,7 +1,7 @@
 import { useRecoilValue } from "recoil";
 import { selectedFundState, selectedInvestorState } from "../../store/atom";
 import { Suspense, useState } from "react";
-import { Alert, Divider, Stack } from "@mui/material";
+import { Alert, Divider, Stack, useTheme } from "@mui/material";
 import CategoryList from "./category";
 import CodeList from "./code-list";
 import BasicInfo from "./basic-info";
@@ -11,6 +11,7 @@ import Charts from "./charts";
 import TotalSummaryDrawer from "./total-summary-drawer.js";
 
 export default function Overview() {
+  const theme = useTheme();
   const selectedFund = useRecoilValue(selectedFundState);
   const selectedInvestor = useRecoilValue(selectedInvestorState);
   const [totalSummaryDrawer, setTotalSummaryDrawer] = useState({
@@ -45,7 +46,7 @@ export default function Overview() {
       <Divider />
       {selectedFund && selectedInvestor ? (
         <Suspense fallback={<div>Loading...</div>}>
-          <Stack direction={"row"} spacing={1} style={{ flexGrow: 1 }}>
+          <Stack sx={{ flexGrow: 1, gap: '0.5rem', [theme.breakpoints.up('md')]: { flexDirection: "row" } }}>
             <Details />
             <Summary />
           </Stack>

@@ -28,6 +28,8 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
+const BASE_URL = process.env.REACT_APP_BASE_URL;
+
 export default function Invests() {
   const invests = useRecoilValue(investsQuery);
   const setAlert = useSetRecoilState(alertState);
@@ -85,7 +87,7 @@ export default function Invests() {
     const formData = new FormData();
     formData.append("file", file);
     await axios.post(
-      `/uploadinvests/${selectedInvestor}/${selectedFund}`,
+      `${BASE_URL}/uploadinvests/${selectedInvestor}/${selectedFund}`,
       formData,
       {
         headers: {
@@ -112,7 +114,7 @@ export default function Invests() {
   };
 
   return (
-    <Stack style={{ flex: 1 }}>
+    <Stack style={{ flex: 1, minHeight: 400 }}>
       <Stack sx={{ alignSelf: "flex-start" }} direction={"row"} spacing={1}>
         <Button
           variant="contained"
@@ -164,7 +166,7 @@ function ActionsRenderer(props) {
   };
 
   const deleteInvest = async () => {
-    await axios.delete(`/invest/${selectedInvestor}/${data.id}`);
+    await axios.delete(`${BASE_URL}/invest/${selectedInvestor}/${data.id}`);
     refetchInvests((pre) => pre + 1);
   };
 

@@ -7,7 +7,7 @@ import java.util.Comparator;
 public class FILOClearanceAlg extends FIFOClearanceAlg {
     @Override
     public String getAlgName() {
-        return "FILO";
+        return "LIFO";
     }
 
     @Override

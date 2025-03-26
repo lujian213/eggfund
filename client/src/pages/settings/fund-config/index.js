@@ -19,6 +19,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ConfirmModal from "../../../components/confirm-modal";
 import FundModal from "./fund-modal";
 
+const BASE_URL = process.env.REACT_APP_BASE_URL;
+
 export default function FundConfig() {
   const funds = useRecoilValue(fundsQuery);
   const refetchFunds = useSetRecoilState(refreshFundState);
@@ -52,7 +54,7 @@ export default function FundConfig() {
   };
 
   const handleDelete = async (fund) => {
-    await axios.delete(`/fund/${fund.id}`);
+    await axios.delete(`${BASE_URL}/fund/${fund.id}`);
     refetchFunds((pre) => pre + 1);
   };
 

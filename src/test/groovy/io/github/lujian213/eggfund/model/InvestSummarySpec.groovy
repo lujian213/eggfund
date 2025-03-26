@@ -109,8 +109,8 @@ class InvestSummarySpec extends Specification {
             estPriceTableItems.size() == 8
             totalDividendAmt == 0
             clearanceMap['FIFO']
-            clearanceMap['FILO']
-            clearanceMap['HVFO']
+            clearanceMap['LIFO']
+            clearanceMap['HPFO']
         }
     }
 }

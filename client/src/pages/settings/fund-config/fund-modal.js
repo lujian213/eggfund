@@ -24,6 +24,8 @@ const style = {
   background: (theme) => theme.palette.background.sidebar,
   p: 4,
 };
+const BASE_URL = process.env.REACT_APP_BASE_URL;
+
 export default function FundModal(props) {
   const { open, handleSubmit, handleClose, data, mode } = props;
   const refetchFunds = useSetRecoilState(refreshFundState);
@@ -36,9 +38,9 @@ export default function FundModal(props) {
   const confirm = async () => {
     let response;
     if (mode === "add") {
-      response = await axios.put(`/fund/${form.code}`, form);
+      response = await axios.put(`${BASE_URL}/fund/${form.code}`, form);
     } else {
-      response = await axios.post(`/fund/${form.code}`, form);
+      response = await axios.post(`${BASE_URL}/fund/${form.code}`, form);
     }
     response?.data && handleModalClose();
     handleSubmit && handleSubmit();

@@ -15,6 +15,8 @@ const style = {
   p: 4,
 };
 
+const BASE_URL = process.env.REACT_APP_BASE_URL;
+
 export default function RealtimeTrendChartModal(props) {
   const { open, data, handleClose } = props;
   const { code, fundName } = data || {};
@@ -22,7 +24,7 @@ export default function RealtimeTrendChartModal(props) {
 
   useEffect(() => {
     const fetchDatasource = async () => {
-      const response = await axios.get(`/rtvalues/history`, {
+      const response = await axios.get(`${BASE_URL}/rtvalues/history`, {
         params: {
           code,
         },
