@@ -2,13 +2,18 @@ package io.github.lujian213.eggfund.dao
 
 import io.github.lujian213.eggfund.model.Invest
 import io.github.lujian213.eggfund.model.Investor
-import spock.lang.Specification
+import io.github.lujian213.eggfund.utils.Constants
+import org.springframework.security.crypto.password.PasswordEncoder
 
 class FileSystemInvestDaoImplSpec extends FileSystemDaoSpec {
     FileSystemInvestDaoImpl dao
+    def passwordEncoder
 
     def setup() {
         dao = new FileSystemInvestDaoImpl(testDir)
+        dao.passwordEncoder = Mock(PasswordEncoder) {
+            encode(_) >> "encoded"
+        }
     }
 
     @Override
@@ -39,24 +44,28 @@ class FileSystemInvestDaoImplSpec extends FileSystemDaoSpec {
         dao.saveInvestors(investors)
         then:
         def investorList = dao.loadInvestors()
-        investorList.size() == 2
+        investorList.size() == 3
         with(investorList[0]) {
             getId() == "Alex"
             getName() == "Alex Smith"
             getIcon() == "icon1"
+            getRoles() == List.of("user")
         }
         with(investorList[1]) {
             getId() == "Bob"
             getName() == "Bob Smith"
             getIcon() == "icon2"
+            getRoles() == List.of("user")
         }
     }
 
-    def "loadInvestors - loadEmptyList"() {
+    def "loadInvestors - has build-in admin"() {
         when:
         def investorList = dao.loadInvestors()
         then:
-        investorList.size() == 0
+        investorList.size() == 1
+        investorList.get(0).id == "admin"
+        investorList.get(0).roles == List.of("admin")
     }
 
     def "saveInvests & loadInvests"() {

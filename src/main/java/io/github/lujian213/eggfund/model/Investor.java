@@ -2,23 +2,40 @@ package io.github.lujian213.eggfund.model;
 
 import jakarta.annotation.Nonnull;
 
+import java.util.List;
 import java.util.Objects;
 
 public class Investor {
     private String id;
     private String name;
     private String icon;
+    private String password;
+    private List<String> roles;
 
     public Investor() {
     }
 
     public Investor(@Nonnull String id, @Nonnull String name, String icon) {
+        this(id, name, icon, id, List.of("user"));
+    }
+
+    public Investor(@Nonnull String id, @Nonnull String name, String icon, String password, List<String> roles) {
         if (id.trim().isEmpty() || name.trim().isEmpty()) {
             throw new IllegalArgumentException("id and name should not be empty");
         }
         this.id = id.trim();
         this.name = name.trim();
         this.icon = icon;
+        this.password = password;
+        this.roles = roles;
+    }
+
+    public Investor(Investor investor) {
+        this.id = investor.id;
+        this.name = investor.name;
+        this.icon = investor.icon;
+        this.password = "***";
+        this.roles = investor.roles;
     }
 
     public String getId() {
@@ -45,6 +62,22 @@ public class Investor {
         this.icon = icon;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public List<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
+    }
+
     public void update(Investor other) {
         this.name = other.name;
         this.icon = other.icon;
@@ -61,5 +94,16 @@ public class Investor {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Investor{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", icon='" + icon + '\'' +
+                ", password='" + "[PROTECTED]" + '\'' +
+                ", roles=" + roles +
+                '}';
     }
 }
