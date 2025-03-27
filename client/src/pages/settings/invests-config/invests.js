@@ -114,7 +114,7 @@ export default function Invests() {
   };
 
   return (
-    <Stack style={{ flex: 1, minHeight: 400 }}>
+    <Stack style={{ flex: 1 }}>
       <Stack sx={{ alignSelf: "flex-start" }} direction={"row"} spacing={1}>
         <Button
           variant="contained"

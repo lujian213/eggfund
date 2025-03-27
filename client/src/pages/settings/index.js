@@ -1,4 +1,12 @@
-import { Box, Collapse, Divider, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Collapse,
+  Divider,
+  Stack,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import { Suspense, useState } from "react";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
@@ -7,13 +15,18 @@ import FundConfig from "./fund-config";
 import InvestsConfig from "./invests-config";
 
 export default function Settings() {
+  const theme = useTheme();
+  const isLarge = useMediaQuery(theme.breakpoints.up("md"));
+
+  const shouldOpen = isLarge ? true : false;
+
   return (
     <Stack spacing={1} style={{ height: "100%" }}>
-      <SettingsSection title="Investor">
+      <SettingsSection title="Investor" shouldOpen={shouldOpen}>
         <InvestorConfig />
       </SettingsSection>
       <Divider />
-      <SettingsSection title="Fund">
+      <SettingsSection title="Fund" shouldOpen={shouldOpen}>
         <FundConfig />
       </SettingsSection>
       <Divider />
@@ -26,8 +39,8 @@ export default function Settings() {
   );
 }
 
-function SettingsSection({ title, children }) {
-  const [open, setOpen] = useState(true);
+function SettingsSection({ title, children, shouldOpen = true }) {
+  const [open, setOpen] = useState(shouldOpen);
 
   return (
     <Box>

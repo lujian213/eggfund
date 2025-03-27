@@ -2,7 +2,15 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { summaryQuery } from "../../../store/selector";
 import AggridWrapper from "../../../components/aggrid-wrapper";
-import { Box, Button, ButtonGroup, Stack, Switch } from "@mui/material";
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Stack,
+  Switch,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import { selectedInvestorState, themeState } from "../../../store/atom";
 import {
   formatNumber,
@@ -14,13 +22,16 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 
 const BASE_URL = process.env.REACT_APP_BASE_URL;
 
-export default function DetailsTable({ handleModalOpen }) {
+export default function DetailsTable({ handleModalOpen, type="items" }) {
+  const muiTheme = useTheme();
+  const isLarge = useMediaQuery(muiTheme.breakpoints.up("md"));
+
   const summary = useRecoilValue(summaryQuery);
   const { items, clearanceMap } = summary;
   const theme = useRecoilValue(themeState);
   const gridRef = useRef();
   const [datasource, setDatasource] = useState([]);
-  const [selectedDataType, setSelectedDataType] = useState("items");
+  const [selectedDataType, setSelectedDataType] = useState(type);
 
   useEffect(() => {
     if (items && clearanceMap) {
@@ -60,7 +71,7 @@ export default function DetailsTable({ handleModalOpen }) {
     });
   };
 
-  const colDefs = [
+  let colDefs = [
     {
       field: "type",
       headerName: "",
@@ -73,11 +84,6 @@ export default function DetailsTable({ handleModalOpen }) {
       },
     },
     {
-      field: "batch",
-      flex: 1,
-      valueGetter: (p) => (p.data.quota !== 0 ? p.data.batch : "-"),
-    },
-    {
       field: "day",
       flex: 1,
     },
@@ -87,38 +93,10 @@ export default function DetailsTable({ handleModalOpen }) {
       valueGetter: (p) => formatNumber(p.data.quota),
     },
     {
-      field: "liquidatedQuota",
-      flex: 1,
-      valueGetter: (p) => formatNumber(p.data.liquidatedQuota),
-    },
-    {
       field: "price",
       flex: 1,
       cellRenderer: PriceRenderer,
       cellRendererParams: { prices, themeType },
-    },
-    {
-      field: "increaseRate",
-      headerName: "COMP Rate",
-      flex: 1,
-      valueGetter: (p) => `${formatNumberByPercent(p.data.increaseRate)}`,
-    },
-    {
-      field: "price minus2pct",
-      headerName: "Price -2%",
-      flex: 1,
-      valueGetter: (p) => formatNumber(p.data.price_minus2pct, 4),
-    },
-    {
-      field: "price_2pct",
-      headerName: "Price +2%",
-      flex: 1,
-      valueGetter: (p) => formatNumber(p.data.price_2pct, 4),
-    },
-    {
-      field: "fee",
-      flex: 1,
-      valueGetter: (p) => formatNumber(p.data.fee),
     },
     {
       field: "investAmt",
@@ -144,6 +122,40 @@ export default function DetailsTable({ handleModalOpen }) {
       valueGetter: (p) => formatNumber(p.data.earning),
     },
     {
+      field: "liquidatedQuota",
+      flex: 1,
+      valueGetter: (p) => formatNumber(p.data.liquidatedQuota),
+    },
+
+    {
+      field: "increaseRate",
+      headerName: "COMP Rate",
+      flex: 1,
+      valueGetter: (p) => `${formatNumberByPercent(p.data.increaseRate)}`,
+    },
+    {
+      field: "price minus2pct",
+      headerName: "Price -2%",
+      flex: 1,
+      valueGetter: (p) => formatNumber(p.data.price_minus2pct, 4),
+    },
+    {
+      field: "price_2pct",
+      headerName: "Price +2%",
+      flex: 1,
+      valueGetter: (p) => formatNumber(p.data.price_2pct, 4),
+    },
+    {
+      field: "fee",
+      flex: 1,
+      valueGetter: (p) => formatNumber(p.data.fee),
+    },
+    {
+      field: "batch",
+      flex: 1,
+      valueGetter: (p) => (p.data.quota !== 0 ? p.data.batch : "-"),
+    },
+    {
       field: "comments",
       flex: 1,
     },
@@ -154,6 +166,10 @@ export default function DetailsTable({ handleModalOpen }) {
       cellRendererParams: { handleUpdateRowStyles, selectedDataType },
     },
   ];
+
+  if(!isLarge) {
+    colDefs.splice(0, 1);
+  }
 
   const getRowStyle = (params) => {
     if (!params.data.enabled) {
@@ -169,9 +185,9 @@ export default function DetailsTable({ handleModalOpen }) {
     <Stack sx={{ height: "100%" }}>
       <ButtonGroup aria-label="Basic button group">
         <Button
-          key={'items'}
-          variant={selectedDataType === 'items' ? "contained" : "outlined"}
-          onClick={() => setSelectedDataType('items')}
+          key={"items"}
+          variant={selectedDataType === "items" ? "contained" : "outlined"}
+          onClick={() => setSelectedDataType("items")}
         >
           Default
         </Button>
@@ -192,7 +208,7 @@ export default function DetailsTable({ handleModalOpen }) {
           columnDefs={colDefs}
           defaultColDef={defaultColDef}
           getRowStyle={getRowStyle}
-          onRowDoubleClicked={handleModalOpen}
+          onRowDoubleClicked={() => handleModalOpen(selectedDataType)}
         />
       </Box>
     </Stack>

@@ -9,19 +9,35 @@ import "./App.css";
 import useInterceptor from "./hooks/useInterceptor";
 import { themeState } from "./store/atom";
 import { Suspense, useEffect } from "react";
-import { Box, CssBaseline } from "@mui/material";
+import { Box, CssBaseline, useMediaQuery, useTheme } from "@mui/material";
 import CustomTheme from "./custom-theme";
 import Header from "./layout/header";
 import Sidebar from "./layout/sidebar";
 import Body from "./layout/body";
 import CustomAlert from "./components/custom-alert";
+import useViewportScale from "./hooks/useViewportScale";
 
 function App() {
+  useViewportScale();
   useInterceptor();
   const theme = useRecoilValue(themeState);
+  const muiTheme = useTheme();
+  const isLarge = useMediaQuery(muiTheme.breakpoints.up("md"));
 
   const themeType =
     theme === "Lightblue" || theme === "Pink" ? "light" : "dark";
+
+  let gridAreas = `
+    "header header"
+    "sidebar body"
+    `;
+  
+  if (!isLarge) {
+    gridAreas = `
+      "header header"
+      "body body"
+    `;
+  }
 
   useEffect(() => {
     themeType === "dark" ? DarkUnica(Highcharts) : Light(Highcharts);
@@ -37,14 +53,11 @@ function App() {
             display: "grid",
             gridTemplateColumns: "64px 1fr",
             gridTemplateRows: "64px 1fr",
-            gridTemplateAreas: `
-            "header header"
-            "sidebar body"
-            `,
+            gridTemplateAreas: gridAreas,
           }}
         >
           <Header />
-          <Sidebar />
+          {isLarge && <Sidebar />}
           <Suspense
             fallback={
               <Box

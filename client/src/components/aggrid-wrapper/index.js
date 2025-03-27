@@ -12,7 +12,13 @@ function AGGridWrapper(props, ref) {
   return (
     <div style={{ height: "100%", flex: 1, flexBasis: 500 }}>
       <div className={`ag-theme-alpine${themeType}`} style={{ height: "100%" }}>
-        <AgGridReact enableCellTextSelection={true} ref={ref} {...rest} defaultColDef={{ minWidth: 100 }}>
+        <AgGridReact
+          enableCellTextSelection={true}
+          ref={ref}
+          suppressDragLeaveHidesColumns={true}
+          {...rest}
+          defaultColDef={{ minWidth: 100 }}
+        >
           {children}
         </AgGridReact>
       </div>

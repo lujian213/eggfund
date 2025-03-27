@@ -122,8 +122,15 @@ export default function RtValuesTable() {
           flex: 1,
           cellRenderer: RateRenderer,
           cellStyle: (params) => {
-            const backgroundColor =
-              Math.abs(params.value) > 0.01 ? "gold" : "transparent";
+            const rateAbs = Math.abs(params.value);
+            let backgroundColor = "transparent";
+            if(rateAbs > 0.05) {
+              backgroundColor = "gold";
+            } else if(rateAbs > 0.03) {
+              backgroundColor = "lightgoldenrodyellow";
+            } else if (rateAbs > 0.01) {
+              backgroundColor = "lightyellow";
+            }
             if (params.value < 0) {
               return { color: "green", backgroundColor };
             } else if (params.value > 0) {
@@ -136,6 +143,12 @@ export default function RtValuesTable() {
           field: "time",
           flex: 1,
           valueGetter: (p) => (p.data.time ? p.data.time : "-"),
+          cellStyle: (params) => {
+            if (params.data.day !== moment().format("YYYY-MM-DD")) {
+              return { backgroundColor: "darkgrey" };
+            }
+            return null;
+          },
         },
       ];
     }
