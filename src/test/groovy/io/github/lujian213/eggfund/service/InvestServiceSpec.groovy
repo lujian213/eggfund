@@ -10,10 +10,10 @@ import java.time.LocalDate
 
 class InvestServiceSpec extends Specification {
 
-    def investDao
-    def investAuditDao
-    def fundService
-    def investService
+    InvestDao investDao
+    InvestAuditDao investAuditDao
+    FundDataService fundService
+    InvestService investService
 
     def setup() {
         investDao = Mock(InvestDao)
@@ -24,36 +24,47 @@ class InvestServiceSpec extends Specification {
     def "deleteInvest"() {
         given:
         def investorId = "investor1"
-        def investId = "invest1"
         def investor = new Investor(id: investorId)
-        def invest = new Invest(id: investId)
         investService = new InvestService()
         investService.setInvestDao(investDao)
         investService.setInvestAuditDao(investAuditDao)
         investService.setFundDataService(fundService)
-        investService.investMap[investor] = [(investId): invest]
+        investService.investMap[investor] = ["invest1": new Invest(id: "invest1"),
+                                             "invest2": new Invest(id: "invest2"),
+                                             "invest3": new Invest(id: "invest3")]
         investService.investorMap[investorId] = investor
 
         when:
         1 * investDao.saveInvests(_, _) >> { throw new IOException() }
-        investService.deleteInvest(investorId, investId)
+        investService.deleteInvests(investorId, ["invest1"])
 
         then:
         thrown(EggFundException)
 
         when:
-        investService.deleteInvest(investorId, investId)
-
-        then:
         1 * investDao.saveInvests(investorId, _)
         1 * investAuditDao.saveInvestAudits(_)
-        !investService.investMap[investor].containsKey(investId)
-
-        when:
-        investService.deleteInvest(investorId, "invalidInvestId")
+        investService.deleteInvests(investorId, ["invest1"])
 
         then:
-        thrown(EggFundException)
+        !investService.investMap[investor].containsKey("invest1")
+        investService.investMap[investor].size() == 2
+
+        when:
+        1 * investDao.saveInvests(investorId, _)
+        1 * investAuditDao.saveInvestAudits(_)
+        investService.deleteInvests(investorId, ["invalidInvestId"])
+
+        then:
+        investService.investMap[(investor)].size() == 2
+
+        when:
+        1 * investDao.saveInvests(investorId, _)
+        1 * investAuditDao.saveInvestAudits(_)
+        investService.deleteInvests(investorId, ["invest2", "invest3", "invest4"])
+
+        then:
+        investService.investMap[(investor)].size() == 0
     }
 
     def "init"() {
@@ -322,7 +333,7 @@ class InvestServiceSpec extends Specification {
 
         ]
 
-        fundService.findFund(_) >> { String code ->
+        fundService.findFund(_ as String) >> { String code ->
             switch (code) {
                 case "1000" -> new FundInfo(code, "fund0").setPriority(4)
                 case "1001" -> new FundInfo(code, "fund1").setPriority(3)

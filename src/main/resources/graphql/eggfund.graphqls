@@ -163,6 +163,7 @@ type Mutation {
     updateInvestor(id: String!, name: String!, icon: String): Investor!
     updateInvest(id: String!, invest: InvestInput!): Invest!
     deleteInvest(id: String!, investId: String!): Boolean!
+    deleteInvests(id: String!, investIds: [String]!): Boolean!
     deleteInvestor(id: String!): Boolean!
     deleteFund(code: String!): Boolean!
     disableInvest(id: String!, investId: String!, enabled: Boolean = false): Invest!

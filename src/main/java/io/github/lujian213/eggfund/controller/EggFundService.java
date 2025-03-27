@@ -194,7 +194,16 @@ public class EggFundService {
     @DeleteMapping(value = "/invest/{id}/{investId}")
     public void deleteInvest(@PathVariable String id, @PathVariable String investId) {
         runWithExceptionHandling("delete invest error: " + id + "," + investId, () -> {
-            investService.deleteInvest(id, investId);
+            investService.deleteInvests(id, List.of(investId));
+            return null;
+        });
+    }
+
+    @Operation(summary = "delete invests")
+    @DeleteMapping(value = "/invest/{id}")
+    public void deleteInvests(@PathVariable String id, @RequestParam List<String> investIds) {
+        runWithExceptionHandling("delete invests error: " + id + "," + investIds, () -> {
+            investService.deleteInvests(id, investIds);
             return null;
         });
     }
