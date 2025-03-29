@@ -6,3 +6,4 @@ spring-boot-dependencies = 'org.springframework.boot:spring-boot-dependencies:3.
 springdoc-openapi = 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
 selenium = 'org.seleniumhq.selenium:selenium-java:3.6.0'
 jtidy = 'com.google.code.maven-play-plugin.net.sf.jtidy:jtidy:r938'
+jackson-dataformat-csv = 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv:2.18.3'

@@ -2,7 +2,6 @@ package io.github.lujian213.eggfund.dao
 
 import io.github.lujian213.eggfund.model.Invest
 import io.github.lujian213.eggfund.model.Investor
-import spock.lang.Specification
 
 class FileSystemInvestDaoImplSpec extends FileSystemDaoSpec {
     FileSystemInvestDaoImpl dao
@@ -61,7 +60,7 @@ class FileSystemInvestDaoImplSpec extends FileSystemDaoSpec {
 
     def "saveInvests & loadInvests"() {
         given:
-        def invest1 = new Invest(Invest.TYPE_TRADE, "001-001", "123456", "2025-01-01", 1000, 1.3, 10)
+        def invest1 = new Invest(type: Invest.TYPE_TRADE, id: "001-001", code: "123456", day: "2025-01-01", share: 1000, unitPrice: 1.3, fee: 10)
         def invest2 = new Invest()
         with(invest2) {
             setType(TYPE_DIVIDEND)
@@ -114,7 +113,7 @@ class FileSystemInvestDaoImplSpec extends FileSystemDaoSpec {
 
     def "saveInvests"() {
         given:
-        def invest1 = new Invest(Invest.TYPE_TRADE, "001-001", "123456", "2025-01-01", 1000, 1.3, 10)
+        def invest1 = new Invest(type: Invest.TYPE_TRADE, id: "001-001", code: "123456", day: "2025-01-01", share: 1000, unitPrice: 1.3, fee: 10)
         def invests = [invest1]
         when:
         dao.saveInvests("Alex", invests)
