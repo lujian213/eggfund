@@ -238,13 +238,21 @@ class EggFundServiceTestSpec extends Specification {
     @WithMockUser(username = "user1")
     def "testDeleteInvest"() {
         when:
-        investService.deleteInvest("user1", "invest1") >> {}
+        1 * investService.deleteInvests("user1", ["invest1"]) >> {}
         then:
         mockMvc.perform(delete("/invest/{id}/{investId}", "user1", "invest1"))
                 .andExpect(status().isOk())
     }
 
     @WithMockUser(roles = ["ADMIN"])
+    def "testDeleteInvests"() {
+        when:
+        1 * investService.deleteInvests("user1", ["invest1", "invest2"]) >> {}
+        then:
+        mockMvc.perform(delete("/invest/{id}", "user1").param("investIds", "invest1", "invest2"))
+                .andExpect(status().isOk())
+    }
+
     def "testDeleteInvestor"() {
         when:
         investService.deleteInvestor("user") >> {}

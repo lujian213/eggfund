@@ -29,6 +29,7 @@ public class InvestSummary {
     private double raiseRate;
     private double estPrice;
     private double totalFee = 0;
+    private double totalTax = 0;
     private final List<InvestSummaryItem> items = new ArrayList<>();
     private final Map<Double, Double> estPriceTable = new LinkedHashMap<>();
     private final Map<String, List<InvestSummaryItem>> clearanceMap = new LinkedHashMap<>();
@@ -64,6 +65,7 @@ public class InvestSummary {
                 }
             }
             totalFee += invest.getFee();
+            totalTax += invest.getTax();
         });
         totalLongAmt = Math.abs(totalLongAmt);
         totalShortAmt = Math.abs(totalShortAmt);
@@ -179,6 +181,10 @@ public class InvestSummary {
         return totalFee;
     }
 
+    public double getTotalTax() {
+        return totalTax;
+    }
+
     public double getEarning() {
         return getPredictedValue() + getNetAmt();
     }
@@ -192,7 +198,7 @@ public class InvestSummary {
     }
 
     public double getGrossEarning() {
-        return getEarning() + getTotalFee();
+        return getEarning() + getTotalFee() + getTotalTax();
     }
 
     public double getGrossEarningRate() {

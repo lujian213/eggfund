@@ -27,7 +27,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-graphql'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.security:spring-security-test'
+    implementation libs.jackson.dataformat.csv
 
     testImplementation platform(libs.groovy.bom)
     testImplementation 'org.apache.groovy:groovy'
@@ -36,6 +36,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.graphql:spring-graphql-test'
     testImplementation 'org.spockframework:spock-spring'
+    testImplementation 'org.springframework.security:spring-security-test'
 }
 
 configurations.configureEach {

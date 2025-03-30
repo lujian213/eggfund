@@ -1,4 +1,11 @@
-import { Chip, Stack, Tooltip, Typography } from "@mui/material";
+import {
+  Chip,
+  Stack,
+  Tooltip,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { fundsQuery } from "../../../store/selector";
 import { rtValuesState } from "../../../store/atom";
@@ -6,6 +13,8 @@ import { datasourceState, selectedFundsState } from "../store/atom";
 import { useEffect } from "react";
 
 export default function Funds() {
+  const theme = useTheme();
+  const isLarge = useMediaQuery(theme.breakpoints.up("md"));
   const funds = useRecoilValue(fundsQuery);
   const rtValues = useRecoilValue(rtValuesState);
   const [selectedFunds, setSelectedFunds] = useRecoilState(selectedFundsState);
@@ -55,6 +64,10 @@ export default function Funds() {
       return pre.filter((item) => item.code !== id);
     });
   };
+
+  if (!isLarge) {
+    return null;
+  }
 
   return (
     <Stack

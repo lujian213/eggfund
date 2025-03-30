@@ -10,7 +10,7 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 600,
+  width: 'min(600px, 70%)',
   boxshadow: 24,
   background: (theme) => theme.palette.background.sidebar,
   p: 4,

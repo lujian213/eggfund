@@ -6,12 +6,13 @@ import {
   formatNumberByPercent,
 } from "../../../utils/process-number";
 import { Divider, Drawer, IconButton } from "@mui/material";
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
-import ChevronRightIcon from '@mui/icons-material/ChevronRight'
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import AggridWrapper from "../../../components/aggrid-wrapper";
+import { useRecoilValue } from "recoil";
+import { fundsQuery } from "../../../store/selector";
 
-
-const drawerWidth = 1200;
+const drawerWidth = "min(800px, 90%)";
 
 const BASE_URL = process.env.REACT_APP_BASE_URL;
 
@@ -25,6 +26,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 
 export default function TotalSummaryDrawer(props) {
   const { open, investor, handleDrawerClose } = props;
+  const funds = useRecoilValue(fundsQuery);
   const theme = useTheme();
   const [datasource, setDatasource] = useState();
 
@@ -33,8 +35,16 @@ export default function TotalSummaryDrawer(props) {
       const response = await axios.post(`${BASE_URL}/summary/${investor}`);
       const result = response.data;
       const { investSummaryList, ...rest } = result;
+      const items = investSummaryList.map((item) => {
+        const fund = funds.find((f) => f.id === item.fundId);
+        return {
+          ...item,
+          fundId: fund?.alias || fund?.name || item.fundId,
+        };
+      }
+      );
       const data = [
-        ...investSummaryList,
+        ...items,
         {
           fundId: "Total",
           ...rest,
@@ -43,34 +53,14 @@ export default function TotalSummaryDrawer(props) {
       setDatasource(data);
     };
     investor && fetchDatasource();
-  }, [investor]);
+  }, [investor, funds]);
 
   const colDefs = [
     { field: "fundId", flex: 1 },
     {
-      field: "totalLongAmt",
-      flex: 1,
-      valueGetter: (p) => formatNumber(p.data.totalLongAmt),
-    },
-    {
-      field: "totalShortAmt",
-      flex: 1,
-      valueGetter: (p) => formatNumber(p.data.totalShortAmt),
-    },
-    {
-      field: "totalFee",
-      flex: 1,
-      valueGetter: (p) => formatNumber(p.data.totalFee),
-    },
-    {
       field: "earning",
       flex: 1,
       valueGetter: (p) => formatNumber(p.data.earning),
-    },
-    {
-      field: "grossEarning",
-      flex: 1,
-      valueGetter: (p) => formatNumber(p.data.grossEarning),
     },
     {
       field: "netAmt",
@@ -78,21 +68,18 @@ export default function TotalSummaryDrawer(props) {
       valueGetter: (p) => formatNumber(p.data.netAmt),
     },
     {
-      field: "predictedValue",
-      flex: 1,
-      valueGetter: (p) => formatNumber(p.data.predictedValue),
-    },
-    {
-      field: "grossEarningRate",
-      flex: 1,
-      valueGetter: (p) => formatNumberByPercent(p.data.crossEarningRate),
-    },
-    {
       field: "earningRate",
       flex: 1,
       valueGetter: (p) => formatNumberByPercent(p.data.earningRate),
     },
   ];
+
+  const getRowStyle = (params) => {
+    if (params.data.fundId === "Total") {
+      return { backgroundColor: "#534912" };
+    }
+    return {};
+  };
 
   return (
     <Drawer
@@ -117,7 +104,11 @@ export default function TotalSummaryDrawer(props) {
         </IconButton>
       </DrawerHeader>
       <Divider />
-      <AggridWrapper rowData={datasource} columnDefs={colDefs} />
+      <AggridWrapper
+        rowData={datasource}
+        columnDefs={colDefs}
+        getRowStyle={getRowStyle}
+      />
     </Drawer>
   );
 }

@@ -117,6 +117,12 @@ public class EggFundController {
     }
 
     @MutationMapping
+    public boolean deleteInvests(@Argument String id, @Argument List<String> investIds) {
+        eggFundService.deleteInvests(id, investIds);
+        return true;
+    }
+
+    @MutationMapping
     public boolean deleteInvestor(@Argument String id) {
         eggFundService.deleteInvestor(id);
         return true;

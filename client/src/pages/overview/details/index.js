@@ -5,15 +5,15 @@ import { Box, Button, Card, CardContent, Modal, Stack } from "@mui/material";
 import DetailsTable from "./table";
 
 export default function Details() {
-  const [openModal, setOpenModal] = useState(false);
+  const [openModal, setOpenModal] = useState({ open: false, type: "items" });
   const refreshSummary = useSetRecoilState(refreshSummaryState);
 
-  const handleModalOpen = () => {
-    setOpenModal(true);
+  const handleModalOpen = (type) => {
+    setOpenModal({ open: true, type });
   };
 
   const handleModalClose = () => {
-    setOpenModal(false);
+    setOpenModal({ open: false, type: "items" });
     refreshSummary((pre) => pre + 1);
   };
 
@@ -29,7 +29,11 @@ export default function Details() {
           <DetailsTable handleModalOpen={handleModalOpen} />
         </CardContent>
       </Card>
-      <DetailsModal open={openModal} handleClose={handleModalClose} />
+      <DetailsModal
+        open={openModal.open}
+        type={openModal.type}
+        handleClose={handleModalClose}
+      />
     </Box>
   );
 }
@@ -47,7 +51,7 @@ const style = {
 };
 
 function DetailsModal(props) {
-  const { open, handleClose } = props;
+  const { open, type, handleClose } = props;
 
   return (
     <Modal
@@ -58,7 +62,7 @@ function DetailsModal(props) {
     >
       <Stack sx={style} spacing={2}>
         <Box sx={{ flex: 1 }}>
-          <DetailsTable />
+          <DetailsTable type={type} />
         </Box>
         <Box sx={{ alignSelf: "flex-end" }}>
           <Button onClick={handleClose}>Close</Button>

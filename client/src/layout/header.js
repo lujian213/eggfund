@@ -9,13 +9,29 @@ import {
   Stack,
   Tooltip,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import PaletteIcon from "@mui/icons-material/Palette";
+import { Link } from "react-router-dom";
+import MenuIcon from '@mui/icons-material/Menu';
 
 export default function Header() {
+  const theme = useTheme();
+  const isLarge = useMediaQuery(theme.breakpoints.up("md"));
   const setTheme = useSetRecoilState(themeState);
+  const [navEl, setNavEl] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
+  const navOpen = Boolean(navEl);
+
+  const handleNavClick = (event) => {
+    setNavEl(event.currentTarget);
+  };
+  const handleNavClose = () => {
+    setNavEl(null);
+  };
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -62,6 +78,84 @@ export default function Header() {
         alignItems={"center"}
         sx={{ paddingRight: "1rem" }}
       >
+        {!isLarge && (
+          <>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                textAlign: "center",
+              }}
+            >
+              <Tooltip title="Nav">
+                <IconButton
+                  onClick={handleNavClick}
+                  size="small"
+                  sx={{ ml: 2 }}
+                  aria-controls={navOpen ? "nav-bar" : undefined}
+                  aria-haspopup="true"
+                  aria-expanded={navOpen ? "true" : undefined}
+                >
+                  <MenuIcon />
+                </IconButton>
+              </Tooltip>
+            </Box>
+            <Menu
+              anchorEl={navEl}
+              id="nav-bar"
+              open={navOpen}
+              onClose={handleNavClose}
+              onClick={handleNavClose}
+              PaperProps={{
+                elevation: 0,
+                sx: {
+                  overflow: "visible",
+                  filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+                  mt: 1.5,
+                  "& .MuiAvatar-root": {
+                    width: 32,
+                    height: 32,
+                    ml: -0.5,
+                    mr: 1,
+                  },
+                  "&:before": {
+                    content: '""',
+                    display: "block",
+                    position: "absolute",
+                    top: 0,
+                    right: 14,
+                    width: 10,
+                    height: 10,
+                    bgcolor: "background.paper",
+                    transform: "translate(-50%) rotate(45deg)",
+                    zIndex: 0,
+                  },
+                },
+              }}
+              transformOrigin={{ horizontal: "right", vertical: "top" }}
+              anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+            >
+              <MenuItem
+                component={Link}
+                to={`/overview`}
+              >
+                Overview
+              </MenuItem>
+              <MenuItem
+                component={Link}
+                to={`/rt-values`}
+              >
+                Real Time Values
+              </MenuItem>
+              <MenuItem
+                component={Link}
+                to={`/settings`}
+              >
+                Settings
+              </MenuItem>
+            </Menu>
+          </>
+        )}
         <Box
           sx={{
             display: "flex",

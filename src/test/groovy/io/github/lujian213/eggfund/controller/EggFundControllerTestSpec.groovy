@@ -1,14 +1,11 @@
 package io.github.lujian213.eggfund.controller
 
-import spock.lang.Specification
 import io.github.lujian213.eggfund.model.*
 import org.spockframework.spring.SpringBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.graphql.GraphQlTest
 import org.springframework.graphql.test.tester.GraphQlTester
-
-
-import java.time.LocalDate
+import spock.lang.Specification
 
 @GraphQlTest(EggFundController.class)
 class EggFundControllerTestSpec extends Specification {
@@ -318,6 +315,21 @@ class EggFundControllerTestSpec extends Specification {
                 """)
                 .execute()
                 .path("deleteInvest")
+                .entity(Boolean.class)
+                .isEqualTo(true)
+    }
+
+    def 'testDeleteInvests'() {
+        when:
+        eggFundService.deleteInvests("user1", ["invest1", "invest2"]) >> {}
+        then:
+        graphQlTester.document("""
+            mutation MyMutation {
+                deleteInvests(id: "user1", investIds: ["invest1", "invest2"])
+            }
+            """)
+                .execute()
+                .path("deleteInvests")
                 .entity(Boolean.class)
                 .isEqualTo(true)
     }

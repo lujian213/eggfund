@@ -356,25 +356,29 @@ public class InvestService {
         }
     }
 
-    public void deleteInvest(String investorId, String investId) {
+    public void deleteInvests(String investorId, List<String> investIds) {
         Investor investor = checkInvestor(investorId);
         synchronized (investMap) {
             try {
                 Map<String, Invest> userInvestMap = investMap.computeIfAbsent(investor, key -> new HashMap<>());
-                if (userInvestMap.containsKey(investId)) {
-                    Map<String, Invest> newUserInvestMap = new HashMap<>(userInvestMap);
-                    Invest oldInvest = newUserInvestMap.remove(investId);
-                    List<InvestAudit> newAuditList = new LinkedList<>(checkInvestAudit());
-                    newAuditList.add(new InvestAudit(oldInvest, null));
-                    investDao.saveInvests(investorId, newUserInvestMap.values());
-                    investAuditDao.saveInvestAudits(newAuditList);
-                    userInvestMap.remove(investId);
-                    investAuditList.add(new InvestAudit(oldInvest, null));
-                } else {
-                    throw new EggFundException("Invest not found: " + investId);
-                }
+                Map<String, Invest> newUserInvestMap = new HashMap<>(userInvestMap);
+                List<InvestAudit> newAuditList = new LinkedList<>(checkInvestAudit());
+                investIds.stream().map(String::trim).forEach(investId -> {
+                    if (userInvestMap.containsKey(investId)) {
+                        Invest oldInvest = newUserInvestMap.remove(investId);
+                        newAuditList.add(new InvestAudit(oldInvest, null));
+                    } else {
+                        log.warn("Invest {} not found, skip. ", investId);
+                    }
+                });
+                investDao.saveInvests(investorId, newUserInvestMap.values());
+                investAuditDao.saveInvestAudits(newAuditList);
+                userInvestMap.clear();
+                userInvestMap.putAll(newUserInvestMap);
+                investAuditList.clear();
+                investAuditList.addAll(newAuditList);
             } catch (IOException e) {
-                throw new EggFundException("delete invest error: " + investorId + "," + investId, e);
+                throw new EggFundException("delete invest error: " + investorId, e);
             }
         }
     }
