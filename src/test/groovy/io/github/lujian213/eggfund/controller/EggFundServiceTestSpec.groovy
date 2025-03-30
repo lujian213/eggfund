@@ -253,6 +253,7 @@ class EggFundServiceTestSpec extends Specification {
                 .andExpect(status().isOk())
     }
 
+    @WithMockUser(roles = ["ADMIN"])
     def "testDeleteInvestor"() {
         when:
         investService.deleteInvestor("user") >> {}
