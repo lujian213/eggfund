@@ -34,7 +34,7 @@ public class SecurityConfig {
     @ConditionalOnProperty(name = "spring.security.enable", havingValue = "true", matchIfMissing = true)
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(requests -> requests
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/graphiql", "/graphql").permitAll()
                         .anyRequest().authenticated()
                 )
                 .csrf(CsrfConfigurer::disable)
