@@ -1,14 +1,13 @@
 package io.github.lujian213.eggfund.model
 
-import io.github.lujian213.eggfund.utils.CommonUtil
-import spock.lang.Specification
 
+import spock.lang.Specification
 
 class InvestSummaryItemSpec extends Specification {
 
     def "InvestSummaryItem with invest and price"() {
         given:
-        def invest = new Invest(Invest.TYPE_TRADE, "001-001", "123456", "2025-01-01", quota, 1.3, 10)
+        def invest = new Invest(type: Invest.TYPE_TRADE, id: "001-001", code: "123456", day: "2025-01-01", share: quota, unitPrice: 1.3, fee: 10)
         with(invest) {
             setUserIndex(2)
             setEnabled(false)
@@ -46,7 +45,7 @@ class InvestSummaryItemSpec extends Specification {
 
     def "InvestSummaryItem with fundValue, non-null invest and price"() {
         given:
-        def invest = new Invest(Invest.TYPE_TRADE, "001-001", "123456", "2025-01-01", quota, -1, 10)
+        def invest = new Invest(type: Invest.TYPE_TRADE, id: "001-001", code: "123456", day: "2025-01-01", share: quota, unitPrice: -1, fee: 10)
         with(invest) {
             setUserIndex(2)
             setEnabled(false)

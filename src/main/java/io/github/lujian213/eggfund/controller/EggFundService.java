@@ -5,6 +5,7 @@ import io.github.lujian213.eggfund.model.*;
 import io.github.lujian213.eggfund.service.FundDataService;
 import io.github.lujian213.eggfund.service.InvestService;
 import io.github.lujian213.eggfund.utils.Constants;
+import io.github.lujian213.eggfund.utils.DataFileParser;
 import io.github.lujian213.eggfund.utils.FileNameUtil;
 import io.github.lujian213.eggfund.utils.LocalDateUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,6 +28,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @CrossOrigin
@@ -194,7 +196,16 @@ public class EggFundService {
     @DeleteMapping(value = "/invest/{id}/{investId}")
     public void deleteInvest(@PathVariable String id, @PathVariable String investId) {
         runWithExceptionHandling("delete invest error: " + id + "," + investId, () -> {
-            investService.deleteInvest(id, investId);
+            investService.deleteInvests(id, List.of(investId));
+            return null;
+        });
+    }
+
+    @Operation(summary = "delete invests")
+    @DeleteMapping(value = "/invest/{id}")
+    public void deleteInvests(@PathVariable String id, @RequestParam List<String> investIds) {
+        runWithExceptionHandling("delete invests error: " + id + "," + investIds, () -> {
+            investService.deleteInvests(id, investIds);
             return null;
         });
     }
@@ -252,7 +263,7 @@ public class EggFundService {
         return runWithExceptionHandling("upload invests error: " + id + ", " + code, () -> {
             FundInfo fund = fundDataService.checkFund(code);
             try (InputStream is = file.getInputStream()) {
-                List<Invest> invests = Constants.MAPPER.readerForListOf(Invest.class).readValue(is);
+                List<Invest> invests = new DataFileParser().parseInvestFile(is, Objects.requireNonNull(file.getOriginalFilename()));
                 return investService.addInvests(id, fund, invests, true);
             }
         });

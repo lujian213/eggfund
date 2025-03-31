@@ -1,9 +1,7 @@
 package io.github.lujian213.eggfund.model
 
-import io.github.lujian213.eggfund.utils.Constants
-import spock.lang.Specification
-import java.time.LocalDate
 
+import spock.lang.Specification
 
 class InvestSpec extends Specification {
 
@@ -30,7 +28,7 @@ class InvestSpec extends Specification {
 
     def "Invest construct with Invest"() {
         given:
-        def anotherInvest = new Invest("trade", "001-001", "123456", "2025-01-01", 1000, 1.3, 10)
+        def anotherInvest = new Invest(type: "trade", id: "001-001", code: "123456", day: "2025-01-01", share: 1000, unitPrice: 1.3, fee: 10)
         when:
         def targetInvest = new Invest(anotherInvest)
 

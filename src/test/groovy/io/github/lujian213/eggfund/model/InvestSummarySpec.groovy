@@ -76,13 +76,13 @@ class InvestSummarySpec extends Specification {
         values << new FundValue("2024-10-31", 1.2814, 1, -0.0006)
         values << new FundValue("2024-11-01", 1.2900, 1, 0.0067)
 
-        invests << new Invest(Invest.TYPE_TRADE, "dummy", "001548", "2024-10-09", 76781.26, 1.3011, 99.9)
-        invests << new Invest(Invest.TYPE_TRADE, "dummy", "001548", "2024-10-11", 15355.07, 1.3012, 19.98)
-        invests << new Invest(Invest.TYPE_TRADE, "dummy", "001548", "2024-10-15", 23236.18, 1.2898, 29.97)
-        invests << new Invest(Invest.TYPE_TRADE, "dummy", "001548", "2024-10-23", -20000, 1.3157, 78.94)
-        invests << new Invest(Invest.TYPE_TRADE, "dummy", "001548", "2024-10-24", 11501.27, 1.3029, 14.99)
-        invests << new Invest(Invest.TYPE_TRADE, "dummy", "001548", "2024-10-29", 19251.54, 1.2973, 24.98)
-        invests << new Invest(Invest.TYPE_TRADE, "dummy", "001548", "2024-10-30", 19478.26, 1.2822, 24.98)
+        invests << new Invest(type: Invest.TYPE_TRADE, id: "dummy", code: "001548", day: "2024-10-09", share: 76781.26, unitPrice: 1.3011, fee: 99.9)
+        invests << new Invest(type: Invest.TYPE_TRADE, id: "dummy", code: "001548", day: "2024-10-11", share: 15355.07, unitPrice: 1.3012, fee: 19.98)
+        invests << new Invest(type: Invest.TYPE_TRADE, id: "dummy", code: "001548", day: "2024-10-15", share: 23236.18, unitPrice: 1.2898, fee: 29.97)
+        invests << new Invest(type: Invest.TYPE_TRADE, id: "dummy", code: "001548", day: "2024-10-23", share: -20000, unitPrice: 1.3157, fee: 78.94)
+        invests << new Invest(type: Invest.TYPE_TRADE, id: "dummy", code: "001548", day: "2024-10-24", share: 11501.27, unitPrice: 1.3029, fee: 14.99)
+        invests << new Invest(type: Invest.TYPE_TRADE, id: "dummy", code: "001548", day: "2024-10-29", share: 19251.54, unitPrice: 1.2973, fee: 24.98)
+        invests << new Invest(type: Invest.TYPE_TRADE, id: "dummy", code: "001548", day: "2024-10-30", share: 19478.26, unitPrice: 1.2822, fee: 24.98)
 
         def inst = new InvestSummary(new FundInfo("001548", "dummy name"), values, invests, new FundRTValue("2024-11-01 15:00", -1, 0.0087), LocalDate.parse("2024-11-01", Constants.DATE_FORMAT))
 

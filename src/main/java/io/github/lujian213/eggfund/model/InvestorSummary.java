@@ -10,6 +10,7 @@ public class InvestorSummary {
     private double totalLongAmt;
     private double totalShortAmt;
     private double totalFee;
+    private double totalTax;
     private double earning;
     private double grossEarning;
     private double netAmt;
@@ -25,6 +26,7 @@ public class InvestorSummary {
             totalLongAmt += investSummary.getTotalLongAmt();
             totalShortAmt += investSummary.getTotalShortAmt();
             totalFee += investSummary.getTotalFee();
+            totalTax += investSummary.getTotalTax();
             earning += investSummary.getEarning();
             grossEarning += investSummary.getGrossEarning();
             netAmt += investSummary.getNetAmt();
@@ -47,6 +49,10 @@ public class InvestorSummary {
 
     public double getTotalFee() {
         return totalFee;
+    }
+
+    public double getTotalTax() {
+        return totalTax;
     }
 
     public double getEarning() {

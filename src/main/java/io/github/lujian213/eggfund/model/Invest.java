@@ -12,6 +12,7 @@ public class Invest extends LocalDateRelated<Invest> {
     private double share;
     private double unitPrice;
     private double fee;
+    private double tax;
     private int userIndex = 0;
     private boolean enabled = true;
     private int batch = 0;
@@ -28,21 +29,12 @@ public class Invest extends LocalDateRelated<Invest> {
         this.share = invest.share;
         this.unitPrice = invest.unitPrice;
         this.fee = invest.fee;
+        this.tax = invest.tax;
         this.userIndex = invest.userIndex;
         this.enabled = invest.enabled;
         this.batch = invest.batch;
         this.comments = invest.comments;
 
-    }
-
-    public Invest(String type, String id, String code, String day, double share, double unitPrice, double fee) {
-        super(day);
-        this.type = type;
-        this.id = id;
-        this.code = code;
-        this.share = share;
-        this.unitPrice = unitPrice;
-        this.fee = fee;
     }
 
     public String getType() {
@@ -90,12 +82,21 @@ public class Invest extends LocalDateRelated<Invest> {
         return this;
     }
 
+    public double getTax() {
+        return tax;
+    }
+
+    public Invest setTax(double tax) {
+        this.tax = tax;
+        return this;
+    }
+
     public double amount(double price) {
         price = (price < 0 ? unitPrice : price);
         if (share < 0) {
-            return Math.abs(share) * price - fee;
+            return Math.abs(share) * price - fee - tax;
         } else {
-            return -(share * price + fee);
+            return -(share * price + fee + tax);
         }
     }
 

@@ -51,6 +51,7 @@ type Invest {
     share: Float!
     unitPrice: Float!
     fee: Float!
+    tax: Float!
     userIndex: Int!
     enabled: Boolean!
     batch: Int!
@@ -66,6 +67,7 @@ input InvestInput {
     share: Float!
     unitPrice: Float = -1
     fee: Float = 0
+    tax: Float = 0
     enabled: Boolean = true
     batch: Int = 0
     comments: String
@@ -78,6 +80,7 @@ type InvestSummaryItem {
     price: Float!
     increaseRate: Float!
     fee: Float!
+    tax: Float!
     investAmt: Float!
     var: Float!
     earning: Float!
@@ -108,6 +111,7 @@ type InvestSummary {
     lastFundDate: String!
     predictedValue: Float!
     totalFee: Float!
+    totalTax: Float!
     earning: Float!
     earningRate: Float!
     grossEarning: Float!
@@ -131,6 +135,7 @@ type InvestorSummary {
     netAmt: Float!
     predictedValue: Float!
     totalFee: Float!
+    totalTax: Float!
     earning: Float!
     earningRate: Float!
     grossEarning: Float!
@@ -163,6 +168,7 @@ type Mutation {
     updateInvestor(id: String!, name: String!, icon: String): Investor!
     updateInvest(id: String!, invest: InvestInput!): Invest!
     deleteInvest(id: String!, investId: String!): Boolean!
+    deleteInvests(id: String!, investIds: [String]!): Boolean!
     deleteInvestor(id: String!): Boolean!
     deleteFund(code: String!): Boolean!
     disableInvest(id: String!, investId: String!, enabled: Boolean = false): Invest!
