@@ -10,7 +10,7 @@ import {
 import { useMemo, useState } from "react";
 import { formatNumber } from "../../../utils/process-number";
 import axios from "axios";
-import { Button, Stack } from "@mui/material";
+import { Button, Stack, useMediaQuery, useTheme } from "@mui/material";
 import AggridWrapper from "../../../components/aggrid-wrapper";
 import InvestModal from "./invest-modal";
 import ConfirmModal from "../../../components/confirm-modal";
@@ -31,6 +31,9 @@ const VisuallyHiddenInput = styled("input")({
 const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 export default function Invests() {
+  const theme = useTheme();
+  const refetchInvests = useSetRecoilState(refreshInvestsState);
+  const isLarge = useMediaQuery(theme.breakpoints.up("md"));
   const invests = useRecoilValue(investsQuery);
   const setAlert = useSetRecoilState(alertState);
   const selectedInvestor = useRecoilValue(selectedInvestorState);
@@ -100,6 +103,7 @@ export default function Invests() {
       message: "Invests Uploaded successfully",
       type: "success",
     });
+    refetchInvests((pre) => pre + 1);
   };
 
   const handleDownload = () => {
@@ -110,11 +114,24 @@ export default function Invests() {
       return acc;
     }, {});
     const query = new URLSearchParams(params).toString();
-    window.open(`/exportinvests/${selectedInvestor}/${selectedFund}?${query}`);
+    const windowBaseURL = window.location.origin;
+    window.open(
+      `${windowBaseURL}/exportinvests/${selectedInvestor}/${selectedFund}?${query}`
+    );
   };
 
+  let containerStyle = {};
+
+  if (!isLarge) {
+    containerStyle = {
+      height: "calc(100vh - 64px)",
+      overflow: "auto",
+      flexBasis: "calc(100vh - 64px)"
+    };
+  }
+
   return (
-    <Stack style={{ flex: 1 }}>
+    <Stack style={{ flex: 1, ...containerStyle }}>
       <Stack sx={{ alignSelf: "flex-start" }} direction={"row"} spacing={1}>
         <Button
           variant="contained"

@@ -51,11 +51,11 @@ export default function RealtimeTrendChartModal(props) {
         valueDescriptionFormat: "{value}",
       },
     },
-    xAixs: {
+    xAxis: {
       title: {
         text: "Increase Rate",
       },
-      categories: datasource.map((item) => item.time.split(" "?.[1])),
+      categories: datasource.map((item) => item.time.split(" ")?.[1]),
     },
     yAxis: {
       title: {

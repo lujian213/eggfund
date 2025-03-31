@@ -51,10 +51,7 @@ export default function TrendChartModal(props) {
         valueDescriptionFormat: "{value}",
       },
     },
-    xAixs: {
-      title: {
-        text: "Date",
-      },
+    xAxis: {
       categories: datasource.map((item) => item.day),
     },
     yAxis: {

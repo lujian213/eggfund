@@ -5,12 +5,15 @@ import {
   formatNumber,
   formatNumberByPercent,
 } from "../../../utils/process-number";
-import { Divider, Drawer, IconButton } from "@mui/material";
+import { Divider, Drawer, IconButton, Stack } from "@mui/material";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import AggridWrapper from "../../../components/aggrid-wrapper";
 import { useRecoilValue } from "recoil";
 import { fundsQuery } from "../../../store/selector";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
+import moment from "moment";
 
 const drawerWidth = "min(800px, 90%)";
 
@@ -29,10 +32,23 @@ export default function TotalSummaryDrawer(props) {
   const funds = useRecoilValue(fundsQuery);
   const theme = useTheme();
   const [datasource, setDatasource] = useState();
+  const [form, setForm] = useState({
+    from: moment(0).format("YYYY-MM-DD"),
+    to: moment().format("YYYY-MM-DD"),
+  });
 
   useEffect(() => {
     const fetchDatasource = async () => {
-      const response = await axios.post(`${BASE_URL}/summary/${investor}`);
+      const response = await axios.post(
+        `${BASE_URL}/summary/${investor}`,
+        null,
+        {
+          params: {
+            from: form.from,
+            to: form.to,
+          },
+        }
+      );
       const result = response.data;
       const { investSummaryList, ...rest } = result;
       const items = investSummaryList.map((item) => {
@@ -41,8 +57,7 @@ export default function TotalSummaryDrawer(props) {
           ...item,
           fundId: fund?.alias || fund?.name || item.fundId,
         };
-      }
-      );
+      });
       const data = [
         ...items,
         {
@@ -53,7 +68,7 @@ export default function TotalSummaryDrawer(props) {
       setDatasource(data);
     };
     investor && fetchDatasource();
-  }, [investor, funds]);
+  }, [investor, funds, form]);
 
   const colDefs = [
     { field: "fundId", flex: 1 },
@@ -104,6 +119,50 @@ export default function TotalSummaryDrawer(props) {
         </IconButton>
       </DrawerHeader>
       <Divider />
+      <Stack direction={"row"} spacing={1} sx={{ padding: 2 }}>
+        <LocalizationProvider dateAdapter={AdapterMoment}>
+          <DatePicker
+            value={form.from ? moment(form.from, "YYYY-MM-DD") : null}
+            label="From"
+            onChange={(newValue) =>
+              setForm((pre) => ({
+                ...pre,
+                from: newValue?.format("YYYY-MM-DD"),
+              }))
+            }
+            format="YYYY-MM-DD"
+            slotProps={{
+              textField: {
+                variant: "standard",
+                sx: { width: "160px" },
+                InputLabelProps: { shrink: true },
+                clearable: true,
+              },
+            }}
+          />
+        </LocalizationProvider>
+        <LocalizationProvider dateAdapter={AdapterMoment}>
+          <DatePicker
+            value={form.to ? moment(form.to, "YYYY-MM-DD") : null}
+            label="To"
+            onChange={(newValue) =>
+              setForm((pre) => ({
+                ...pre,
+                to: newValue?.format("YYYY-MM-DD"),
+              }))
+            }
+            format="YYYY-MM-DD"
+            slotProps={{
+              textField: {
+                variant: "standard",
+                sx: { width: "160px" },
+                InputLabelProps: { shrink: true },
+                clearable: true,
+              },
+            }}
+          />
+        </LocalizationProvider>
+      </Stack>
       <AggridWrapper
         rowData={datasource}
         columnDefs={colDefs}
