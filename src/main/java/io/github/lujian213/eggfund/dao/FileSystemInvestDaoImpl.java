@@ -44,13 +44,13 @@ public class FileSystemInvestDaoImpl extends FileSystemDaoImpl implements Invest
     private void complementIfMissing(List<Investor> investors) {
         Optional<Investor> admin = investors.stream().filter(investor -> ADMIN.equals(investor.getId())).findFirst();
         if (admin.isEmpty()) {
-            investors.add(new Investor(ADMIN, ADMIN, null, passwordEncoder.encode(ADMIN), List.of(ADMIN)));
+            investors.add(new Investor(ADMIN, ADMIN, null, passwordEncoder.encode(ADMIN), Constants.DEFAULT_ROLE_ADMIN));
         }
         investors.stream()
                 .filter(investor -> investor.getPassword() == null)
                 .forEach(investor -> {
                     investor.setPassword(passwordEncoder.encode(investor.getId()));
-                    investor.setRoles(List.of("user"));
+                    investor.setRoles(Constants.DEFAULT_ROLE_USER);
                 });
     }
 

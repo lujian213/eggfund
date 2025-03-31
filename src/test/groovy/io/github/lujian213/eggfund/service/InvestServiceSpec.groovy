@@ -384,7 +384,12 @@ class InvestServiceSpec extends Specification {
         when:
         def ret = investService.addNewInvestor(new Investor("Bob", "Bob Smith", null))
         then:
-        ret.getId() == "Bob"
+        ret.with {
+            id == "Bob"
+            name == "Bob Smith"
+            password == "***"
+            roles == Constants.DEFAULT_ROLE_USER
+        }
         investService.investorMap.size() == 2
         investService.investorMap["Bob"] != null
 
@@ -496,12 +501,14 @@ class InvestServiceSpec extends Specification {
         thrown(EggFundException)
 
         when:
-        def ret = investService.updateInvestor(new Investor("Alex", "Alex Pink", "icon1"))
+        def ret = investService.updateInvestor(new Investor("Alex", "Alex Pink", "icon1", "password", null))
         then:
         with(ret) {
             id == "Alex"
             name == "Alex Pink"
             icon == "icon1"
+            password == "***"
+            roles == Constants.DEFAULT_ROLE_USER
         }
         investService.investorMap.size() == 1
         investService.investorMap["Alex"] == ret

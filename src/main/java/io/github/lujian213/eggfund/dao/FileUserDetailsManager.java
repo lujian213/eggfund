@@ -14,13 +14,14 @@ public class FileUserDetailsManager implements UserDetailsService {
     public void setInvestService(InvestService investService) {
         this.investService = investService;
     }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return investService.getUser(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User '" + username + "' not found"));
+        try {
+            return investService.getUser(username);
+        } catch (Exception e) {
+            throw new UsernameNotFoundException("User '" + username + "' not found");
+        }
     }
 
 }
-
-
-

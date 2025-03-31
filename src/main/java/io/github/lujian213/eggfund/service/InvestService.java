@@ -156,12 +156,12 @@ public class InvestService {
             try {
                 Map<String, Investor> newInvestorMap = new HashMap<>(investorMap);
                 // Set default password and roles
-                Investor newInvestor = new Investor(investor.getId(), investor.getName(), investor.getIcon(), passwordEncoder.encode(investor.getId()), List.of("user"));
+                Investor newInvestor = new Investor(investor.getId(), investor.getName(), investor.getIcon(), passwordEncoder.encode(investor.getId()), Constants.DEFAULT_ROLE_USER);
                 newInvestorMap.put(investor.getId(), newInvestor);
                 investDao.saveInvestors(newInvestorMap.values());
                 investorMap.put(investor.getId(), newInvestor);
                 // hide password
-                return new Investor(investor);
+                return new Investor(newInvestor);
             } catch (IOException e) {
                 throw new EggFundException("add new investor error: " + investor.getId(), e);
             }
@@ -173,33 +173,14 @@ public class InvestService {
             Investor existingInvestor = checkInvestor(investor.getId());
             try {
                 Map<String, Investor> newInvestorMap = new HashMap<>(investorMap);
-                Investor newInvestor = mergeInvestor(investor, existingInvestor);
+                Investor newInvestor = investor.mergeInvestor(passwordEncoder, existingInvestor);
                 newInvestorMap.put(investor.getId(), newInvestor);
                 investDao.saveInvestors(newInvestorMap.values());
                 investorMap.put(investor.getId(), newInvestor);
-                return new Investor(existingInvestor);
+                return new Investor(newInvestor);
             } catch (IOException e) {
                 throw new EggFundException("update investor error: " + investor.getId(), e);
             }
-        }
-    }
-
-    private Investor mergeInvestor(Investor newInvestor, Investor existingInvestor) {
-        // Update standard fields
-        updateIfNotNull(newInvestor.getName(), existingInvestor::setName);
-        updateIfNotNull(newInvestor.getIcon(), existingInvestor::setIcon);
-        updateIfNotNull(newInvestor.getRoles(), existingInvestor::setRoles);
-
-        if (newInvestor.getPassword() != null) {
-            existingInvestor.setPassword(passwordEncoder.encode(newInvestor.getPassword()));
-        }
-
-        return existingInvestor;
-    }
-
-    private static <T> void updateIfNotNull(T newValue, Consumer<T> setter) {
-        if (newValue != null) {
-            setter.accept(newValue);
         }
     }
 
@@ -408,18 +389,24 @@ public class InvestService {
         }
     }
 
-    public Investor checkInvestor(String investorId) {
+    protected Investor checkInvestor(String investorId) {
         synchronized (investorMap) {
             Investor investor = investorMap.get(investorId);
             if (investor == null) {
                 throw new EggFundException("Investor not found: " + investorId);
             }
-            return new Investor(investor);
+            return investor;
         }
     }
 
-    public Optional<UserDetails> getUser(String investorId) {
-        return Optional.ofNullable(investorMap.get(investorId)).map(this::convertToSpringUser);
+    public Investor securedInvestor(String investorId) {
+        Investor investor = checkInvestor(investorId);
+        return new Investor(investor);
+    }
+
+    public UserDetails getUser(String investorId) {
+        Investor investor = checkInvestor(investorId);
+        return convertToSpringUser(investor);
     }
 
     private UserDetails convertToSpringUser(Investor investor) {

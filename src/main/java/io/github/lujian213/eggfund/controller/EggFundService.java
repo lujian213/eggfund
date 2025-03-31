@@ -57,7 +57,7 @@ public class EggFundService {
     @Operation(summary = "get login user")
     @GetMapping(value = "/loginUser", produces = MediaType.APPLICATION_JSON_VALUE)
     public Investor getLoginUser(Authentication authentication) {
-        return runWithExceptionHandling("get login user error", () -> investService.checkInvestor(authentication.getName()));
+        return runWithExceptionHandling("get login user error", () -> investService.securedInvestor(authentication.getName()));
     }
 
     @Operation(summary = "get all funds")

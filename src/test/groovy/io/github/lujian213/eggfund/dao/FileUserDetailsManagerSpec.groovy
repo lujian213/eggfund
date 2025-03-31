@@ -1,5 +1,6 @@
 package io.github.lujian213.eggfund.dao
 
+import io.github.lujian213.eggfund.exception.EggFundException
 import io.github.lujian213.eggfund.service.InvestService
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.User
@@ -16,8 +17,8 @@ class FileUserDetailsManagerSpec extends Specification {
     def setup() {
         targetClass = new FileUserDetailsManager()
         investService = Mock(InvestService) {
-            getUser(ADMIN) >> Optional.of(new User(ADMIN, ADMIN, List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))))
-            getUser(_) >> Optional.empty()
+            getUser(ADMIN) >> new User(ADMIN, ADMIN, List.of(new SimpleGrantedAuthority("ROLE_ADMIN")))
+            getUser(_) >> new EggFundException()
         }
         targetClass.setInvestService(investService)
     }
