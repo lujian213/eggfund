@@ -38,7 +38,17 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .csrf(CsrfConfigurer::disable)
-                .formLogin(FormLoginConfigurer::disable)
+                .formLogin(form -> form
+                        .successHandler((request, response, authentication) -> {
+                            response.setStatus(HttpStatus.OK.value());
+                            response.getWriter().write("{\"message\": \"Login success\"}");
+                        })
+                        .failureHandler((request, response, authentication) -> {
+                            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                            response.getWriter().write("{\"message\": \"Invalid credentials\"}");
+                        })
+                        .permitAll()
+                )
                 .logout(logout -> logout
                         .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler())
                         .invalidateHttpSession(true)
