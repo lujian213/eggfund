@@ -13,7 +13,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
-import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -38,17 +38,6 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .csrf(CsrfConfigurer::disable)
-                .formLogin(form -> form
-                        .successHandler((request, response, authentication) -> {
-                            response.setStatus(HttpStatus.OK.value());
-                            response.getWriter().write("{\"message\": \"Login success\"}");
-                        })
-                        .failureHandler((request, response, authentication) -> {
-                            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                            response.getWriter().write("{\"message\": \"Invalid credentials\"}");
-                        })
-                        .permitAll()
-                )
                 .logout(logout -> logout
                         .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler())
                         .invalidateHttpSession(true)
@@ -59,7 +48,10 @@ public class SecurityConfig {
                         .authenticationEntryPoint((request, response, authException) ->
                                 // 返回401且不添加WWW-Authenticate头, 解决 Swagger 在认证失败后持续弹出输入框
                                 response.sendError(HttpStatus.UNAUTHORIZED.value(), "Unauthorized")
-                        ));
+                ))
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.ALWAYS) // 强制创建 Session
+                );
         return http.build();
     }
 
