@@ -1,5 +1,6 @@
 package io.github.lujian213.eggfund.service
 
+import org.springframework.security.crypto.password.PasswordEncoder
 import spock.lang.Specification
 
 import io.github.lujian213.eggfund.dao.*
@@ -14,11 +15,13 @@ class InvestServiceSpec extends Specification {
     InvestAuditDao investAuditDao
     FundDataService fundService
     InvestService investService
+    PasswordEncoder passwordEncoder
 
     def setup() {
         investDao = Mock(InvestDao)
         investAuditDao = Mock(InvestAuditDao)
         fundService = Mock(FundDataService)
+        passwordEncoder = Mock(PasswordEncoder)
     }
 
     def "deleteInvest"() {
@@ -365,6 +368,7 @@ class InvestServiceSpec extends Specification {
     def "addNewInvestor"() {
         given:
         investService = new InvestService()
+        investService.passwordEncoder = passwordEncoder
         investService.investorMap = ["Alex": new Investor("Alex", "Alex Cheng", null)]
 
         investDao = Mock(InvestDao) {
@@ -380,7 +384,12 @@ class InvestServiceSpec extends Specification {
         when:
         def ret = investService.addNewInvestor(new Investor("Bob", "Bob Smith", null))
         then:
-        ret.getId() == "Bob"
+        ret.with {
+            id == "Bob"
+            name == "Bob Smith"
+            password == "***"
+            roles == Constants.DEFAULT_ROLE_USER
+        }
         investService.investorMap.size() == 2
         investService.investorMap["Bob"] != null
 
@@ -478,6 +487,7 @@ class InvestServiceSpec extends Specification {
         def investor2 = new Investor("Bob", "Bob Smith", null)
 
         investService = new InvestService()
+        investService.passwordEncoder = passwordEncoder
         investService.investorMap = ["Alex": investor1]
 
         investDao = Mock(InvestDao) {
@@ -491,12 +501,14 @@ class InvestServiceSpec extends Specification {
         thrown(EggFundException)
 
         when:
-        def ret = investService.updateInvestor(new Investor("Alex", "Alex Pink", "icon1"))
+        def ret = investService.updateInvestor(new Investor("Alex", "Alex Pink", "icon1", "password", null))
         then:
         with(ret) {
             id == "Alex"
             name == "Alex Pink"
             icon == "icon1"
+            password == "***"
+            roles == Constants.DEFAULT_ROLE_USER
         }
         investService.investorMap.size() == 1
         investService.investorMap["Alex"] == ret

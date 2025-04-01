@@ -1,6 +1,7 @@
 package io.github.lujian213.eggfund.controller
 
 import io.github.lujian213.eggfund.config.SecurityConfig
+import org.springframework.security.test.context.support.WithAnonymousUser
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ContextConfiguration
 import spock.lang.Specification
@@ -146,6 +147,7 @@ class EggFundServiceTestSpec extends Specification {
                 .andExpect(content().json(Constants.MAPPER.writeValueAsString(investAudits)))
     }
 
+    @WithMockUser(roles = ["ADMIN"])
     def "testAddNewFund"() {
         when:
         def fundInfo = new FundInfo("10000", "test")
@@ -158,6 +160,7 @@ class EggFundServiceTestSpec extends Specification {
                 .andExpect(content().json(Constants.MAPPER.writeValueAsString(fundInfo)))
     }
 
+    @WithMockUser(username = "user1")
     def "testAddNewInvest"() {
         when:
         def investList = [new Invest(day: "2020-01-01", code: "10000", userIndex: 1, id: "invest1")]
@@ -171,17 +174,19 @@ class EggFundServiceTestSpec extends Specification {
                 .andExpect(content().json(Constants.MAPPER.writeValueAsString(investList)))
     }
 
+    @WithMockUser(roles = ["ADMIN"])
     def "testAddNewInvestor"() {
         when:
-        def investor = new Investor("user_1", "test", null)
+        def investor = new Investor("user1", "test", null)
         investService.addNewInvestor(investor) >> investor
         then:
-        mockMvc.perform(put("/investor").param("id", "user‹1").param("name", "test"))
+        mockMvc.perform(put("/investor").param("id", "user1").param("name", "test"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(content().json(Constants.MAPPER.writeValueAsString(investor)))
     }
 
+    @WithMockUser(roles = ["ADMIN"])
     def "testUpdateFund"() {
         when:
         def fundInfo1 = new FundInfo("10000", "test")
@@ -205,16 +210,18 @@ class EggFundServiceTestSpec extends Specification {
                 .andExpect(status().isOk())
     }
 
+    @WithMockUser(username = "user1")
     def "testUpdateInvestor"() {
         when:
         def investor = new Investor("user1", "test", null)
         investService.updateInvestor(investor) >> investor
         then:
-        mockMvc.perform(post("/investor/user1").param("name", "test1"))
+        mockMvc.perform(post("/investor/user1").param("name", "test1").param("password", "password"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(Constants.MAPPER.writeValueAsString(investor)))
     }
 
+    @WithMockUser(username = "invest1")
     def "testUpdateInvest"() {
         when:
         def invest = new Invest(day: "2020-01-01", code: "10000", userIndex: 1, id: "invest1")
@@ -228,6 +235,7 @@ class EggFundServiceTestSpec extends Specification {
                 .andExpect(content().json(Constants.MAPPER.writeValueAsString(invest)))
     }
 
+    @WithMockUser(username = "user1")
     def "testDeleteInvest"() {
         when:
         1 * investService.deleteInvests("user1", ["invest1"]) >> {}
@@ -236,6 +244,7 @@ class EggFundServiceTestSpec extends Specification {
                 .andExpect(status().isOk())
     }
 
+    @WithMockUser(roles = ["ADMIN"])
     def "testDeleteInvests"() {
         when:
         1 * investService.deleteInvests("user1", ["invest1", "invest2"]) >> {}
@@ -244,6 +253,7 @@ class EggFundServiceTestSpec extends Specification {
                 .andExpect(status().isOk())
     }
 
+    @WithMockUser(roles = ["ADMIN"])
     def "testDeleteInvestor"() {
         when:
         investService.deleteInvestor("user") >> {}
@@ -252,6 +262,7 @@ class EggFundServiceTestSpec extends Specification {
                 .andExpect(status().isOk())
     }
 
+    @WithMockUser(roles = ["ADMIN"])
     def "testDeleteFund"() {
         when:
         fundDataService.deleteFund("10000") >> {}
@@ -292,6 +303,7 @@ class EggFundServiceTestSpec extends Specification {
                 .andExpect(status().isOk())
     }
 
+    @WithMockUser(username = "user1")
     def "testUploadInvests"() {
         when:
         def fundInfo = new FundInfo("10000", "test")
@@ -331,16 +343,34 @@ class EggFundServiceTestSpec extends Specification {
                 .andExpect(content().json(Constants.MAPPER.writeValueAsString(invests)))
     }
 
-    def "testLoginUser with user Login"() {
+    @WithAnonymousUser
+    def "return 401 without user Login"() {
         expect:
-        this.mockMvc.perform(get("/loginUser")).andExpect(status().isOk())
-        this.mockMvc.perform(get("/adminUser")).andExpect(status().is4xxClientError())
+        this.mockMvc.perform(get("/loginUser"))
+                .andExpect(status().is(401))
     }
 
-    @WithMockUser(roles = ["ADMIN"])
-    def "testLoginUser with admin Login"() {
+    def "testLoginUser with user Login"() {
         expect:
-        this.mockMvc.perform(get("/loginUser")).andExpect(status().isOk())
-        this.mockMvc.perform(get("/adminUser")).andExpect(status().isOk())
+        this.mockMvc.perform(get("/loginUser"))
+                .andExpect(status().isOk())
     }
+
+    def "should return forbidden if not admin"() {
+        when:
+        def fundInfo = new FundInfo("10000", "test")
+        then:
+        mockMvc.perform(put("/fund/10000").contentType(MediaType.APPLICATION_JSON_VALUE).content(Constants.MAPPER.writeValueAsString(fundInfo)))
+                .andExpect(status().isForbidden())
+    }
+
+    @WithMockUser(username = "user2")
+    def "should return forbidden if not self"() {
+        when:
+        def investList = [new Invest(day: "2020-01-01", code: "10000", userIndex: 1, id: "invest1")]
+        then:
+        mockMvc.perform(put("/invest/user1/10000").contentType(MediaType.APPLICATION_JSON_VALUE).content(Constants.MAPPER.writeValueAsString(investList)))
+                .andExpect(status().isForbidden())
+    }
+
 }

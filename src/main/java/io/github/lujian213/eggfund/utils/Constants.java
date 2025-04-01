@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public final class Constants {
     private Constants() {
@@ -21,4 +22,6 @@ public final class Constants {
     public static final DateTimeFormatter MONTH_FORMAT = DateTimeFormatter.ofPattern("yyyyMM").withZone(ZONE_ID);
     public static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("yyyyMMddHHmmss").withZone(ZONE_ID);
     public static final DateTimeFormatter MINUTE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZONE_ID);
+    public static final List<String> DEFAULT_ROLE_USER = List.of("user");
+    public static final List<String> DEFAULT_ROLE_ADMIN = List.of("admin");
 }

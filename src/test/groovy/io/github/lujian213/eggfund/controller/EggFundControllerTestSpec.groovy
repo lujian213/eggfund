@@ -269,11 +269,11 @@ class EggFundControllerTestSpec extends Specification {
     def 'testUpdateInvestor'() {
         when:
         def investor = new Investor("user1", "test", "icon")
-        eggFundService.updateInvestor("user1", "test", "icon") >> investor
+        eggFundService.updateInvestor("user1", "test", "icon", "password") >> investor
         then:
         graphQlTester.document("""
                     mutation MyMutation {
-                        updateInvestor (id: "user1", name: "test", icon: "icon") {
+                        updateInvestor (id: "user1", name: "test", icon: "icon", password: "password") {
                             id
                             name
                         }

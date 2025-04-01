@@ -33,7 +33,7 @@ import java.util.Objects;
 @RestController
 @CrossOrigin
 @RequestMapping("/")
-@Tag(name = "EggFund Service", description = "EggFUnd Service")
+@Tag(name = "EggFund Service", description = "EggFund Service")
 @SuppressWarnings({"squid:S112", "squid:S100"})
 public class EggFundService {
     public interface ThrowingRunnable<T> {
@@ -54,18 +54,10 @@ public class EggFundService {
         this.fundDataService = fundDataService;
     }
 
-    @Operation(summary = "get current user")
+    @Operation(summary = "get login user")
     @GetMapping(value = "/loginUser", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Authentication getCurrentUser(Authentication authentication) {
-        log.info("User {} with role {} is calling.", authentication.getName(), authentication.getAuthorities());
-        return authentication;
-    }
-
-    @Operation(summary = "get admin user")
-    @GetMapping(value = "/adminUser", produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasRole('ADMIN')")
-    public Authentication getAdminUser(Authentication authentication) {
-        return getCurrentUser(authentication);
+    public Investor getLoginUser(Authentication authentication) {
+        return runWithExceptionHandling("get login user error", () -> investService.securedInvestor(authentication.getName()));
     }
 
     @Operation(summary = "get all funds")
@@ -139,12 +131,14 @@ public class EggFundService {
 
     @Operation(summary = "add new fund")
     @PutMapping(value = "/fund/{code}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('ADMIN')")
     public FundInfo addNewFund(@PathVariable String code, @RequestBody FundInfo fundInfo) {
         return runWithExceptionHandling("add new fund error: " + code, () -> fundDataService.addNewFund(fundInfo.setId(code)));
     }
 
     @Operation(summary = "add new investor")
     @PutMapping(value = "/investor", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('ADMIN')")
     public Investor addNewInvestor(@RequestParam String id, @RequestParam String name, @RequestParam(required = false) String icon) {
         return runWithExceptionHandling("add new investor error: " + id,
                 () -> investService.addNewInvestor(new Investor(FileNameUtil.makeValidFileName(id), name, icon)));
@@ -152,6 +146,7 @@ public class EggFundService {
 
     @Operation(summary = "add new invests")
     @PutMapping(value = "/invest/{id}/{code}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("#id == authentication.name")
     public List<Invest> addNewInvest(@PathVariable String id, @PathVariable String code, @RequestBody List<Invest> invests) {
         return runWithExceptionHandling("add new invest error: " + id, () -> {
             FundInfo fund = fundDataService.checkFund(code);
@@ -161,6 +156,7 @@ public class EggFundService {
 
     @Operation(summary = "update fund")
     @PostMapping(value = "/fund/{code}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('ADMIN')")
     public FundInfo updateFund(@PathVariable String code, @RequestBody FundInfo fundInfo) {
         return runWithExceptionHandling("update investor error: " + code, () -> fundDataService.updateFund(fundInfo.setId(code)));
     }
@@ -178,13 +174,15 @@ public class EggFundService {
 
     @Operation(summary = "update investor")
     @PostMapping(value = "/investor/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Investor updateInvestor(@PathVariable String id, @RequestParam String
-            name, @RequestParam(required = false) String icon) {
-        return runWithExceptionHandling("update investor error: " + id, () -> investService.updateInvestor(new Investor(id, name, icon)));
+    @PreAuthorize("#id== authentication.name")
+    public Investor updateInvestor(@PathVariable String id, @RequestParam String name,
+                                   @RequestParam(required = false) String icon, @RequestParam(required = false) String password) {
+        return runWithExceptionHandling("update investor error: " + id, () -> investService.updateInvestor(new Investor(id, name, icon, password, null)));
     }
 
     @Operation(summary = "update invest")
     @PostMapping(value = "/invest/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("#id == authentication.name")
     public Invest updateInvest(@PathVariable String id, @RequestBody Invest invest) {
         return runWithExceptionHandling("update invest error: " + id, () -> {
             fundDataService.checkFund(invest.getCode());
@@ -194,6 +192,7 @@ public class EggFundService {
 
     @Operation(summary = "delete invest")
     @DeleteMapping(value = "/invest/{id}/{investId}")
+    @PreAuthorize("#id== authentication.name")
     public void deleteInvest(@PathVariable String id, @PathVariable String investId) {
         runWithExceptionHandling("delete invest error: " + id + "," + investId, () -> {
             investService.deleteInvests(id, List.of(investId));
@@ -212,6 +211,7 @@ public class EggFundService {
 
     @Operation(summary = "delete investor")
     @DeleteMapping(value = "/investor/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteInvestor(@PathVariable String id) {
         runWithExceptionHandling("delete investor error: " + id, () -> {
             investService.deleteInvestor(id);
@@ -221,6 +221,7 @@ public class EggFundService {
 
     @Operation(summary = "delete fund")
     @DeleteMapping(value = "/fund/{code}")
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteFund(@PathVariable String code) {
         runWithExceptionHandling("delete fund error: " + code, () -> {
             fundDataService.deleteFund(code);
@@ -259,6 +260,7 @@ public class EggFundService {
 
     @Operation(summary = "upload invests")
     @PostMapping(value = "/uploadinvests/{id}/{code}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("#id == authentication.name")
     public List<Invest> uploadInvests(@PathVariable String id, @PathVariable String code, @RequestParam MultipartFile file) {
         return runWithExceptionHandling("upload invests error: " + id + ", " + code, () -> {
             FundInfo fund = fundDataService.checkFund(code);
