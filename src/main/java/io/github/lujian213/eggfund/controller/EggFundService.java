@@ -258,7 +258,7 @@ public class EggFundService {
                 () -> investService.generateInvestorSummary(id, from, to));
     }
 
-    @Operation(summary = "upload invests")
+    @Operation(summary = "upload invests for specific user and fund")
     @PostMapping(value = "/uploadinvests/{id}/{code}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("#id == authentication.name")
     public List<Invest> uploadInvests(@PathVariable String id, @PathVariable String code, @RequestParam MultipartFile file) {
@@ -267,6 +267,18 @@ public class EggFundService {
             try (InputStream is = file.getInputStream()) {
                 List<Invest> invests = new DataFileParser().parseInvestFile(is, Objects.requireNonNull(file.getOriginalFilename()));
                 return investService.addInvests(id, fund, invests, true);
+            }
+        });
+    }
+
+    @Operation(summary = "upload invests for specific user")
+    @PostMapping(value = "/uploadinvests/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("#id == authentication.name")
+    public List<Invest> uploadInvests(@PathVariable String id, @RequestParam MultipartFile file) {
+        return runWithExceptionHandling("upload invests error: " + id, () -> {
+            try (InputStream is = file.getInputStream()) {
+                List<Invest> invests = new DataFileParser().parseInvestFile(is, Objects.requireNonNull(file.getOriginalFilename()));
+                return investService.addInvests(id, invests, true);
             }
         });
     }

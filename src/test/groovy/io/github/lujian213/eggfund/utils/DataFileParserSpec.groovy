@@ -30,6 +30,9 @@ class DataFileParserSpec extends Specification {
             batch == 0
             comments == null
         }
+        with (result[1]) {
+            code == "159741"
+        }
     }
 
     def "ParseInvestFile with json"() {
