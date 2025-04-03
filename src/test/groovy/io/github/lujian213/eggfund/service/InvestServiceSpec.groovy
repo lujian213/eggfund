@@ -1,5 +1,6 @@
 package io.github.lujian213.eggfund.service
 
+import org.springframework.security.crypto.password.PasswordEncoder
 import spock.lang.Specification
 
 import io.github.lujian213.eggfund.dao.*
@@ -14,11 +15,13 @@ class InvestServiceSpec extends Specification {
     InvestAuditDao investAuditDao
     FundDataService fundService
     InvestService investService
+    PasswordEncoder passwordEncoder
 
     def setup() {
         investDao = Mock(InvestDao)
         investAuditDao = Mock(InvestAuditDao)
         fundService = Mock(FundDataService)
+        passwordEncoder = Mock(PasswordEncoder)
     }
 
     def "deleteInvest"() {
@@ -365,6 +368,7 @@ class InvestServiceSpec extends Specification {
     def "addNewInvestor"() {
         given:
         investService = new InvestService()
+        investService.passwordEncoder = passwordEncoder
         investService.investorMap = ["Alex": new Investor("Alex", "Alex Cheng", null)]
 
         investDao = Mock(InvestDao) {
@@ -380,7 +384,12 @@ class InvestServiceSpec extends Specification {
         when:
         def ret = investService.addNewInvestor(new Investor("Bob", "Bob Smith", null))
         then:
-        ret.getId() == "Bob"
+        ret.with {
+            id == "Bob"
+            name == "Bob Smith"
+            password == "***"
+            roles == Constants.DEFAULT_ROLE_USER
+        }
         investService.investorMap.size() == 2
         investService.investorMap["Bob"] != null
 
@@ -478,6 +487,7 @@ class InvestServiceSpec extends Specification {
         def investor2 = new Investor("Bob", "Bob Smith", null)
 
         investService = new InvestService()
+        investService.passwordEncoder = passwordEncoder
         investService.investorMap = ["Alex": investor1]
 
         investDao = Mock(InvestDao) {
@@ -491,12 +501,14 @@ class InvestServiceSpec extends Specification {
         thrown(EggFundException)
 
         when:
-        def ret = investService.updateInvestor(new Investor("Alex", "Alex Pink", "icon1"))
+        def ret = investService.updateInvestor(new Investor("Alex", "Alex Pink", "icon1", "password", null))
         then:
         with(ret) {
             id == "Alex"
             name == "Alex Pink"
             icon == "icon1"
+            password == "***"
+            roles == Constants.DEFAULT_ROLE_USER
         }
         investService.investorMap.size() == 1
         investService.investorMap["Alex"] == ret
@@ -610,7 +622,7 @@ class InvestServiceSpec extends Specification {
         thrown(EggFundException)
     }
 
-    def "addInvests"() {
+    def "addInvests for one fund"() {
         given:
         def investor1 = new Investor("Alex", "Alex Cheng", null)
 
@@ -632,6 +644,7 @@ class InvestServiceSpec extends Specification {
         investAuditDao = Mock(InvestAuditDao) {
             saveInvestAudits(_) >> {}
         }
+
         investService.setInvestDao(investDao)
         investService.setInvestAuditDao(investAuditDao)
 
@@ -665,6 +678,63 @@ class InvestServiceSpec extends Specification {
         investService.addInvests("Alex", new FundInfo("1000", "fund0"), invests, true)
         then:
         thrown(EggFundException)
+    }
+
+    def "addInvests for multiple funds"() {
+        given:
+        def investor1 = new Investor("Alex", "Alex Cheng", null)
+
+        investService = Spy(InvestService) {
+            generateInvestMap(_, _, _, _, _,_, _) >> {
+                Investor investor, FundInfo fund, List<Invest> investList, boolean overwrite, Map<String, Invest> userInvestMap, Map<String, Invest> newUserInvestMap, List<InvestAudit> auditList -> {
+                    def invest1 = "invest-$fund.id-10"
+                    def invest2 = "invest-$fund.id-11"
+                    newUserInvestMap << userInvestMap
+                    newUserInvestMap << [(invest1): new Invest(id: invest1, code: fund.id),
+                                         (invest2): new Invest(id: invest2, code: fund.id)]
+                    auditList << new InvestAudit("2025-02-01", null, new Invest(id: invest1, code: fund.id))
+                    auditList << new InvestAudit("2025-02-01", null, new Invest(id: invest2, code: fund.id))
+                    return [(invest1): new Invest(id: invest1, code: fund.id),
+                            (invest2): new Invest(id: invest2, code: fund.id)]
+                }
+            }
+        }
+        investService.investorMap << ["Alex": investor1]
+        investService.investMap << [(investor1): ["invest1": new Invest(id: "invest1", code: "1000", day: "2025-01-05", share: 1000)]]
+        investDao = Mock(InvestDao) {
+            saveInvests(_, _) >> {}
+        }
+        investAuditDao = Mock(InvestAuditDao) {
+            saveInvestAudits(_) >> {}
+        }
+        fundService.checkFund(_) >> {
+            String code -> {
+                switch (code) {
+                    case "1000", "1001" -> new FundInfo(id: code, name: code)
+                    default -> throw new EggFundException()
+                }
+            }
+        }
+
+        investService.setInvestDao(investDao)
+        investService.setInvestAuditDao(investAuditDao)
+        investService.setFundDataService(fundService)
+
+        when:
+        def invests = [new Invest(id: "invest100", code: "1000"), new Invest(id: "invest101", code: "1002")]
+        def ret = investService.addInvests("Alex", invests, false)
+
+        then:
+        thrown(EggFundException)
+
+        when:
+        invests = [new Invest(id: "invest100", code: "1000"), new Invest(id: "invest101", code: "1001")]
+        ret = investService.addInvests("Alex", invests, false)
+
+        then:
+        ret.size() == 4
+        investService.investMap[investor1].size() == 5
+        investService.investAuditList.size() == 4
     }
 
     def "getInvestAudits"() {

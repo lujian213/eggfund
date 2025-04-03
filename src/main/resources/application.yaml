@@ -27,6 +27,10 @@ logging:
   file:
     name: log/log.txt
     path: log
+  level:
+    org:
+      springframework:
+        security: DEBUG
 
 spring:
   graphql:

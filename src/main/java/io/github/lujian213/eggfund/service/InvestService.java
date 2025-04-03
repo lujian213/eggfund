@@ -10,6 +10,11 @@ import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -30,6 +35,7 @@ public class InvestService {
     private InvestDao investDao;
     private InvestAuditDao investAuditDao;
     private FundDataService fundDataService;
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     public void setInvestDao(InvestDao investDao) {
@@ -44,6 +50,11 @@ public class InvestService {
     @Autowired
     public void setFundDataService(FundDataService fundDataService) {
         this.fundDataService = fundDataService;
+    }
+
+    @Autowired
+    public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
     }
 
     @PostConstruct
@@ -123,7 +134,7 @@ public class InvestService {
         synchronized (this) {
             List<Investor> ret = new ArrayList<>(investorMap.values());
             ret.sort(Comparator.comparing(Investor::getName));
-            return ret;
+            return ret.stream().map(Investor::new).toList();
         }
     }
 
@@ -132,7 +143,7 @@ public class InvestService {
             List<Investor> ret = new ArrayList<>();
             investMap.forEach((investor, invests) -> invests.values().stream().filter(invest -> invest.getCode().equals(code)).findAny().ifPresent(invest -> ret.add(investor)));
             ret.sort(Comparator.comparing(Investor::getName));
-            return ret;
+            return ret.stream().map(Investor::new).toList();
         }
     }
 
@@ -143,10 +154,13 @@ public class InvestService {
             }
             try {
                 Map<String, Investor> newInvestorMap = new HashMap<>(investorMap);
-                newInvestorMap.put(investor.getId(), investor);
+                // Set default password and roles
+                Investor newInvestor = new Investor(investor.getId(), investor.getName(), investor.getIcon(), passwordEncoder.encode(investor.getId()), Constants.DEFAULT_ROLE_USER);
+                newInvestorMap.put(investor.getId(), newInvestor);
                 investDao.saveInvestors(newInvestorMap.values());
-                investorMap.put(investor.getId(), investor);
-                return investor;
+                investorMap.put(investor.getId(), newInvestor);
+                // hide password
+                return new Investor(newInvestor);
             } catch (IOException e) {
                 throw new EggFundException("add new investor error: " + investor.getId(), e);
             }
@@ -158,10 +172,11 @@ public class InvestService {
             Investor existingInvestor = checkInvestor(investor.getId());
             try {
                 Map<String, Investor> newInvestorMap = new HashMap<>(investorMap);
-                newInvestorMap.put(investor.getId(), investor);
+                Investor newInvestor = investor.mergeInvestor(passwordEncoder, existingInvestor);
+                newInvestorMap.put(investor.getId(), newInvestor);
                 investDao.saveInvestors(newInvestorMap.values());
-                existingInvestor.update(investor);
-                return existingInvestor;
+                investorMap.put(investor.getId(), newInvestor);
+                return new Investor(newInvestor);
             } catch (IOException e) {
                 throw new EggFundException("update investor error: " + investor.getId(), e);
             }
@@ -183,32 +198,37 @@ public class InvestService {
         }
     }
 
-    public List<Invest> addInvests(String investorId, FundInfo fund, List<Invest> invests, boolean overwrite) {
-        Investor investor = checkInvestor(investorId);
+    protected Map<String, Invest> generateInvestMap(Investor investor, FundInfo fund, List<Invest> invests, boolean overwrite, final Map<String, Invest> userInvestMap, final Map<String, Invest> newUserInvestMap, final List<InvestAudit> auditList) {
         invests.forEach(invest -> {
             if (!fund.getId().equals(invest.getCode())) {
-                throw new EggFundException("Invest code not match: " + fund.getId() + "," + invest.getCode());
+                throw new EggFundException("Invest code not match: %s,%s".formatted(fund.getId(), invest.getCode()));
             }
             resetInvestPrice(fund, invest);
         });
+        Map<String, Invest> newInvestMap = invests.stream().
+                map(invest -> invest.setId(genInvestId(investor.getId(), fund.getId())).setCode(fund.getId())).map(this::updateInvestPrice).
+                collect(Collectors.toMap(Invest::getId, Function.identity()));
+        if (overwrite) {
+            newUserInvestMap.putAll(overwriteInvests(fund, userInvestMap, newInvestMap));
+            auditList.addAll(prepareAuditList(userInvestMap, newUserInvestMap));
+        } else {
+            newUserInvestMap.putAll(userInvestMap);
+            newUserInvestMap.putAll(newInvestMap);
+            newInvestMap.values().forEach(invest -> auditList.add(new InvestAudit(null, invest)));
+        }
+        resetInvestUserIndex(userInvestMap, newUserInvestMap.values());
+        return newInvestMap;
+    }
+
+    public List<Invest> addInvests(String investorId, FundInfo fund, List<Invest> invests, boolean overwrite) {
+        Investor investor = checkInvestor(investorId);
+
         synchronized (investMap) {
             try {
-                Map<String, Invest> newInvestMap = invests.stream().
-                        map(invest -> invest.setId(genInvestId(investorId, fund.getId())).setCode(fund.getId())).map(this::updateInvestPrice).
-                        collect(Collectors.toMap(Invest::getId, Function.identity()));
+                Map<String, Invest> newUserInvestMap = new HashMap<>();
+                List<InvestAudit> auditList = new ArrayList<>();
                 Map<String, Invest> userInvestMap = investMap.computeIfAbsent(investor, key -> new HashMap<>());
-                Map<String, Invest> newUserInvestMap;
-                List<InvestAudit> auditList;
-                if (overwrite) {
-                    newUserInvestMap = overwriteInvests(fund, userInvestMap, newInvestMap);
-                    auditList = prepareAuditList(userInvestMap, newUserInvestMap);
-                } else {
-                    newUserInvestMap = new HashMap<>(userInvestMap);
-                    newUserInvestMap.putAll(newInvestMap);
-                    auditList = new LinkedList<>();
-                    newInvestMap.values().forEach(invest -> auditList.add(new InvestAudit(null, invest)));
-                }
-                resetInvestUserIndex(userInvestMap, newUserInvestMap.values());
+                Map<String, Invest> newInvestMap = generateInvestMap(investor, fund, invests, overwrite, userInvestMap, newUserInvestMap, auditList);
                 investDao.saveInvests(investorId, newUserInvestMap.values());
                 List<InvestAudit> newAuditList = new LinkedList<>(checkInvestAudit());
                 newAuditList.addAll(auditList);
@@ -218,7 +238,38 @@ public class InvestService {
                 investAuditList.addAll(auditList);
                 return new ArrayList<>(newInvestMap.values());
             } catch (IOException e) {
-                throw new EggFundException("add invest error: " + investorId, e);
+                throw new EggFundException("add invests error: " + investorId, e);
+            }
+        }
+    }
+
+    public List<Invest> addInvests(String investorId, List<Invest> invests, boolean overwrite) {
+        Investor investor = checkInvestor(investorId);
+        synchronized (investMap) {
+            try {
+                List<InvestAudit> auditList = new ArrayList<>();
+                Map<String, Invest> userInvestMap = investMap.computeIfAbsent(investor, key -> new HashMap<>());
+                Map<String, Invest> newInvestMap = new HashMap<>();
+                Map<String, Invest> newUserInvestMap = new HashMap<>(userInvestMap);
+                Map<String, Invest> temp = userInvestMap;
+                for (Map.Entry<String, List<Invest>> entry: invests.stream().collect(Collectors.groupingBy(Invest::getCode)).entrySet()) {
+                    String code = entry.getKey();
+                    List<Invest> investList = entry.getValue();
+                    FundInfo fund = fundDataService.checkFund(code);
+                    newUserInvestMap = new HashMap<>();
+                    newInvestMap.putAll(generateInvestMap(investor, fund, investList, overwrite, temp, newUserInvestMap, auditList));
+                    temp = newUserInvestMap;
+                }
+                investDao.saveInvests(investorId, newUserInvestMap.values());
+                List<InvestAudit> newAuditList = new LinkedList<>(checkInvestAudit());
+                newAuditList.addAll(auditList);
+                investAuditDao.saveInvestAudits(newAuditList);
+                userInvestMap.clear();
+                userInvestMap.putAll(newUserInvestMap);
+                investAuditList.addAll(auditList);
+                return new ArrayList<>(newInvestMap.values());
+            } catch (IOException e) {
+                throw new EggFundException("add invests error: " + investorId, e);
             }
         }
     }
@@ -241,10 +292,11 @@ public class InvestService {
         return auditList;
     }
 
-    protected void resetInvestPrice(FundInfo fund, Invest invest) {
+    protected Invest resetInvestPrice(FundInfo fund, Invest invest) {
         if (!fund.isEtf() && Invest.TYPE_TRADE.equals(invest.getType())) {
             invest.setUnitPrice(-1);
         }
+        return invest;
     }
 
     protected void resetInvestUserIndex(Map<String, Invest> investMap, Collection<Invest> invests) {
@@ -381,6 +433,30 @@ public class InvestService {
             }
             return investor;
         }
+    }
+
+    public Investor securedInvestor(String investorId) {
+        Investor investor = checkInvestor(investorId);
+        return new Investor(investor);
+    }
+
+    public UserDetails getUser(String investorId) {
+        Investor investor = checkInvestor(investorId);
+        return convertToSpringUser(investor);
+    }
+
+    private UserDetails convertToSpringUser(Investor investor) {
+        return new User(
+                investor.getId(),
+                investor.getPassword(),
+                mapRolesToAuthorities(investor.getRoles())
+        );
+    }
+
+    private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<String> roles) {
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
+                .toList();
     }
 
     protected String genInvestId(String investorId, String code) {
