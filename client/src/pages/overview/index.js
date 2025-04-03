@@ -19,17 +19,10 @@ export default function Overview() {
     investor: null,
   });
 
-  const handleDrawerOpen = (investor) => {
-    setTotalSummaryDrawer({
-      open: true,
-      investor,
-    });
-  };
-
   return (
     <Stack spacing={1} sx={{ height: "100%" }}>
       <Suspense fallback={<div>Loading...</div>}>
-        <CategoryList handleDrawerOpen={handleDrawerOpen} />
+        <CategoryList setTotalSummaryDrawer={setTotalSummaryDrawer} />
       </Suspense>
       <Divider />
       <Suspense fallback={<div>Loading...</div>}>

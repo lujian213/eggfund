@@ -1,5 +1,5 @@
-import { useSetRecoilState } from "recoil";
-import { themeState } from "../store/atom";
+import { useRecoilState, useSetRecoilState } from "recoil";
+import { themeState, userInfoState } from "../store/atom";
 import { useState } from "react";
 import {
   Box,
@@ -14,12 +14,16 @@ import {
 } from "@mui/material";
 import PaletteIcon from "@mui/icons-material/Palette";
 import { Link } from "react-router-dom";
-import MenuIcon from '@mui/icons-material/Menu';
+import MenuIcon from "@mui/icons-material/Menu";
+import axios from "axios";
+
+const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 export default function Header() {
   const theme = useTheme();
   const isLarge = useMediaQuery(theme.breakpoints.up("md"));
   const setTheme = useSetRecoilState(themeState);
+  const [userInfo, setUserInfo] = useRecoilState(userInfoState);
   const [navEl, setNavEl] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -44,6 +48,16 @@ export default function Header() {
     setTheme(theme);
     handleClose();
   };
+
+  const handleLogout = async() => {
+    await axios.post(`${BASE_URL}/logout`);
+    setUserInfo({
+      id: null,
+      name: null,
+      password: null,
+      roles: [],
+    })
+  }
 
   return (
     <Box
@@ -78,6 +92,43 @@ export default function Header() {
         alignItems={"center"}
         sx={{ paddingRight: "1rem" }}
       >
+        {userInfo?.name && (
+          <>
+            <Typography
+              variant="h6"
+              gutterBottom
+              sx={{
+                marginBottom: 0,
+                textAlign: "center",
+                display: "flex",
+                alignItems: "center",
+                gap: "1rem",
+              }}
+            >
+              Welcom {userInfo?.name}
+            </Typography>
+            <Typography
+              variant="h6"
+              gutterBottom
+              onClick={handleLogout}
+              sx={{
+                marginBottom: 0,
+                textAlign: "center",
+                display: "flex",
+                alignItems: "center",
+                gap: "1rem",
+                cursor: "pointer",
+                color: "text.secondary",
+                "&:hover": {
+                  color: "text.primary",
+                },
+                textDecoration: "underline",
+              }}
+            >
+              logout
+            </Typography>
+          </>
+        )}
         {!isLarge && (
           <>
             <Box
@@ -135,22 +186,13 @@ export default function Header() {
               transformOrigin={{ horizontal: "right", vertical: "top" }}
               anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
             >
-              <MenuItem
-                component={Link}
-                to={`/overview`}
-              >
+              <MenuItem component={Link} to={`/overview`}>
                 Overview
               </MenuItem>
-              <MenuItem
-                component={Link}
-                to={`/rt-values`}
-              >
+              <MenuItem component={Link} to={`/rt-values`}>
                 Real Time Values
               </MenuItem>
-              <MenuItem
-                component={Link}
-                to={`/settings`}
-              >
+              <MenuItem component={Link} to={`/settings`}>
                 Settings
               </MenuItem>
             </Menu>

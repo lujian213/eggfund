@@ -16,10 +16,13 @@ import Sidebar from "./layout/sidebar";
 import Body from "./layout/body";
 import CustomAlert from "./components/custom-alert";
 import useViewportScale from "./hooks/useViewportScale";
+import useAuth from "./hooks/useAuth";
+import Login from "./pages/login";
 
 function App() {
   useViewportScale();
   useInterceptor();
+  const { isAuthenticated } = useAuth();
   const theme = useRecoilValue(themeState);
   const muiTheme = useTheme();
   const isLarge = useMediaQuery(muiTheme.breakpoints.up("md"));
@@ -31,7 +34,7 @@ function App() {
     "header header"
     "sidebar body"
     `;
-  
+
   if (!isLarge) {
     gridAreas = `
       "header header"
@@ -47,36 +50,42 @@ function App() {
     <CustomTheme>
       <div className={`custom-theme-${themeType}`}>
         <CssBaseline />
-        <Box
-          sx={{
-            height: "100vh",
-            display: "grid",
-            gridTemplateColumns: "64px 1fr",
-            gridTemplateRows: "64px 1fr",
-            gridTemplateAreas: gridAreas,
-          }}
-        >
-          <Header />
-          {isLarge && <Sidebar />}
-          <Suspense
-            fallback={
-              <Box
-                sx={{
-                  gridArea: "body",
-                  padding: 2,
-                  height: "100%",
-                  background: (theme) => theme.palette.background.main,
-                  overflow: "auto",
-                }}
-                color="text.secondary"
-              >
-                Loading...
-              </Box>
-            }
+        {
+          !isAuthenticated ? (
+            <Login />
+          ) : (
+            <Box
+            sx={{
+              height: "100vh",
+              display: "grid",
+              gridTemplateColumns: "64px 1fr",
+              gridTemplateRows: "64px 1fr",
+              gridTemplateAreas: gridAreas,
+            }}
           >
-            <Body />
-          </Suspense>
-        </Box>
+            <Header />
+            {isLarge && <Sidebar />}
+            <Suspense
+              fallback={
+                <Box
+                  sx={{
+                    gridArea: "body",
+                    padding: 2,
+                    height: "100%",
+                    background: (theme) => theme.palette.background.main,
+                    overflow: "auto",
+                  }}
+                  color="text.secondary"
+                >
+                  Loading...
+                </Box>
+              }
+            >
+              <Body />
+            </Suspense>
+          </Box>
+          )
+        }
         <CustomAlert />
       </div>
     </CustomTheme>

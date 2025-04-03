@@ -2,11 +2,29 @@ const {createProxyMiddleware} = require("http-proxy-middleware");
 
 //https://103.200.29.147:9011
 
+//https://eggfund.website
+
 module.exports = function (app) {
+    app.use(
+        "/loginUser",
+        createProxyMiddleware({
+            target: 'https://103.200.29.147/',
+            changeOrigin: true,
+            secure: false,
+        })
+    );
+    app.use(
+        "/logout",
+        createProxyMiddleware({
+            target: 'https://103.200.29.147/',
+            changeOrigin: true,
+            secure: false,
+        })
+    );
     app.use(
         "/investor",
         createProxyMiddleware({
-            target: 'https://eggfund.website/',
+            target: 'https://103.200.29.147/',
             changeOrigin: true,
             secure: false,
         })
@@ -14,7 +32,7 @@ module.exports = function (app) {
     app.use(
         "/invest",
         createProxyMiddleware({
-            target: 'https://eggfund.website/',
+            target: 'https://103.200.29.147/',
             changeOrigin: true,
             secure: false,
         })
@@ -22,7 +40,7 @@ module.exports = function (app) {
     app.use(
         "/fund",
         createProxyMiddleware({
-            target: 'https://eggfund.website/',
+            target: 'https://103.200.29.147/',
             changeOrigin: true,
             secure: false,
         })
@@ -30,7 +48,7 @@ module.exports = function (app) {
     app.use(
         "/value",
         createProxyMiddleware({
-            target: 'https://eggfund.website/',
+            target: 'https://103.200.29.147/',
             changeOrigin: true,
             secure: false,
         })
@@ -38,7 +56,7 @@ module.exports = function (app) {
     app.use(
         "/summary",
         createProxyMiddleware({
-            target: 'https://eggfund.website/',
+            target: 'https://103.200.29.147/',
             changeOrigin: true,
             secure: false,
         })
@@ -46,7 +64,7 @@ module.exports = function (app) {
     app.use(
         "/values",
         createProxyMiddleware({
-            target: 'https://eggfund.website/',
+            target: 'https://103.200.29.147/',
             changeOrigin: true,
             secure: false,
         })
@@ -54,7 +72,7 @@ module.exports = function (app) {
     app.use(
         "/invests",
         createProxyMiddleware({
-            target: 'https://eggfund.website/',
+            target: 'https://103.200.29.147/',
             changeOrigin: true,
             secure: false,
         })
@@ -62,7 +80,7 @@ module.exports = function (app) {
     app.use(
         "/investors",
         createProxyMiddleware({
-            target: 'https://eggfund.website/',
+            target: 'https://103.200.29.147/',
             changeOrigin: true,
             secure: false,
         })
@@ -70,7 +88,7 @@ module.exports = function (app) {
     app.use(
         "/funds",
         createProxyMiddleware({
-            target: 'https://eggfund.website/',
+            target: 'https://103.200.29.147/',
             changeOrigin: true,
             secure: false,
         })
@@ -78,7 +96,7 @@ module.exports = function (app) {
     app.use(
         "/rtvalues",
         createProxyMiddleware({
-            target: 'https://eggfund.website/',
+            target: 'https://103.200.29.147/',
             changeOrigin: true,
             secure: false,
         })
@@ -86,7 +104,7 @@ module.exports = function (app) {
     app.use(
         "/disableinvest",
         createProxyMiddleware({
-            target: 'https://eggfund.website/',
+            target: 'https://103.200.29.147/',
             changeOrigin: true,
             secure: false,
         })
@@ -94,7 +112,7 @@ module.exports = function (app) {
     app.use(
         "/uploadinvests",
         createProxyMiddleware({
-            target: 'https://eggfund.website/',
+            target: 'https://103.200.29.147/',
             changeOrigin: true,
             secure: false,
         })
@@ -102,7 +120,7 @@ module.exports = function (app) {
     app.use(
         "/exportinvests",
         createProxyMiddleware({
-            target: 'https://eggfund.website/',
+            target: 'https://103.200.29.147/',
             changeOrigin: true,
             secure: false,
         })

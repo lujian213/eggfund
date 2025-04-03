@@ -39,11 +39,13 @@ export default function Invests() {
   const selectedInvestor = useRecoilValue(selectedInvestorState);
   const selectedFund = useRecoilValue(selectedFundState);
   const searchForm = useRecoilValue(searchFormState);
+  const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [investModal, setInvestModal] = useState({
     open: false,
     data: {},
     mode: "add",
   });
+  const [confirmModal, setConfirmModal] = useState(false);
 
   const maxBatch = invests.reduce((acc, item) => {
     if (item.batch > acc) {
@@ -60,6 +62,7 @@ export default function Invests() {
       { field: "unitPrice", flex: 1 },
       { field: "type", flex: 1 },
       { field: "fee", flex: 1 },
+      { field: "tax", flex: 1 },
       {
         field: "amount",
         headerName: "Effective Amt",
@@ -70,6 +73,7 @@ export default function Invests() {
       {
         field: "actions",
         flex: 1,
+        minWidth: 200,
         cellRenderer: ActionsRenderer,
         cellRendererParams: {
           openEditModal: (rowData) =>
@@ -126,9 +130,28 @@ export default function Invests() {
     containerStyle = {
       height: "calc(100vh - 64px)",
       overflow: "auto",
-      flexBasis: "calc(100vh - 64px)"
+      flexBasis: "calc(100vh - 64px)",
     };
   }
+
+  const onSelectionChanged = (selectedRows) => {
+    const selectedIds = selectedRows.api.getSelectedRows().map((row) => row.id);
+    setSelectedRowIds(selectedIds);
+  };
+
+  const openDeletConfirmModal = async () => {
+    setConfirmModal(true);
+  };
+
+  const handleDeleteRows = async () => {
+    const investIds = selectedRowIds.join(",");
+    await axios.delete(`${BASE_URL}/invest/${selectedInvestor}`, {
+      params: {
+        investIds,
+      },
+    });
+    refetchInvests((pre) => pre + 1);
+  };
 
   return (
     <Stack style={{ flex: 1, ...containerStyle }}>
@@ -154,8 +177,29 @@ export default function Invests() {
         <Button variant="contained" onClick={handleDownload}>
           Download
         </Button>
+        {selectedRowIds.length > 0 && (
+          <Button
+            variant="contained"
+            color="error"
+            onClick={openDeletConfirmModal}
+          >
+            Delete
+          </Button>
+        )}
+        <ConfirmModal
+          open={confirmModal}
+          handleClose={() => setConfirmModal(false)}
+          handleSubmit={handleDeleteRows}
+          message="Are you sure you want to delete these items?"
+        />
       </Stack>
-      <AggridWrapper rowData={invests} columnDefs={colDefs} />
+      <AggridWrapper
+        rowData={invests}
+        columnDefs={colDefs}
+        rowSelection={{ mode: "multiRow" }}
+        onSelectionChanged={onSelectionChanged}
+        getRowId={(params) => params.data.id}
+      />
       <InvestModal
         open={investModal.open}
         data={investModal.data}

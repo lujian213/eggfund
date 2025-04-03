@@ -15,7 +15,7 @@ import axios from "axios";
 
 const BASE_URL = process.env.REACT_APP_BASE_URL;
 
-export default function CategoryList({ handleDrawerOpen }) {
+export default function CategoryList({ setTotalSummaryDrawer }) {
   const funds = useRecoilValue(fundsQuery);
   const investors = useRecoilValue(investorsQuery);
   const [selected, setSelected] = useRecoilState(selectedCategoryState);
@@ -49,6 +49,7 @@ export default function CategoryList({ handleDrawerOpen }) {
   };
 
   const handleInvestorChange = async (id) => {
+    setTotalSummaryDrawer(pre => ({...pre, investor: id}))
     setSelectedInvestor(id);
     setSelected(null);
     setCategoryType("investor");
@@ -115,7 +116,12 @@ export default function CategoryList({ handleDrawerOpen }) {
       {selectedInvestor && (
         <IconButton
           sx={{ marginLeft: "auto" }}
-          onClick={() => handleDrawerOpen(selectedInvestor)}
+          onClick={() => {
+            setTotalSummaryDrawer({
+              open: true,
+              investor: selectedInvestor,
+            });
+          }}
         >
           <SummarizeIcon />
         </IconButton>

@@ -1,5 +1,15 @@
 import { atom } from "recoil";
 
+export const userInfoState = atom({
+  key: "userInfo",
+  default: {
+    id: 1,
+    name: null,
+    password: null,
+    roles: [],
+  },
+});
+
 export const themeState = atom({
   key: "themeState",
   default: localStorage.getItem("custom-theme") ?? "Dark",

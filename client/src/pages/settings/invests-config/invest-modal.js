@@ -27,7 +27,7 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 'min(800px, 90%)',
+  width: "min(800px, 90%)",
   boxshadow: 24,
   background: (theme) => theme.palette.background.sidebar,
   p: 4,
@@ -48,6 +48,7 @@ export default function InvestModal(props) {
     share: "",
     unitPrice: "",
     fee: 0,
+    tax: 0,
     batch: maxBatch,
     comments: "",
   });
@@ -116,6 +117,7 @@ export default function InvestModal(props) {
       share: "",
       unitPrice: "",
       fee: 0,
+      tax: 0,
       batch: maxBatch,
       comments: "",
     });
@@ -242,6 +244,15 @@ export default function InvestModal(props) {
               />
             </>
           )}
+          <TextField
+            size="small"
+            label="Tax"
+            variant="outlined"
+            name="tax"
+            value={form?.tax || ""}
+            InputLabelProps={{ shrink: true }}
+            onChange={handleChange}
+          />
           <TextField
             size="small"
             label="Comments"
