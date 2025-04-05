@@ -54,6 +54,12 @@ public class EggFundService {
         this.fundDataService = fundDataService;
     }
 
+    @Operation(summary = "login")
+    @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Investor login(Authentication authentication) {
+        return getLoginUser(authentication);
+    }
+
     @Operation(summary = "get login user")
     @GetMapping(value = "/loginUser", produces = MediaType.APPLICATION_JSON_VALUE)
     public Investor getLoginUser(Authentication authentication) {
