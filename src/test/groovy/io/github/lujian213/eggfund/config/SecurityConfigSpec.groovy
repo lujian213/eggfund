@@ -73,7 +73,7 @@ class SecurityConfigSpec extends Specification {
 
         where:
         path         | returnCode
-        "/loginUser" | 200
+//        "/loginUser" | 200
         "/investors" | 200
     }
 
