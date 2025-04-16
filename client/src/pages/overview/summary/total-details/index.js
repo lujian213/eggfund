@@ -57,6 +57,7 @@ export default function TotalDetails(props) {
     estPrice,
     estPriceTable,
     totalFee,
+    totalTax,
     totalDividendAmt,
   } = summary || {};
 
@@ -193,6 +194,10 @@ export default function TotalDetails(props) {
           <Box sx={itemStyle}>
             <Typography variant="div">Total Fee</Typography>
             <Box>{formatNumber(totalFee, 2)}</Box>
+          </Box>
+          <Box sx={itemStyle}>
+            <Typography variant="div">Total Tax</Typography>
+            <Box>{formatNumber(totalTax, 2)}</Box>
           </Box>
           <Box sx={itemStyle}>
             <Typography variant="div">Total Dividend AMT</Typography>

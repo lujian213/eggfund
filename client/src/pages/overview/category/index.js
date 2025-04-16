@@ -5,8 +5,9 @@ import {
   selectedCategoryState,
   selectedCategoryTypeState,
   selectedInvestorForCategoryState,
+  userInfoState,
 } from "../../../store/atom";
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { Stack } from "@mui/system";
 import { Chip, Divider, IconButton, Tooltip } from "@mui/material";
 import SummarizeIcon from "@mui/icons-material/Summarize";
@@ -16,6 +17,7 @@ import axios from "axios";
 const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 export default function CategoryList({ setTotalSummaryDrawer }) {
+  const userInfo = useRecoilValue(userInfoState);
   const funds = useRecoilValue(fundsQuery);
   const investors = useRecoilValue(investorsQuery);
   const [selected, setSelected] = useRecoilState(selectedCategoryState);
@@ -48,8 +50,8 @@ export default function CategoryList({ setTotalSummaryDrawer }) {
     setSelected(id);
   };
 
-  const handleInvestorChange = async (id) => {
-    setTotalSummaryDrawer(pre => ({...pre, investor: id}))
+  const handleInvestorChange = useCallback(async (id) => {
+    setTotalSummaryDrawer((pre) => ({ ...pre, investor: id }));
     setSelectedInvestor(id);
     setSelected(null);
     setCategoryType("investor");
@@ -60,7 +62,12 @@ export default function CategoryList({ setTotalSummaryDrawer }) {
     } catch (error) {
       console.error(error);
     }
-  };
+  }, [setCategoryType, setFundsOfInvestorCategory, setSelected, setSelectedInvestor, setTotalSummaryDrawer]);
+
+  useEffect(() => {
+    if (!userInfo?.id) return;
+    handleInvestorChange(userInfo.id);
+  }, [userInfo, handleInvestorChange]);
 
   return (
     <Stack

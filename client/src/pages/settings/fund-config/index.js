@@ -1,6 +1,6 @@
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { fundsQuery } from "../../../store/selector";
-import { refreshFundState } from "../../../store/atom";
+import { refreshFundState, userInfoState } from "../../../store/atom";
 import { useState } from "react";
 import {
   Box,
@@ -22,6 +22,7 @@ import FundModal from "./fund-modal";
 const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 export default function FundConfig() {
+  const userInfo = useRecoilValue(userInfoState);
   const funds = useRecoilValue(fundsQuery);
   const refetchFunds = useSetRecoilState(refreshFundState);
   const [fundModal, setFundModal] = useState({
@@ -96,23 +97,29 @@ export default function FundConfig() {
               label={
                 <Stack direction={"row"} spacing={0.5} alignItems={"center"}>
                   <Box>{fund.alias || fund.name}</Box>
-                  <Divider
-                    sx={{ paddingLeft: "10px" }}
-                    orientation="vertical"
-                    flexItem
-                  />
-                  <IconButton size="small" onClick={() => handleEdit(fund)}>
-                    <EditIcon color="primary" />
-                  </IconButton>
-                  <IconButton
-                    size="small"
-                    onClick={() => setConfirmModal({
-                      open: true,
-                      fund: fund,
-                    })}
-                  >
-                    <DeleteIcon color="error" />
-                  </IconButton>
+                  {userInfo?.roles?.includes("admin") && (
+                    <>
+                      <Divider
+                        sx={{ paddingLeft: "10px" }}
+                        orientation="vertical"
+                        flexItem
+                      />
+                      <IconButton size="small" onClick={() => handleEdit(fund)}>
+                        <EditIcon color="primary" />
+                      </IconButton>
+                      <IconButton
+                        size="small"
+                        onClick={() =>
+                          setConfirmModal({
+                            open: true,
+                            fund: fund,
+                          })
+                        }
+                      >
+                        <DeleteIcon color="error" />
+                      </IconButton>
+                    </>
+                  )}
                 </Stack>
               }
               variant={"outlined"}
@@ -120,12 +127,14 @@ export default function FundConfig() {
           </Tooltip>
         );
       })}
-      <Chip
-        icon={<AddIcon />}
-        label="Add New"
-        variant="outlined"
-        onClick={handleAdd}
-      />
+      {userInfo?.roles?.includes("admin") && (
+        <Chip
+          icon={<AddIcon />}
+          label="Add New"
+          variant="outlined"
+          onClick={handleAdd}
+        />
+      )}
       <FundModal
         open={fundModal.open}
         data={fundModal.data}
@@ -135,10 +144,12 @@ export default function FundConfig() {
       />
       <ConfirmModal
         open={confirmModal.open}
-        handleClose={() => setConfirmModal({
-          open: false,
-          fund: null,
-        })}
+        handleClose={() =>
+          setConfirmModal({
+            open: false,
+            fund: null,
+          })
+        }
         handleSubmit={() => handleDelete(confirmModal.fund)}
         message="Are you sure you want to delete this item?"
       />

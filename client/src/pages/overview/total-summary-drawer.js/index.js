@@ -83,6 +83,11 @@ export default function TotalSummaryDrawer(props) {
       valueGetter: (p) => formatNumber(p.data.netAmt),
     },
     {
+      field: "totalTax",
+      flex: 1,
+      valueGetter: (p) => formatNumber(p.data.totalTax),
+    },
+    {
       field: "earningRate",
       flex: 1,
       valueGetter: (p) => formatNumberByPercent(p.data.earningRate),

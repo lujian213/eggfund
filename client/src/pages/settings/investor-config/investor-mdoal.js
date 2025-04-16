@@ -43,6 +43,7 @@ export default function InvestorModal(props) {
         params: {
           name: form.name,
           icon: form.icon,
+          password: form.password,
         },
       });
     }
@@ -94,6 +95,16 @@ export default function InvestorModal(props) {
             variant="outlined"
             name="name"
             value={form?.name || ""}
+            InputLabelProps={{ shrink: true }}
+            onChange={handleChange}
+          />
+          <TextField
+            size="small"
+            label="Password"
+            variant="outlined"
+            name="password"
+            type="password"
+            value={form?.password || ""}
             InputLabelProps={{ shrink: true }}
             onChange={handleChange}
           />

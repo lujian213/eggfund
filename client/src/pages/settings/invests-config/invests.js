@@ -1,6 +1,6 @@
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { investsQuery } from "./store/selector";
-import { alertState } from "../../../store/atom";
+import { alertState, userInfoState } from "../../../store/atom";
 import {
   refreshInvestsState,
   searchFormState,
@@ -10,7 +10,7 @@ import {
 import { useMemo, useState } from "react";
 import { formatNumber } from "../../../utils/process-number";
 import axios from "axios";
-import { Button, Stack, useMediaQuery, useTheme } from "@mui/material";
+import { Button, Stack } from "@mui/material";
 import AggridWrapper from "../../../components/aggrid-wrapper";
 import InvestModal from "./invest-modal";
 import ConfirmModal from "../../../components/confirm-modal";
@@ -31,9 +31,8 @@ const VisuallyHiddenInput = styled("input")({
 const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 export default function Invests() {
-  const theme = useTheme();
+  const userInfo = useRecoilValue(userInfoState);
   const refetchInvests = useSetRecoilState(refreshInvestsState);
-  const isLarge = useMediaQuery(theme.breakpoints.up("md"));
   const invests = useRecoilValue(investsQuery);
   const setAlert = useSetRecoilState(alertState);
   const selectedInvestor = useRecoilValue(selectedInvestorState);
@@ -73,6 +72,7 @@ export default function Invests() {
       {
         field: "actions",
         flex: 1,
+        hide: userInfo?.id !== selectedInvestor,
         minWidth: 200,
         cellRenderer: ActionsRenderer,
         cellRendererParams: {
@@ -86,7 +86,7 @@ export default function Invests() {
         },
       },
     ],
-    []
+    [selectedInvestor, userInfo?.id]
   );
 
   const handleUpload = async (event) => {
@@ -124,15 +124,11 @@ export default function Invests() {
     );
   };
 
-  let containerStyle = {};
-
-  if (!isLarge) {
-    containerStyle = {
-      height: "calc(100vh - 64px)",
-      overflow: "auto",
-      flexBasis: "calc(100vh - 64px)",
-    };
-  }
+  let containerStyle = {
+    height: "calc(100vh - 64px)",
+    overflow: "auto",
+    flexBasis: "calc(100vh - 64px)",
+  };
 
   const onSelectionChanged = (selectedRows) => {
     const selectedIds = selectedRows.api.getSelectedRows().map((row) => row.id);
@@ -156,47 +152,53 @@ export default function Invests() {
   return (
     <Stack style={{ flex: 1, ...containerStyle }}>
       <Stack sx={{ alignSelf: "flex-start" }} direction={"row"} spacing={1}>
-        <Button
-          variant="contained"
-          onClick={() =>
-            setInvestModal((pre) => ({
-              ...pre,
-              open: true,
-              mode: "add",
-              data: {},
-              maxBatch: maxBatch,
-            }))
-          }
-        >
-          Add new
-        </Button>
-        <Button component="label" variant="contained">
-          Upload
-          <VisuallyHiddenInput onChange={handleUpload} type="file" />
-        </Button>
-        <Button variant="contained" onClick={handleDownload}>
-          Download
-        </Button>
-        {selectedRowIds.length > 0 && (
-          <Button
-            variant="contained"
-            color="error"
-            onClick={openDeletConfirmModal}
-          >
-            Delete
-          </Button>
+        {userInfo?.id === selectedInvestor && (
+          <>
+            <Button
+              variant="contained"
+              onClick={() =>
+                setInvestModal((pre) => ({
+                  ...pre,
+                  open: true,
+                  mode: "add",
+                  data: {},
+                  maxBatch: maxBatch,
+                }))
+              }
+            >
+              Add new
+            </Button>
+            <Button component="label" variant="contained">
+              Upload
+              <VisuallyHiddenInput onChange={handleUpload} type="file" />
+            </Button>
+            <Button variant="contained" onClick={handleDownload}>
+              Download
+            </Button>
+            {selectedRowIds.length > 0 && (
+              <Button
+                variant="contained"
+                color="error"
+                onClick={openDeletConfirmModal}
+              >
+                Delete
+              </Button>
+            )}
+            <ConfirmModal
+              open={confirmModal}
+              handleClose={() => setConfirmModal(false)}
+              handleSubmit={handleDeleteRows}
+              message="Are you sure you want to delete these items?"
+            />
+          </>
         )}
-        <ConfirmModal
-          open={confirmModal}
-          handleClose={() => setConfirmModal(false)}
-          handleSubmit={handleDeleteRows}
-          message="Are you sure you want to delete these items?"
-        />
       </Stack>
       <AggridWrapper
         rowData={invests}
         columnDefs={colDefs}
-        rowSelection={{ mode: "multiRow" }}
+        rowSelection={
+          userInfo?.id === selectedInvestor ? { mode: "multiRow" } : null
+        }
         onSelectionChanged={onSelectionChanged}
         getRowId={(params) => params.data.id}
       />

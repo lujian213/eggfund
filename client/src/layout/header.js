@@ -2,6 +2,7 @@ import { useRecoilState, useSetRecoilState } from "recoil";
 import { themeState, userInfoState } from "../store/atom";
 import { useState } from "react";
 import {
+  Avatar,
   Box,
   IconButton,
   Menu,
@@ -16,6 +17,36 @@ import PaletteIcon from "@mui/icons-material/Palette";
 import { Link } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 import axios from "axios";
+
+function stringToColor(string) {
+  let hash = 0;
+  let i;
+
+  /* eslint-disable no-bitwise */
+  for (i = 0; i < string.length; i += 1) {
+    hash = string.charCodeAt(i) + ((hash << 5) - hash);
+  }
+
+  let color = "#";
+
+  for (i = 0; i < 3; i += 1) {
+    const value = (hash >> (i * 8)) & 0xff;
+    color += `00${value.toString(16)}`.slice(-2);
+  }
+  /* eslint-enable no-bitwise */
+
+  return color;
+}
+
+function stringAvatar(name) {
+  return {
+    sx: {
+      bgcolor: stringToColor(name),
+      color: "white",
+    },
+    children: `${name.charAt(0)}${name.charAt(1)}`,
+  };
+}
 
 const BASE_URL = process.env.REACT_APP_BASE_URL;
 
@@ -49,15 +80,15 @@ export default function Header() {
     handleClose();
   };
 
-  const handleLogout = async() => {
+  const handleLogout = async () => {
     await axios.post(`${BASE_URL}/logout`);
     setUserInfo({
       id: null,
       name: null,
       password: null,
       roles: [],
-    })
-  }
+    });
+  };
 
   return (
     <Box
@@ -94,19 +125,7 @@ export default function Header() {
       >
         {userInfo?.name && (
           <>
-            <Typography
-              variant="h6"
-              gutterBottom
-              sx={{
-                marginBottom: 0,
-                textAlign: "center",
-                display: "flex",
-                alignItems: "center",
-                gap: "1rem",
-              }}
-            >
-              Welcom {userInfo?.name}
-            </Typography>
+            <Avatar {...stringAvatar(userInfo.name)} />
             <Typography
               variant="h6"
               gutterBottom

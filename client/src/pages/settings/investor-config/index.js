@@ -1,6 +1,10 @@
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { investorsQuery } from "../../../store/selector";
-import { alertState, refreshInvestorState } from "../../../store/atom";
+import {
+  alertState,
+  refreshInvestorState,
+  userInfoState,
+} from "../../../store/atom";
 import { useState } from "react";
 import { Box, Chip, Divider, IconButton, Stack } from "@mui/material";
 import axios from "axios";
@@ -29,6 +33,7 @@ const VisuallyHiddenInput = styled("input")({
 const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 export default function InvestorConfig() {
+  const userInfo = useRecoilValue(userInfoState);
   const investors = useRecoilValue(investorsQuery);
   const refetchInvestors = useSetRecoilState(refreshInvestorState);
   const setAlert = useSetRecoilState(alertState);
@@ -111,44 +116,53 @@ export default function InvestorConfig() {
             label={
               <Stack direction={"row"} spacing={0.5} alignItems={"center"}>
                 <Box>{investor.name}</Box>
-                <Divider
-                  sx={{ paddingLeft: "10px" }}
-                  orientation="vertical"
-                  flexItem
-                />
-                <IconButton size="small" onClick={() => handleEdit(investor)}>
-                  <EditIcon color="primary" />
-                </IconButton>
-                <IconButton
-                  size="small"
-                  onClick={() =>
-                    setConfirmModal({
-                      open: true,
-                      investor: investor,
-                    })
-                  }
-                >
-                  <DeleteIcon color="error" />
-                </IconButton>
-                <IconButton size="small" component="label">
-                  <UploadFileIcon color="primary" />
-                  <VisuallyHiddenInput
-                    onChange={(event) => handleUpload(event, investor)}
-                    type="file"
-                  />
-                </IconButton>
+                {userInfo?.id === investor.id && (
+                  <>
+                    <Divider
+                      sx={{ paddingLeft: "10px" }}
+                      orientation="vertical"
+                      flexItem
+                    />
+                    <IconButton
+                      size="small"
+                      onClick={() => handleEdit(investor)}
+                    >
+                      <EditIcon color="primary" />
+                    </IconButton>
+                    <IconButton
+                      size="small"
+                      onClick={() =>
+                        setConfirmModal({
+                          open: true,
+                          investor: investor,
+                        })
+                      }
+                    >
+                      <DeleteIcon color="error" />
+                    </IconButton>
+                    <IconButton size="small" component="label">
+                      <UploadFileIcon color="primary" />
+                      <VisuallyHiddenInput
+                        onChange={(event) => handleUpload(event, investor)}
+                        type="file"
+                      />
+                    </IconButton>
+                  </>
+                )}
               </Stack>
             }
             variant={"outlined"}
           />
         );
       })}
-      <Chip
-        icon={<AddIcon />}
-        label="Add New"
-        variant="outlined"
-        onClick={handleAdd}
-      />
+      {userInfo?.roles?.includes("admin") && (
+        <Chip
+          icon={<AddIcon />}
+          label="Add New"
+          variant="outlined"
+          onClick={handleAdd}
+        />
+      )}
       <InvestorModal
         open={investorModal.open}
         data={investorModal.data}
