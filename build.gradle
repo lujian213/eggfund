@@ -27,8 +27,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-graphql'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.session:spring-session-core'
-
     implementation libs.jackson.dataformat.csv
 
     testImplementation platform(libs.groovy.bom)
