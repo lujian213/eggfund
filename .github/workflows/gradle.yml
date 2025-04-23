@@ -169,7 +169,7 @@ jobs:
           host: ${{ secrets.DEPLOY_HOSTNAME }}
           username: ${{ secrets.DEPLOY_USERNAME }}
           password: ${{ secrets.DEPLOY_PASSWORD }}
-          source: "dist/client/client.zip,dist/nginx/config.nginx"
+          source: "${{ github.workspace }}/dist/client/client.zip"
           overwrite: true
           strip_components: 4
           target: /eggfund_deploy_other
