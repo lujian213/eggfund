@@ -1,5 +1,8 @@
 package io.github.lujian213.eggfund.config;
 
+import io.github.lujian213.eggfund.filter.JWTTokenGeneratorFilter;
+import io.github.lujian213.eggfund.filter.JWTTokenValidatorFilter;
+import io.github.lujian213.eggfund.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -18,6 +21,7 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -41,8 +45,6 @@ public class SecurityConfig {
                 .formLogin(FormLoginConfigurer::disable)
                 .logout(logout -> logout
                         .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler())
-                        .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID")
                 )
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .httpBasic(httpBasic -> httpBasic
@@ -50,8 +52,10 @@ public class SecurityConfig {
                                 // 返回401且不添加WWW-Authenticate头, 解决 Swagger 在认证失败后持续弹出输入框
                                 response.sendError(HttpStatus.UNAUTHORIZED.value(), "Unauthorized")
                 ))
+                .addFilterBefore(new JWTTokenValidatorFilter(), BasicAuthenticationFilter.class)
+                .addFilterAfter(new JWTTokenGeneratorFilter(), BasicAuthenticationFilter.class)
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.ALWAYS) // 强制创建 Session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 强制创建 Session
                 );
         log.info("Spring Security Enabled.");
         return http.build();
@@ -64,7 +68,7 @@ public class SecurityConfig {
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
         config.setAllowedHeaders(List.of("Content-Type", "Authorization"));
         config.setAllowCredentials(true); // 允许携带凭证（如Cookie）
-
+        config.addExposedHeader(Constants.JWT_HEADER);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;

@@ -24,4 +24,7 @@ public final class Constants {
     public static final DateTimeFormatter MINUTE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZONE_ID);
     public static final List<String> DEFAULT_ROLE_USER = List.of("user");
     public static final List<String> DEFAULT_ROLE_ADMIN = List.of("admin");
+    public static final String JWT_SECRET_KEY = "JWT_SECRET";
+    public static final String JWT_SECRET_DEFAULT_VALUE = "jxgEQeXHuPq8VdbyYFNkANdudQ53YUn4";
+    public static final String JWT_HEADER = "Authorization";
 }

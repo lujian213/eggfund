@@ -60,12 +60,26 @@ jobs:
       uses: cicirello/jacoco-badge-generator@v2
       with:
         jacoco-csv-file: build/reports/jacoco/test/jacocoTestReport.csv
+
     - name: Temporarily save output jar
       uses: actions/upload-artifact@v4
       with:
         name: eggfund-jar
         path: dist/lib/eggfund-1.0.0.jar
         compression-level: 9
+    - name: Temporarily save client zip
+      uses: actions/upload-artifact@v4
+      with:
+       name: client-zip
+       path: dist/client/client.zip
+       compression-level: 9
+    - name: Temporarily save nginx config
+      uses: actions/upload-artifact@v4
+      with:
+        name: nginx-config
+        path: dist/nginx/config.nginx
+        compression-level: 9
+
     - name: Setup Pages
       uses: actions/configure-pages@v5
     - name: Build with Jekyll
@@ -108,7 +122,20 @@ jobs:
         with:
           name: eggfund-jar
           path: dist/lib
-      - run: ls -l dist/lib
+      - name: Retrieve saved client zip
+        uses: actions/download-artifact@v4
+        with:
+          name: client-zip
+          path: dist/client
+      - name: Retrieve saved nginx config
+        uses: actions/download-artifact@v4
+        with:
+          name: nginx-config
+          path: dist/nginx
+      - run: |
+          ls -l dist/lib
+          ls -l dist/client
+          ls -l dist/nginx
       - name: Login to dockerhub
         uses: docker/login-action@v3
         with:
@@ -136,17 +163,36 @@ jobs:
           push: true
           tags: ghcr.io/${{ github.repository_owner }}/eggfund:latest
 
-      - name: copy file via ssh password
+      - name: copy client.zip via ssh password
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.DEPLOY_HOSTNAME }}
           username: ${{ secrets.DEPLOY_USERNAME }}
           password: ${{ secrets.DEPLOY_PASSWORD }}
-          source: ${{ github.workspace }}/dist/lib/eggfund-1.0.0.jar
+          source: "${{ github.workspace }}/dist/client/client.zip"
           overwrite: true
           strip_components: 4
           target: /eggfund_deploy
-
+      - name: copy config.nginx via ssh password
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.DEPLOY_HOSTNAME }}
+          username: ${{ secrets.DEPLOY_USERNAME }}
+          password: ${{ secrets.DEPLOY_PASSWORD }}
+          source: "${{ github.workspace }}/dist/nginx/config.nginx"
+          overwrite: true
+          strip_components: 4
+          target: /eggfund_deploy
+      - name: copy eggfund jar via ssh password
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.DEPLOY_HOSTNAME }}
+          username: ${{ secrets.DEPLOY_USERNAME }}
+          password: ${{ secrets.DEPLOY_PASSWORD }}
+          source: "${{ github.workspace }}/dist/lib/eggfund-1.0.0.jar"
+          overwrite: true
+          strip_components: 4
+          target: /eggfund_deploy
   dependency-submission:
     runs-on: ubuntu-latest
     permissions:
