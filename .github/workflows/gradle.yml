@@ -132,7 +132,7 @@ jobs:
         with:
           name: nginx-config
           path: dist/nginx
-      - run: ls -l dist/lib
+      - run: ls -l dist
       - name: Login to dockerhub
         uses: docker/login-action@v3
         with:
