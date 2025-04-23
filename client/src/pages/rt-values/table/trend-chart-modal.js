@@ -3,6 +3,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import HighchartsReact from 'highcharts-react-official';
 import Highcharts from 'highcharts';
+import { BASE_URL } from "../../../utils/get-baseurl";
 
 const style = {
   position: "absolute",
@@ -14,8 +15,6 @@ const style = {
   background: (theme) => theme.palette.background.sidebar,
   p: 4,
 };
-
-const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 export default function TrendChartModal(props) {
   const { open, data, handleClose } = props;

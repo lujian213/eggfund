@@ -2,8 +2,7 @@ import { useRecoilState } from "recoil";
 import { userInfoState } from "../store/atom";
 import { useEffect, useState } from "react";
 import axios from "axios";
-
-const BASE_URL = process.env.REACT_APP_BASE_URL;
+import { BASE_URL } from "../utils/get-baseurl";
 
 export default function useAuth() {
   const [userInfo, setUserInfo] = useRecoilState(userInfoState);
@@ -14,6 +13,13 @@ export default function useAuth() {
       let response;
       try {
         const instance = axios.create();
+        const token = localStorage.getItem("EGG-Authorization");
+        if (token) {
+          instance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+        } else {
+          console.error("No token found");
+          return;
+        }
         response = await instance.get(`${BASE_URL}/loginUser`);
       } catch (error) {
         console.error("Error fetching user data:", error);

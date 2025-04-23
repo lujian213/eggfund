@@ -9,6 +9,11 @@ export default function useInterceptor() {
 
     useEffect(()=> {
         const onRequest = (config) => {
+            // Add the Authorization header to the request
+            const authHeader = localStorage.getItem('EGG-Authorization');
+            if (authHeader) {
+                config.headers['Authorization'] = authHeader;
+            }
             return config;
         }
         const onRequestError = (error) => {

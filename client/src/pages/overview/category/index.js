@@ -13,8 +13,7 @@ import { Chip, Divider, IconButton, Tooltip } from "@mui/material";
 import SummarizeIcon from "@mui/icons-material/Summarize";
 import CustomAvatar from "../../../utils/get-icons";
 import axios from "axios";
-
-const BASE_URL = process.env.REACT_APP_BASE_URL;
+import { BASE_URL } from "../../../utils/get-baseurl";
 
 export default function CategoryList({ setTotalSummaryDrawer }) {
   const userInfo = useRecoilValue(userInfoState);

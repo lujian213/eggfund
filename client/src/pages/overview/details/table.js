@@ -19,8 +19,7 @@ import {
 import axios from "axios";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-
-const BASE_URL = process.env.REACT_APP_BASE_URL;
+import { BASE_URL } from "../../../utils/get-baseurl";
 
 export default function DetailsTable({ handleModalOpen, type="items" }) {
   const muiTheme = useTheme();

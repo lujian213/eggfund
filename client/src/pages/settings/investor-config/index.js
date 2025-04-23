@@ -17,6 +17,7 @@ import InvestorModal from "./investor-mdoal";
 import CustomAvatar from "../../../utils/get-icons";
 import styled from "@emotion/styled";
 import { refreshInvestsState } from "../invests-config/store/atom";
+import { BASE_URL } from "../../../utils/get-baseurl";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -29,8 +30,6 @@ const VisuallyHiddenInput = styled("input")({
   whiteSpace: "nowrap",
   width: 1,
 });
-
-const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 export default function InvestorConfig() {
   const userInfo = useRecoilValue(userInfoState);

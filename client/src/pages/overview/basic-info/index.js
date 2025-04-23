@@ -26,8 +26,7 @@ import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import LoopIcon from "@mui/icons-material/Loop";
 import CustomAvatar from "../../../utils/get-icons";
-
-const BASE_URL = process.env.REACT_APP_BASE_URL;
+import { BASE_URL } from "../../../utils/get-baseurl";
 
 export default function BasicInfo() {
   const investors = useRecoilValue(investorsForFundQuery);

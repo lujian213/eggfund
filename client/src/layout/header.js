@@ -17,6 +17,7 @@ import PaletteIcon from "@mui/icons-material/Palette";
 import { Link } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 import axios from "axios";
+import { BASE_URL } from "../utils/get-baseurl";
 
 function stringToColor(string) {
   let hash = 0;
@@ -47,8 +48,6 @@ function stringAvatar(name) {
     children: `${name.charAt(0)}${name.charAt(1)}`,
   };
 }
-
-const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 export default function Header() {
   const theme = useTheme();
@@ -82,6 +81,9 @@ export default function Header() {
 
   const handleLogout = async () => {
     await axios.post(`${BASE_URL}/logout`);
+    // remove authHeader from localStorage
+    localStorage.removeItem("EGG-Authorization");
+    // remove user from recoil state
     setUserInfo({
       id: null,
       name: null,

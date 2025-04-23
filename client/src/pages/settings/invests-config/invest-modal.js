@@ -21,6 +21,7 @@ import {
 import moment from "moment";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
+import { BASE_URL } from "../../../utils/get-baseurl";
 
 const style = {
   position: "absolute",
@@ -32,8 +33,6 @@ const style = {
   background: (theme) => theme.palette.background.sidebar,
   p: 4,
 };
-
-const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 export default function InvestModal(props) {
   const { open, handleSubmit, handleClose, data, mode, maxBatch } = props;

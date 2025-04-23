@@ -1,8 +1,7 @@
 import { selector } from "recoil";
 import { refreshInvestsState, searchFormState, selectedFundState, selectedInvestorState } from "./atom";
 import axios from "axios";
-
-const BASE_URL = process.env.REACT_APP_BASE_URL;
+import { BASE_URL } from "../../../../utils/get-baseurl";
 
 export const investorsForFundQuery = selector({
     key: 'settingsinvestorsForFundQuery',

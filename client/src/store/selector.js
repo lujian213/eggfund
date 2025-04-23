@@ -10,8 +10,7 @@ import {
   selectedFundState,
   selectedInvestorState,
 } from "./atom";
-
-const BASE_URL = process.env.REACT_APP_BASE_URL;
+import { BASE_URL } from "../utils/get-baseurl";
 
 export const fundsQuery = selector({
   key: "fundsQuery",

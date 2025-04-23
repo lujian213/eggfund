@@ -15,6 +15,7 @@ import AggridWrapper from "../../../components/aggrid-wrapper";
 import InvestModal from "./invest-modal";
 import ConfirmModal from "../../../components/confirm-modal";
 import styled from "@emotion/styled";
+import { BASE_URL } from "../../../utils/get-baseurl";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -27,8 +28,6 @@ const VisuallyHiddenInput = styled("input")({
   whiteSpace: "nowrap",
   width: 1,
 });
-
-const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 export default function Invests() {
   const userInfo = useRecoilValue(userInfoState);

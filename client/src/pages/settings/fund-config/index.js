@@ -18,8 +18,7 @@ import StoreIcon from "@mui/icons-material/Store";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ConfirmModal from "../../../components/confirm-modal";
 import FundModal from "./fund-modal";
-
-const BASE_URL = process.env.REACT_APP_BASE_URL;
+import { BASE_URL } from "../../../utils/get-baseurl";
 
 export default function FundConfig() {
   const userInfo = useRecoilValue(userInfoState);

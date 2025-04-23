@@ -14,10 +14,9 @@ import { fundsQuery } from "../../../store/selector";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import moment from "moment";
+import { BASE_URL } from "../../../utils/get-baseurl";
 
 const drawerWidth = "min(800px, 90%)";
-
-const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
