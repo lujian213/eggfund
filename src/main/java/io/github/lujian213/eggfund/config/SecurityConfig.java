@@ -2,6 +2,7 @@ package io.github.lujian213.eggfund.config;
 
 import io.github.lujian213.eggfund.filter.JWTTokenGeneratorFilter;
 import io.github.lujian213.eggfund.filter.JWTTokenValidatorFilter;
+import io.github.lujian213.eggfund.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -67,7 +68,7 @@ public class SecurityConfig {
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
         config.setAllowedHeaders(List.of("Content-Type", "Authorization"));
         config.setAllowCredentials(true); // 允许携带凭证（如Cookie）
-
+        config.addExposedHeader(Constants.JWT_HEADER);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
