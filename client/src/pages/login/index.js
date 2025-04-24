@@ -20,7 +20,7 @@ export default function Login() {
     });
     const user = response.data;
     //get response header Authorization
-    const authHeader = response.headers["Authorization"];
+    const authHeader = response.headers["authorization"];
     //set authHeader to localStorage
     localStorage.setItem("EGG-Authorization", authHeader);
     //set user to recoil state
