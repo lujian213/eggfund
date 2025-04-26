@@ -11,10 +11,15 @@ package io.github.lujian213.eggfund.filter;
     import org.slf4j.Logger;
     import org.slf4j.LoggerFactory;
     import org.springframework.core.env.Environment;
+    import org.springframework.http.HttpStatus;
     import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
     import org.springframework.security.core.Authentication;
     import org.springframework.security.core.authority.AuthorityUtils;
+    import org.springframework.security.core.context.SecurityContext;
     import org.springframework.security.core.context.SecurityContextHolder;
+    import org.springframework.security.core.context.SecurityContextHolderStrategy;
+    import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
+    import org.springframework.security.web.context.SecurityContextRepository;
     import org.springframework.web.filter.OncePerRequestFilter;
 
     import javax.crypto.SecretKey;
@@ -24,6 +29,8 @@ package io.github.lujian213.eggfund.filter;
     public class JWTTokenValidatorFilter extends OncePerRequestFilter {
 
         private static final Logger log = LoggerFactory.getLogger(JWTTokenValidatorFilter.class);
+        private final SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy();
+        private final SecurityContextRepository securityContextRepository = new RequestAttributeSecurityContextRepository();
 
         @Override
         protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -33,11 +40,13 @@ package io.github.lujian213.eggfund.filter;
                 try {
                     log.debug("Validating JWT: {}", jwt);
                     Authentication authentication = validateToken(jwt);
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                    SecurityContext context = this.securityContextHolderStrategy.createEmptyContext();
+                    context.setAuthentication(authentication);
+                    this.securityContextRepository.saveContext(context, request, response);
                     log.info("JWT validation successful for user: {}", authentication.getName());
                 } catch (Exception exception) {
                     log.error("Invalid JWT: {}", exception.getMessage());
-                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT");
+                    response.sendError(HttpStatus.UNAUTHORIZED.value(), "Unauthorized");
                     return;
                 }
             }
