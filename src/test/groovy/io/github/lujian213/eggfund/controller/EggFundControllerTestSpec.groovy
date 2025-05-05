@@ -1,5 +1,6 @@
 package io.github.lujian213.eggfund.controller
 
+
 import io.github.lujian213.eggfund.model.*
 import org.spockframework.spring.SpringBean
 import org.springframework.beans.factory.annotation.Autowired
@@ -37,6 +38,23 @@ class EggFundControllerTestSpec extends Specification {
                 .path("getAllFunds[0].alias")
                 .entity(String.class)
                 .isEqualTo("dummy")
+    }
+
+    def "testGetAllFundTypes"() {
+        given:
+        def fundTypes = Arrays.stream(FundInfo.FundType.values()).map(Object::toString).toArray() as String[]
+        eggFundService.getAllFundTypes() >> FundInfo.FundType.values()
+
+        expect:
+        graphQlTester.document("""
+            query MyQuery {
+                getAllFundTypes
+            }
+        """)
+                .execute()
+                .path("getAllFundTypes")
+                .entityList(String.class)
+                .contains(fundTypes)
     }
 
     def "testGetAllUserInvestedFunds"() {
@@ -216,11 +234,11 @@ class EggFundControllerTestSpec extends Specification {
     def 'testAddNewInvest'() {
         when:
         def investList = [new Invest(day: "2020-01-01", code: "10000", userIndex: 1, id: "invest1")]
-        eggFundService.addNewInvest("user1", "10000", investList) >> investList
+        eggFundService.addNewInvest("user1", "10000", investList, false) >> investList
         then:
         graphQlTester.document("""
                         mutation MyMutation {
-                            addNewInvest(id: "user1", code: "10000", invests: [{day: "2020-01-01", code: "10000", id: "invest1", share: 1}]) {
+                            addNewInvest(id: "user1", code: "10000", invests: [{day: "2020-01-01", code: "10000", id: "invest1", share: 1}], overwrite: false) {
                                 id
                                 day
                             }
@@ -228,6 +246,25 @@ class EggFundControllerTestSpec extends Specification {
                         """)
                 .execute()
                 .path("addNewInvest[0].id")
+                .entity(String.class)
+                .isEqualTo("invest1")
+    }
+
+    def 'testAddNewInvests'() {
+        when:
+        def investList = [new Invest(day: "2020-01-01", code: "10000", userIndex: 1, id: "invest1")]
+        eggFundService.addNewInvests("user1", investList, false) >> investList
+        then:
+        graphQlTester.document("""
+                        mutation MyMutation {
+                            addNewInvests(id: "user1", invests: [{day: "2020-01-01", code: "10000", id: "invest1", share: 1}], overwrite: false) {
+                                id
+                                day
+                            }
+                        }
+                        """)
+                .execute()
+                .path("addNewInvests[0].id")
                 .entity(String.class)
                 .isEqualTo("invest1")
     }

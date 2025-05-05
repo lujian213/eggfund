@@ -54,6 +54,7 @@ type Invest {
     unitPrice: Float!
     fee: Float!
     tax: Float!
+    fxRate: Float!
     userIndex: Int!
     enabled: Boolean!
     batch: Int!
@@ -70,6 +71,7 @@ input InvestInput {
     unitPrice: Float = -1
     fee: Float = 0
     tax: Float = 0
+    fxRate: Float = 1.0
     enabled: Boolean = true
     batch: Int = 0
     comments: String
@@ -83,6 +85,7 @@ type InvestSummaryItem {
     increaseRate: Float!
     fee: Float!
     tax: Float!
+    fxRate: Float!
     investAmt: Float!
     var: Float!
     earning: Float!
@@ -148,6 +151,7 @@ type InvestorSummary {
 # The Root Query for the application
 type Query {
     getAllFunds: [FundInfo]
+    getAllFundTypes: [String]
     getAllUserInvestedFunds(id: String!): [FundInfo]
     getAllInvestors: [Investor]
     getInvestorsByFund(code: String!): [Investor]
@@ -164,7 +168,8 @@ type Query {
 type Mutation {
     addNewFund(fundInfo: FundInfoInput!): FundInfo!
     addNewInvestor(id: String!, name: String!, icon: String): Investor!
-    addNewInvest(id: String!, code: String!, invests: [InvestInput]!): [Invest]!
+    addNewInvest(id: String!, code: String!, invests: [InvestInput]!, overwrite: Boolean): [Invest]!
+    addNewInvests(id: String!, invests: [InvestInput]!, overwrite: Boolean): [Invest]!
     updateFund(fundInfo: FundInfoInput!): FundInfo!
     updateFundValues(code: String!, from: String!, to: String!): Boolean!
     updateInvestor(id: String!, name: String!, icon: String, password: String): Investor!

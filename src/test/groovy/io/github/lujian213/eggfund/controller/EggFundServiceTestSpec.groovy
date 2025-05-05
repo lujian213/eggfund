@@ -43,6 +43,15 @@ class EggFundServiceTestSpec extends Specification {
                 .andExpect(content().json(Constants.MAPPER.writeValueAsString(fundList)))
     }
 
+    def "getAllFundTypes"() {
+        when:
+        def fundTypeList = FundInfo.FundType.values()
+        then:
+        mockMvc.perform(get("/fundtypes"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(Constants.MAPPER.writeValueAsString(fundTypeList)))
+    }
+
     def "testGetAllUserInvestedFunds"() {
         when:
         def fundList = [new FundInfo("1", "test")]
@@ -169,6 +178,18 @@ class EggFundServiceTestSpec extends Specification {
         investService.addInvests("user1", fundInfo, investList, false) >> investList
         then:
         mockMvc.perform(put("/invest/user1/10000").contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(Constants.MAPPER.writeValueAsString(investList)))
+                .andExpect(status().isOk())
+                .andExpect(content().json(Constants.MAPPER.writeValueAsString(investList)))
+    }
+
+    @WithMockUser(username = "user1")
+    def "testAddNewInvests"() {
+        when:
+        def investList = [new Invest(day: "2020-01-01", code: "10000", userIndex: 1, id: "invest1")]
+        investService.addInvests("user1", investList, true) >> investList
+        then:
+        mockMvc.perform(put("/invest/user1").contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(Constants.MAPPER.writeValueAsString(investList)))
                 .andExpect(status().isOk())
                 .andExpect(content().json(Constants.MAPPER.writeValueAsString(investList)))
@@ -309,7 +330,6 @@ class EggFundServiceTestSpec extends Specification {
         def fundInfo = new FundInfo("10000", "test")
         def investList = [new Invest(day: "2020-01-01", code: "10000", userIndex: 1, id: "invest1")]
         fundDataService.checkFund("10000") >> fundInfo
-        investService.addInvests("user1", fundInfo, investList, true) >> investList
         def file = new MockMultipartFile(
                 "file",
                 "invests.json",
@@ -327,7 +347,6 @@ class EggFundServiceTestSpec extends Specification {
     def "testUploadInvests with multiple funds"() {
         when:
         def investList = [new Invest(day: "2020-01-01", code: "10000", userIndex: 1, id: "invest1")]
-        investService.addInvests("user1", investList, true) >> investList
         def file = new MockMultipartFile(
                 "file",
                 "invests.json",

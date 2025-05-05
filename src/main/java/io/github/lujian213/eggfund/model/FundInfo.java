@@ -3,6 +3,11 @@ package io.github.lujian213.eggfund.model;
 import java.util.Objects;
 
 public class FundInfo {
+    public enum FundType {
+        HK_STOCK,
+        LOCAL_FUND
+    }
+    private FundType type = FundType.LOCAL_FUND;
     private String id;
     private String name;
     private boolean etf = false;
@@ -15,8 +20,13 @@ public class FundInfo {
     }
 
     public FundInfo(String id, String name) {
+        this(id, name, FundType.LOCAL_FUND);
+    }
+
+    public FundInfo(String id, String name, FundType type) {
         this.id = id;
         this.name = name;
+        this.type = type;
     }
 
     public String getId() {
@@ -79,6 +89,14 @@ public class FundInfo {
 
     public FundInfo setAlias(String alias) {
         this.alias = alias;
+        return this;
+    }
+
+    public FundType getType() {
+        return type;
+    }
+    public FundInfo setType(FundType type) {
+        this.type = type;
         return this;
     }
 

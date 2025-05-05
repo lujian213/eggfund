@@ -72,6 +72,12 @@ public class EggFundService {
         return runWithExceptionHandling("get all funds error", () -> fundDataService.getAllFunds());
     }
 
+    @Operation(summary = "get all fund types")
+    @GetMapping(value = "/fundtypes", produces = MediaType.APPLICATION_JSON_VALUE)
+    public FundInfo.FundType[] getAllFundTypes() {
+        return runWithExceptionHandling("get all fund types error", FundInfo.FundType::values);
+    }
+
     @Operation(summary = "get all user invested funds")
     @GetMapping(value = "/funds/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<FundInfo> getAllUserInvestedFunds(@PathVariable String id) {
@@ -153,11 +159,18 @@ public class EggFundService {
     @Operation(summary = "add new invests")
     @PutMapping(value = "/invest/{id}/{code}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("#id == authentication.name")
-    public List<Invest> addNewInvest(@PathVariable String id, @PathVariable String code, @RequestBody List<Invest> invests) {
+    public List<Invest> addNewInvest(@PathVariable String id, @PathVariable String code, @RequestBody List<Invest> invests, @RequestParam(required = false, defaultValue = "false")boolean overwrite) {
         return runWithExceptionHandling("add new invest error: " + id, () -> {
             FundInfo fund = fundDataService.checkFund(code);
-            return investService.addInvests(id, fund, invests, false);
+            return investService.addInvests(id, fund, invests, overwrite);
         });
+    }
+
+    @Operation(summary = "add new invests")
+    @PutMapping(value = "/invest/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("#id == authentication.name")
+    public List<Invest> addNewInvests(@PathVariable String id, @RequestBody List<Invest> invests, @RequestParam(required = false, defaultValue = "true")boolean overwrite) {
+        return runWithExceptionHandling("add new invest error: " + id, () -> investService.addInvests(id, invests, overwrite));
     }
 
     @Operation(summary = "update fund")
@@ -269,10 +282,9 @@ public class EggFundService {
     @PreAuthorize("#id == authentication.name")
     public List<Invest> uploadInvests(@PathVariable String id, @PathVariable String code, @RequestParam MultipartFile file) {
         return runWithExceptionHandling("upload invests error: " + id + ", " + code, () -> {
-            FundInfo fund = fundDataService.checkFund(code);
+            fundDataService.checkFund(code);
             try (InputStream is = file.getInputStream()) {
-                List<Invest> invests = new DataFileParser().parseInvestFile(is, Objects.requireNonNull(file.getOriginalFilename()));
-                return investService.addInvests(id, fund, invests, true);
+                return new DataFileParser().parseInvestFile(is, Objects.requireNonNull(file.getOriginalFilename()));
             }
         });
     }
@@ -283,8 +295,7 @@ public class EggFundService {
     public List<Invest> uploadInvests(@PathVariable String id, @RequestParam MultipartFile file) {
         return runWithExceptionHandling("upload invests error: " + id, () -> {
             try (InputStream is = file.getInputStream()) {
-                List<Invest> invests = new DataFileParser().parseInvestFile(is, Objects.requireNonNull(file.getOriginalFilename()));
-                return investService.addInvests(id, invests, true);
+                return new DataFileParser().parseInvestFile(is, Objects.requireNonNull(file.getOriginalFilename()));
             }
         });
     }

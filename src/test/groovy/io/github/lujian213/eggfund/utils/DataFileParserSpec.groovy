@@ -35,6 +35,20 @@ class DataFileParserSpec extends Specification {
         }
     }
 
+    def "ParseInvestFile with trades.csv"() {
+        given:
+        def dataFileParser = new DataFileParser()
+
+        when:
+        List<Invest> result
+        new FileInputStream("test/trades.csv").withCloseable {
+            result = dataFileParser.parseInvestFile(it, "trades.csv")
+        }
+
+        then:
+        result.size() == 129
+    }
+
     def "ParseInvestFile with json"() {
         given:
         def dataFileParser = new DataFileParser()
