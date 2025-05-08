@@ -48,6 +48,7 @@ export default function InvestModal(props) {
     unitPrice: "",
     fee: 0,
     tax: 0,
+    fxRate: 1,
     batch: maxBatch,
     comments: "",
   });
@@ -116,6 +117,7 @@ export default function InvestModal(props) {
       share: "",
       unitPrice: "",
       fee: 0,
+      fxRate: 1,
       tax: 0,
       batch: maxBatch,
       comments: "",
@@ -249,6 +251,15 @@ export default function InvestModal(props) {
             variant="outlined"
             name="tax"
             value={form?.tax || ""}
+            InputLabelProps={{ shrink: true }}
+            onChange={handleChange}
+          />
+          <TextField
+            size="small"
+            label="Fx Rate"
+            variant="outlined"
+            name="fxRate"
+            value={form?.fxRate || ""}
             InputLabelProps={{ shrink: true }}
             onChange={handleChange}
           />

@@ -62,6 +62,11 @@ export default function Invests() {
       { field: "fee", flex: 1 },
       { field: "tax", flex: 1 },
       {
+        field: "fxRate",
+        flex: 1,
+        valueGetter: (p) => formatNumber(p.data.fxRate),
+      },
+      {
         field: "amount",
         headerName: "Effective Amt",
         flex: 1,

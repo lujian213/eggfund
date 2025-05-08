@@ -155,6 +155,11 @@ export default function DetailsTable({ handleModalOpen, type="items" }) {
       valueGetter: (p) => formatNumber(p.data.tax),
     },
     {
+      field: "fxRate",
+      flex: 1,
+      valueGetter: (p) => formatNumber(p.data.fxRate),
+    },
+    {
       field: "batch",
       flex: 1,
       valueGetter: (p) => (p.data.quota !== 0 ? p.data.batch : "-"),

@@ -40,6 +40,19 @@ export const investorsQuery = selector({
   },
 });
 
+export const fundTypesState = selector({
+  key: "fundTypesState",
+  get: async ({ get }) => {
+    try {
+      const response = await axios.get(`${BASE_URL}/fundtypes`);
+      const result = response.data || [];
+      return result;
+    } catch (e) {
+      return [];
+    }
+  },
+});
+
 export const investorsForFundQuery = selector({
   key: "investorsForFundQuery",
   get: async ({ get }) => {

@@ -15,7 +15,7 @@ export default function useAuth() {
         const instance = axios.create();
         const token = localStorage.getItem("EGG-Authorization");
         if (token) {
-          instance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+          instance.defaults.headers.common["authorization"] = `${token}`;
         } else {
           console.error("No token found");
           return;

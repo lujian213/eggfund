@@ -2,7 +2,7 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import { Stack } from "@mui/system";
-import { useSetRecoilState } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { refreshFundState } from "../../../store/atom";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -14,13 +14,14 @@ import {
   TextField,
 } from "@mui/material";
 import { BASE_URL } from "../../../utils/get-baseurl";
+import { fundTypesState } from "../../../store/selector";
 
 const style = {
   position: "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 'min(800px, 90%)',
+  width: "min(800px, 90%)",
   boxshadow: 24,
   background: (theme) => theme.palette.background.sidebar,
   p: 4,
@@ -29,6 +30,7 @@ const style = {
 export default function FundModal(props) {
   const { open, handleSubmit, handleClose, data, mode } = props;
   const refetchFunds = useSetRecoilState(refreshFundState);
+  const fundTypes = useRecoilValue(fundTypesState);
   const [form, setForm] = useState({});
 
   useEffect(() => {
@@ -90,6 +92,26 @@ export default function FundModal(props) {
             InputLabelProps={{ shrink: true }}
             onChange={handleChange}
           />
+          <FormControl fullWidth size="small">
+            <InputLabel id={"type-select-label"} shrink>
+              Fund Type
+            </InputLabel>
+            <Select
+              notched
+              labelId="type-select-label"
+              id="type-select"
+              value={String(form?.type)}
+              label="type"
+              name="type"
+              onChange={handleChange}
+            >
+              {fundTypes?.map((item) => (
+                <MenuItem key={item} value={item}>
+                  {item}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           <TextField
             size="small"
             label="Alias"

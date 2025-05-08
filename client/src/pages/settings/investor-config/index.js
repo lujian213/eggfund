@@ -1,10 +1,6 @@
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import { investorsQuery } from "../../../store/selector";
-import {
-  alertState,
-  refreshInvestorState,
-  userInfoState,
-} from "../../../store/atom";
+import { fundsQuery, investorsQuery } from "../../../store/selector";
+import { refreshInvestorState, userInfoState } from "../../../store/atom";
 import { useState } from "react";
 import { Box, Chip, Divider, IconButton, Stack } from "@mui/material";
 import axios from "axios";
@@ -16,8 +12,8 @@ import ConfirmModal from "../../../components/confirm-modal";
 import InvestorModal from "./investor-mdoal";
 import CustomAvatar from "../../../utils/get-icons";
 import styled from "@emotion/styled";
-import { refreshInvestsState } from "../invests-config/store/atom";
 import { BASE_URL } from "../../../utils/get-baseurl";
+import UploadPreviewModal from "./upload-preview-modal";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -34,9 +30,8 @@ const VisuallyHiddenInput = styled("input")({
 export default function InvestorConfig() {
   const userInfo = useRecoilValue(userInfoState);
   const investors = useRecoilValue(investorsQuery);
+  const funds = useRecoilValue(fundsQuery);
   const refetchInvestors = useSetRecoilState(refreshInvestorState);
-  const setAlert = useSetRecoilState(alertState);
-  const refetchInvests = useSetRecoilState(refreshInvestsState);
   const [investorModal, setInvestorModal] = useState({
     open: false,
     data: null,
@@ -45,6 +40,10 @@ export default function InvestorConfig() {
   const [confirmModal, setConfirmModal] = useState({
     open: false,
     investor: null,
+  });
+  const [uploadPreviewModal, setUploadPreviewModal] = useState({
+    open: false,
+    data: null,
   });
 
   const handleAdd = () => {
@@ -73,17 +72,31 @@ export default function InvestorConfig() {
     let file = event.target.files[0];
     const formData = new FormData();
     formData.append("file", file);
-    await axios.post(`${BASE_URL}/uploadinvests/${investor.id}`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
+    const response = await axios.post(
+      `${BASE_URL}/uploadinvests/${investor.id}`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    const result = response.data;
+    const mappedResult = result.map((item) => {
+      const fund = funds.find((f) => f.id === item.code);
+      if (fund) {
+        item.name = fund.alias || fund.name;
+      }
+      return item;
+    });
+    setUploadPreviewModal({
+      open: true,
+      data: {
+        investor,
+        invests: mappedResult,
       },
     });
-    setAlert({
-      open: true,
-      message: "Invests Uploaded successfully",
-      type: "success",
-    });
-    refetchInvests((pre) => pre + 1);
+    event.target.value = null; // Reset the input value
   };
 
   return (
@@ -179,6 +192,16 @@ export default function InvestorConfig() {
         }
         handleSubmit={() => handleDelete(confirmModal.investor)}
         message="Are you sure you want to delete this item?"
+      />
+      <UploadPreviewModal
+        open={uploadPreviewModal.open}
+        data={uploadPreviewModal.data}
+        handleClose={() =>
+          setUploadPreviewModal({
+            open: false,
+            data: null,
+          })
+        }
       />
     </Stack>
   );
