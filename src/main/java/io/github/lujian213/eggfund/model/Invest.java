@@ -13,6 +13,7 @@ public class Invest extends LocalDateRelated<Invest> {
     private double unitPrice;
     private double fee;
     private double tax;
+    private double fxRate = 1.0;
     private int userIndex = 0;
     private boolean enabled = true;
     private int batch = 0;
@@ -30,6 +31,7 @@ public class Invest extends LocalDateRelated<Invest> {
         this.unitPrice = invest.unitPrice;
         this.fee = invest.fee;
         this.tax = invest.tax;
+        this.fxRate = invest.fxRate;
         this.userIndex = invest.userIndex;
         this.enabled = invest.enabled;
         this.batch = invest.batch;
@@ -88,6 +90,15 @@ public class Invest extends LocalDateRelated<Invest> {
 
     public Invest setTax(double tax) {
         this.tax = tax;
+        return this;
+    }
+
+    public double getFxRate() {
+        return fxRate;
+    }
+
+    public Invest setFxRate(double fxRate) {
+        this.fxRate = fxRate;
         return this;
     }
 

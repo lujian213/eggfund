@@ -27,14 +27,16 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-graphql'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
-    implementation 'io.jsonwebtoken:jjwt-impl:0.12.6'
-    implementation 'io.jsonwebtoken:jjwt-jackson:0.12.6'
+    implementation libs.jjwt.api
+    implementation libs.jjwt.impl
+    implementation libs.jjwt.jackson
+    implementation libs.json.path
 
     implementation libs.jackson.dataformat.csv
 
     testImplementation platform(libs.groovy.bom)
     testImplementation 'org.apache.groovy:groovy'
+    testImplementation 'org.apache.groovy:groovy-json'
     testImplementation platform(libs.spock.bom)
     testImplementation 'org.spockframework:spock-core'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

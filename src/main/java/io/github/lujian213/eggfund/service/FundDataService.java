@@ -6,31 +6,24 @@ import io.github.lujian213.eggfund.model.DateRange;
 import io.github.lujian213.eggfund.model.FundInfo;
 import io.github.lujian213.eggfund.model.FundRTValue;
 import io.github.lujian213.eggfund.model.FundValue;
+import io.github.lujian213.eggfund.service.loader.FundInfoLoaderFactory;
 import io.github.lujian213.eggfund.utils.Constants;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
-import jakarta.annotation.Nullable;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Component
@@ -46,8 +39,6 @@ public class FundDataService implements FundValueListener {
     }
 
     private static final Logger log = LoggerFactory.getLogger(FundDataService.class);
-    private static final String FUND_INFO_URL = "https://fund.eastmoney.com/pingzhongdata/%s.js?v-%s";
-    private static final Pattern FSNAME_PATTERN = Pattern.compile(".*fS_name\\s*=\\s*\"([^\"]*)\".*");
     final Map<String, Map<String, List<FundValue>>> fundValueMap = new HashMap<>();
     Map<String, FundInfo> fundInfoMap = new HashMap<>();
     final Map<String, FundRTValueHistory> fundRTValueHistoryMap = new ConcurrentHashMap<>();
@@ -55,16 +46,10 @@ public class FundDataService implements FundValueListener {
     private FundDao fundDao;
     private AsyncActionService asyncActionService;
     private Timer loadFundNameTimer;
-    private RestTemplate restTemplate;
 
     @Autowired
     public void setFundDao(FundDao fundDao) {
         this.fundDao = fundDao;
-    }
-
-    @Autowired
-    public void setRestTemplate(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
     }
 
     @Autowired
@@ -156,14 +141,14 @@ public class FundDataService implements FundValueListener {
                 throw new EggFundException("Fund code already exists: " + code);
             }
             try {
-                fundInfo.setName(loadFundNameTimer.record(() -> loadFundName(code)));
+                fundInfo.setName(loadFundNameTimer.record(() -> loadFundName(fundInfo)));
                 Map<String, FundInfo> newFundMap = new HashMap<>(fundInfoMap);
                 newFundMap.put(code, fundInfo);
                 fundDao.saveFunds(newFundMap.values());
                 fundInfoMap.put(fundInfo.getId(), fundInfo);
                 LocalDate now = LocalDate.now(Constants.ZONE_ID);
                 asyncActionService.updateFundValues(fundInfo, new DateRange(now.minusMonths(2).withDayOfMonth(1), now), this);
-                asyncActionService.getFundRTValueInBatch(code);
+                asyncActionService.getFundRTValueInBatch(fundInfo);
                 return fundInfo;
             } catch (IOException e) {
                 throw new EggFundException("add new fund error: " + code, e);
@@ -217,22 +202,8 @@ public class FundDataService implements FundValueListener {
         }
     }
 
-    protected String loadFundName(String code) {
-        String url = String.format(FUND_INFO_URL, code, LocalDateTime.now(Constants.ZONE_ID).format(Constants.DATE_TIME_FORMAT));
-        log.info("load fund info from {}", url);
-        try {
-            ResponseEntity<String> response = restTemplate.getForEntity(new URI(url), String.class);
-            if (response.getStatusCode() == HttpStatus.OK) {
-                String name = extractFundName(response.getBody());
-                if (name != null) {
-                    return name;
-                }
-            }
-            log.error("load fund info failed with code {}", response.getStatusCode());
-            throw new EggFundException("load fund info failed with code " + response.getStatusCode());
-        } catch (URISyntaxException | RestClientException e) {
-            throw new EggFundException("load fund info error: " + code, e);
-        }
+    protected String loadFundName(FundInfo fundInfo) {
+        return FundInfoLoaderFactory.getInstance().getFundInfoLoader(fundInfo).loadFundName(fundInfo.getId());
     }
 
     @Override
@@ -262,12 +233,12 @@ public class FundDataService implements FundValueListener {
     public void updateFundRTValues() {
         log.info("Scheduled task started at {}", LocalDateTime.now());
         try {
-            List<String> codeList;
+            List<FundInfo> fundList;
             synchronized (this) {
-                codeList = new ArrayList<>(fundInfoMap.keySet());
+                fundList = new ArrayList<>(fundInfoMap.values());
             }
-            List<String[]> codeBatches = groupCodesToBatches(codeList, 5, 3);
-            codeBatches.forEach(batch -> asyncActionService.getFundRTValueInBatch(batch).
+            List<FundInfo[]> fundBatches = groupToBatches(FundInfo.class, fundList, 5, 3);
+            fundBatches.forEach(batch -> asyncActionService.getFundRTValueInBatch(batch).
                     thenApply(this::handleBatchRTValues).exceptionally(e -> {
                         log.error("Exception occurred while fetching fund real time value", e);
                         return null;
@@ -320,23 +291,13 @@ public class FundDataService implements FundValueListener {
         }
     }
 
-    List<String[]> groupCodesToBatches(List<String> codes, int maxBatches, int minBatchSize) {
-        List<String[]> ret = new ArrayList<>();
-        int batchSize = (int) Math.ceil(Math.max((double) codes.size() / maxBatches, minBatchSize));
-        for (int i = 0; i < codes.size(); i += batchSize) {
-            ret.add(codes.subList(i, Math.min(i + batchSize, codes.size())).toArray(new String[0]));
+    static <T> List<T[]> groupToBatches(Class<T> clazz, List<T> objList, int maxBatches, int minBatchSize) {
+        List<T[]> ret = new ArrayList<>();
+        int batchSize = (int) Math.ceil(Math.max((double) objList.size() / maxBatches, minBatchSize));
+        for (int i = 0; i < objList.size(); i += batchSize) {
+            ret.add(objList.subList(i, Math.min(i + batchSize, objList.size())).toArray((T[])Array.newInstance(clazz, 0)));
         }
         return ret;
-    }
-
-    @Nullable
-    String extractFundName(String content) {
-        log.info("load fund info content: {}", content);
-        Matcher matcher = FSNAME_PATTERN.matcher(content);
-        if (matcher.matches()) {
-            return matcher.group(1);
-        }
-        return null;
     }
 
     public List<FundRTValue> getFundRTValueHistory(String code) {

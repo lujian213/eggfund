@@ -9,23 +9,17 @@ import io.github.lujian213.eggfund.model.FundValue
 import io.github.lujian213.eggfund.utils.Constants
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Timer
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
-import org.springframework.web.client.RestClientException
-import org.springframework.web.client.RestTemplate
 import spock.lang.Specification
+
 import java.time.LocalDate
 import java.util.concurrent.CompletableFuture
 import java.util.function.Supplier
 
 class FundDataServiceSpec extends Specification {
 
-    def "groupCodesToBatches"() {
-        given:
-        def service = new FundDataService()
-
+    def "groupToBatches"() {
         expect:
-        batches == service.groupCodesToBatches(codes, maxBatches, minBatchSize).stream().map(item -> item.length).toList()
+        batches == FundDataService.groupToBatches(String.class, codes, maxBatches, minBatchSize).stream().map(item -> item.length).toList()
         where:
         codes                                               | maxBatches | minBatchSize | batches
         ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"] | 3          | 1            | [4, 4, 2]
@@ -128,23 +122,6 @@ class FundDataServiceSpec extends Specification {
         service.updateFundsValues()
         then:
         codes == ["1000", "1001", "1002"] as Set
-    }
-
-    def "extractFundName" () {
-        given:
-        def service = new FundDataService()
-        def content = """\
-/** * 测试数据 * @type {arry} *//*2025-03-03 21:28:39*/var ishb=false;/*基金或股票信息*/var fS_name = "华夏国证半导体芯片ETF联接C";var fS_code = "008888";/*原费率*/var fund_sourceRate="0.00";/*现费率*/var fund_Rate="0.00";/*最小申购金额*/var fund_minsg="10";/*基金持仓股票代码*/var stockCodes=[];/*基金持仓债券代码*/var zqCodes = "0197491,0197491,0196311,0196311,0197061";/*基金持仓股票代码(新市场号)*/var stockCodesNew =[];/*基金持仓债券代码（新市场号）\
-        """
-        expect:
-        service.extractFundName(content) == "华夏国证半导体芯片ETF联接C"
-    }
-    def "extractFundName with bad content"() {
-        given:
-        def service = new FundDataService()
-        def content = "some bad content"
-        expect:
-        !service.extractFundName(content)
     }
 
     def "checkFund & findFund"() {
@@ -261,7 +238,7 @@ class FundDataServiceSpec extends Specification {
     def "addNewFund"() {
         given:
         def service = Spy(FundDataService) {
-            loadFundName(_ as String) >> "fund3"
+            loadFundName(_) >> "fund3"
         }
         def meterRegistry = Mock(MeterRegistry) {
             timer(_ as String) >> Mock(Timer) {
@@ -311,7 +288,7 @@ class FundDataServiceSpec extends Specification {
     def "addNewFund with exception"() {
         given:
         def service = Spy(FundDataService) {
-            loadFundName(_ as String) >> "fund3"
+            loadFundName(_) >> "fund3"
         }
         def meterRegistry = Mock(MeterRegistry) {
             timer(_ as String) >> Mock(Timer) {
@@ -376,7 +353,7 @@ class FundDataServiceSpec extends Specification {
         given:
         def service = new FundDataService()
         def asyncService = Mock(AsyncActionService) {
-            getFundRTValueInBatch(_ as String[]) >> { String[] batch ->
+            getFundRTValueInBatch(_ as FundInfo[]) >> { FundInfo[] batch ->
                 def ret = [:] as Map
                 if (batch.length == 2) {
                     CompletableFuture<Map<String, FundRTValue>> future = new CompletableFuture<>()
@@ -384,7 +361,7 @@ class FundDataServiceSpec extends Specification {
                     return future
                 }
                 batch.each {
-                    ret << [(it): new FundRTValue("2025-01-01 14:00", 1.00, 0.02)]
+                    ret << [(it.getId()): new FundRTValue("2025-01-01 14:00", 1.00, 0.02)]
                 }
                 return CompletableFuture.completedFuture(ret)
             }
@@ -554,61 +531,5 @@ class FundDataServiceSpec extends Specification {
         then:
         service.fundInfoMap.size() == 2
         service.fundValueMap.size() == 2
-    }
-
-    def "loadFundName"() {
-        given:
-        def service = Spy(FundDataService) {
-            extractFundName(_) >> "fund1"
-        }
-        def restTemplate = Mock(RestTemplate) {
-            getForEntity(_, _) >> new ResponseEntity("content", HttpStatus.OK)
-        }
-        service.setRestTemplate(restTemplate)
-        when:
-        def result = service.loadFundName("1001")
-        then:
-        result == "fund1"
-    }
-
-    def "loadFundName with non-ok status"() {
-        given:
-        def service = new FundDataService()
-        def restTemplate = Mock(RestTemplate) {
-            getForEntity(_, _) >> new ResponseEntity("content", HttpStatus.NOT_FOUND)
-        }
-        service.setRestTemplate(restTemplate)
-        when:
-        def result = service.loadFundName("1001")
-        then:
-        thrown(EggFundException)
-    }
-
-    def "loadFundName with bad content"() {
-        def service = Spy(FundDataService) {
-            extractFundName(_) >> null
-        }
-        def restTemplate = Mock(RestTemplate) {
-            getForEntity(_, _) >> new ResponseEntity("content", HttpStatus.OK)
-        }
-        service.setRestTemplate(restTemplate)
-        when:
-        def result = service.loadFundName("1001")
-        then:
-        thrown(EggFundException)
-    }
-
-    def "loadFundName with exception in request"() {
-        given:
-        def service = new FundDataService()
-        def restTemplate = Mock(RestTemplate) {
-            getForEntity(_, _) >> { throw new RestClientException("") }
-        }
-        service.setRestTemplate(restTemplate)
-
-        when:
-        def result = service.loadFundName("1001")
-        then:
-        thrown(EggFundException)
     }
 }

@@ -13,6 +13,7 @@ public class InvestSummaryItem extends LocalDateRelated<InvestSummaryItem> {
     private double increaseRate;
     private double fee;
     private double tax;
+    private double fxRate;
     private double investAmt;
     private double _var;
     private double earning;
@@ -50,6 +51,7 @@ public class InvestSummaryItem extends LocalDateRelated<InvestSummaryItem> {
         this.increaseRate = item.increaseRate;
         this.fee = item.fee;
         this.tax = item.tax;
+        this.fxRate = item.fxRate;
         this.investAmt = item.investAmt;
         this._var = item._var;
         this.earning = item.earning;
@@ -67,6 +69,7 @@ public class InvestSummaryItem extends LocalDateRelated<InvestSummaryItem> {
         this.liquidatedQuota = 0;
         this.fee = invest.getFee();
         this.tax = invest.getTax();
+        this.fxRate = invest.getFxRate();
         this.batch = invest.getBatch();
         this.investAmt = invest.getAmount();
         if (quota > 0) {
@@ -101,6 +104,10 @@ public class InvestSummaryItem extends LocalDateRelated<InvestSummaryItem> {
 
     public double getTax() {
         return tax;
+    }
+
+    public double getFxRate() {
+        return fxRate;
     }
 
     public double getInvestAmt() {
@@ -194,6 +201,7 @@ public class InvestSummaryItem extends LocalDateRelated<InvestSummaryItem> {
                 ", increaseRate=" + increaseRate +
                 ", fee=" + fee +
                 ", tax=" + tax +
+                ", fxRate=" + fxRate +
                 ", investAmt=" + investAmt +
                 ", _var=" + _var +
                 ", earning=" + earning +

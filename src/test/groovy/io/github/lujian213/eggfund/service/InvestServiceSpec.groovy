@@ -823,4 +823,80 @@ class InvestServiceSpec extends Specification {
         investService.checkInvestAudit().size() == 2
         investService.investAuditList.size() == 2
     }
+
+    def "updateInvest"() {
+        given:
+        def investor = new Investor("Alex", "Alex Cheng", null)
+        def investService = Spy(InvestService) {
+            checkInvestor(_) >> investor
+            resetInvestPrice(_, _) >> {_, Invest invest -> invest}
+            updateInvestPrice(_) >> { Invest invest -> invest }
+            it.@investMap << [(investor): ["invest1": new Invest(id: "invest1", code: "1000", day: "2025-01-05", share: 1000)]]
+        }
+        fundService.checkFund("1000") >> new FundInfo("1000", "fund0")
+        1 * investDao.saveInvests(_, _) >> {}
+        1 * investAuditDao.saveInvestAudits(_) >> {}
+        investService.fundDataService = fundService
+        investService.investDao = investDao
+        investService.investAuditDao = investAuditDao
+
+        when:
+        investService.updateInvest("Alex", new Invest(id: "invest1", code: "1000", day: "2025-01-05", share: 2000))
+
+        then:
+        investService.investMap[investor].size() == 1
+        investService.investMap[investor]["invest1"].share == 2000
+        investService.investAuditList.size() == 1
+        investService.investAuditList[0].oldInvest().share == 1000
+        investService.investAuditList[0].newInvest().share == 2000
+
+        when:
+        investService.updateInvest("Alex", new Invest(id: "invest2", code: "1000", day: "2025-01-05", share: 2000))
+
+        then:
+        thrown(EggFundException)
+
+        when:
+        investDao.saveInvests(_, _) >> { throw new IOException() }
+        investService.updateInvest("Alex", new Invest(id: "invest1", code: "1000", day: "2025-01-05", share: 2000))
+
+        then:
+        thrown(EggFundException)
+    }
+
+    def "securedInvestor"() {
+        given:
+        def investor = new Investor("Alex", "Alex Cheng", null).with(true) {
+            password = "abc"
+        }
+        def investService = Spy(InvestService) {
+            checkInvestor("Alex") >>investor
+        }
+
+        when:
+        def ret = investService.securedInvestor("Alex")
+
+        then:
+        ret.id == "Alex"
+        ret.password == "***"
+    }
+
+    def "getUser"() {
+        given:
+        def investor = new Investor("Alex", "Alex Cheng", null).with(true) {
+            password = "abc"
+            roles = ["read", "write"]
+        }
+        def investService = Spy(InvestService) {
+            checkInvestor("Alex") >>investor
+        }
+
+        when:
+        def ret = investService.getUser("Alex")
+
+        then:
+        ret.username == "Alex"
+        ret.password == "abc"
+        ret.authorities*.toString() == ["ROLE_READ", "ROLE_WRITE"]
+    }
 }

@@ -31,10 +31,15 @@ public class JWTTokenGeneratorFilter extends OncePerRequestFilter {
             FilterChain filterChain) throws ServletException, IOException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (null != authentication && authentication.isAuthenticated()) {
-            log.debug("Generating JWT for user: {}", authentication.getName());
-            String jwt = generateJwt(authentication);
-            response.setHeader(Constants.JWT_HEADER, "Bearer " + jwt);
-            log.info("JWT generated and added to response header for user: {}", authentication.getName());
+            String bearerToken = request.getHeader(Constants.JWT_HEADER);
+            if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+                log.debug("JWT existed, no need regenerate.");
+            } else {
+                log.debug("Generating JWT for user: {}", authentication.getName());
+                bearerToken = "Bearer " + generateJwt(authentication);
+            }
+            response.setHeader(Constants.JWT_HEADER, bearerToken);
+            log.info("JWT added to response header for user: {}", authentication.getName());
         }
         filterChain.doFilter(request, response);
     }

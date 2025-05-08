@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +25,11 @@ public class EggFundController {
     @QueryMapping
     public List<FundInfo> getAllFunds() {
         return eggFundService.getAllFunds();
+    }
+
+    @QueryMapping
+    public List<String> getAllFundTypes() {
+        return Arrays.stream(eggFundService.getAllFundTypes()).map(Enum::toString).toList();
     }
 
     @QueryMapping
@@ -83,8 +89,13 @@ public class EggFundController {
     }
 
     @MutationMapping
-    public List<Invest> addNewInvest(@Argument String id, @Argument String code, @Argument List<Invest> invests) {
-        return eggFundService.addNewInvest(id, code, invests);
+    public List<Invest> addNewInvest(@Argument String id, @Argument String code, @Argument List<Invest> invests, @Argument boolean overwrite) {
+        return eggFundService.addNewInvest(id, code, invests, overwrite);
+    }
+
+    @MutationMapping
+    public List<Invest> addNewInvests(@Argument String id, @Argument List<Invest> invests, @Argument boolean overwrite) {
+        return eggFundService.addNewInvests(id, invests, overwrite);
     }
 
     @MutationMapping

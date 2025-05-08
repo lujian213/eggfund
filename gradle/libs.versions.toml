@@ -1,3 +1,6 @@
+[versions]
+jjwt-version = '0.12.6'
+
 [libraries]
 spock-bom = 'org.spockframework:spock-bom:2.4-M5-groovy-4.0'
 groovy-bom = 'org.apache.groovy:groovy-bom:4.0.24'
@@ -7,3 +10,8 @@ springdoc-openapi = 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
 selenium = 'org.seleniumhq.selenium:selenium-java:3.6.0'
 jtidy = 'com.google.code.maven-play-plugin.net.sf.jtidy:jtidy:r938'
 jackson-dataformat-csv = 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv:2.18.3'
+
+jjwt-api = {group = "io.jsonwebtoken", name= "jjwt-api", version.ref = "jjwt-version"}
+jjwt-impl = {group = "io.jsonwebtoken", name= "jjwt-impl", version.ref = "jjwt-version"}
+jjwt-jackson = {group = "io.jsonwebtoken", name= "jjwt-jackson", version.ref = "jjwt-version"}
+json-path = 'com.jayway.jsonpath:json-path:2.9.0'
