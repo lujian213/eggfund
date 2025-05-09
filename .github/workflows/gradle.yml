@@ -104,9 +104,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: node-and-java-build
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+    - run: |
+        echo "Current ref: $GITHUB_REF"
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
 
   package-and-deploy:
     runs-on: ubuntu-latest
