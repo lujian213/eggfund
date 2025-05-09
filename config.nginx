@@ -65,6 +65,10 @@ server {
         proxy_pass http://localhost:9012/;
     }
 
+    location /swagger-ui/ {
+        proxy_pass http://localhost:9012/swagger-ui/;
+    }
+
     location / {
         root /eggfund_dev/web;
         index index.html;
