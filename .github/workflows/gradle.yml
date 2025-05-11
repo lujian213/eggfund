@@ -172,6 +172,7 @@ jobs:
           host: ${{ secrets.DEPLOY_HOSTNAME }}
           username: ${{ secrets.DEPLOY_USERNAME }}
           password: ${{ secrets.DEPLOY_PASSWORD }}
+          debug: true
           source: |
             "${{ github.workspace }}/dist/client/client.zip"
             "${{ github.workspace }}/dist/nginx/config.nginx"
