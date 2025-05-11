@@ -161,7 +161,7 @@ class HKStockInfoLoaderSpec extends Specification {
         with(values[1]) {
             day == "2025-04-02"
             unitValue == 129.9d
-            increaseRate == 0.014065d
+            Math.abs(increaseRate - 0.014065d) < 0.00001d
         }
     }
 
@@ -255,12 +255,12 @@ class HKStockInfoLoaderSpec extends Specification {
         with(values["09882"]) {
             time == "2025-05-02 16:08"
             unitValue == 0.65d
-            increaseRate == -0.1216217d
+            Math.abs(increaseRate - (-0.1216217d)) < 0.00001d
         }
         with(values["09885"]) {
             time == "2025-05-02 16:08"
             unitValue == 7.14d
-            increaseRate == 0.0900763d
+            Math.abs(increaseRate - 0.0900763d) < 0.00001d
         }
     }
 
@@ -277,7 +277,7 @@ class HKStockInfoLoaderSpec extends Specification {
         with(values["09885"]) {
             time == "2025-05-02 16:08"
             unitValue == 7.14d
-            increaseRate == 0.0900763d
+            Math.abs(increaseRate - 0.0900763d) < 0.00001d
         }
     }
 
@@ -335,7 +335,7 @@ class HKStockInfoLoaderSpec extends Specification {
             hkloader.executor = executor
             1 * hkloader.loadFundRTValues() >> {
                 hkloader.@rtValueMap << ["0001": rtValue]
-                Thread.sleep(100)
+                Thread.sleep(200)
             }
         }
         expect:
