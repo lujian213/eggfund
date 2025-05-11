@@ -334,8 +334,8 @@ class HKStockInfoLoaderSpec extends Specification {
             hkloader.@lastFundRTValueLodeTime = System.currentTimeMillis() - HKStockInfoLoader.MAX_LOAD_INTERVAL - 1
             hkloader.executor = executor
             1 * hkloader.loadFundRTValues() >> {
-                hkloader.@rtValueMap << ["0001": rtValue]
                 Thread.sleep(200)
+                hkloader.@rtValueMap << ["0001": rtValue]
             }
         }
         expect:
