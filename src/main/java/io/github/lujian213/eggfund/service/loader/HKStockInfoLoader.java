@@ -170,7 +170,12 @@ public class HKStockInfoLoader implements FundInfoLoader {
                 List<CompletableFuture<Integer>> futures = new ArrayList<>();
                 for (int i = 1; i <= MAX_PARALLEL_TASKS; i++) {
                     int finalPage = page++;
-                    futures.add(CompletableFuture.supplyAsync(() -> loadFundRTValuesForPage(finalPage), executor));
+                    futures.add(CompletableFuture.supplyAsync(() ->
+                            loadFundRTValuesForPage(finalPage), executor).
+                            exceptionally(t->{
+                                log.error("load fund real time value page failed", t);
+                                return 0;
+                            }));
                 }
                 allDone = CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).thenApply(v->{
                     boolean ret = false;

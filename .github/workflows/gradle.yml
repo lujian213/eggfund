@@ -166,33 +166,16 @@ jobs:
           push: true
           tags: ghcr.io/${{ github.repository_owner }}/eggfund:latest
 
-      - name: copy client.zip via ssh password
+      - name: Copy artifacts to target server via SSH
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.DEPLOY_HOSTNAME }}
           username: ${{ secrets.DEPLOY_USERNAME }}
           password: ${{ secrets.DEPLOY_PASSWORD }}
-          source: "${{ github.workspace }}/dist/client/client.zip"
-          overwrite: true
-          strip_components: 4
-          target: /eggfund_deploy
-      - name: copy config.nginx via ssh password
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.DEPLOY_HOSTNAME }}
-          username: ${{ secrets.DEPLOY_USERNAME }}
-          password: ${{ secrets.DEPLOY_PASSWORD }}
-          source: "${{ github.workspace }}/dist/nginx/config.nginx"
-          overwrite: true
-          strip_components: 4
-          target: /eggfund_deploy
-      - name: copy eggfund jar via ssh password
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.DEPLOY_HOSTNAME }}
-          username: ${{ secrets.DEPLOY_USERNAME }}
-          password: ${{ secrets.DEPLOY_PASSWORD }}
-          source: "${{ github.workspace }}/dist/lib/eggfund-1.0.0.jar"
+          source: |
+            "${{ github.workspace }}/dist/client/client.zip"
+            "${{ github.workspace }}/dist/nginx/config.nginx"
+            "${{ github.workspace }}/dist/lib/eggfund-1.0.0.jar"
           overwrite: true
           strip_components: 4
           target: /eggfund_deploy
@@ -214,3 +197,4 @@ jobs:
     # See: https://github.com/gradle/actions/blob/main/dependency-submission/README.md
     - name: Generate and submit dependency graph
       uses: gradle/actions/dependency-submission@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+
