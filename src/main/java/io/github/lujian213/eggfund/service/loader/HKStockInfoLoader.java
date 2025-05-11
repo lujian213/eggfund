@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -25,10 +24,10 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
-import java.util.concurrent.Future;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -168,17 +167,20 @@ public class HKStockInfoLoader implements FundInfoLoader {
             int page = 1;
             boolean allDone = false;
             while (!allDone) {
-                Future<Integer>[] results = new Future[MAX_PARALLEL_TASKS];
+                List<CompletableFuture<Integer>> futures = new ArrayList<>();
                 for (int i = 1; i <= MAX_PARALLEL_TASKS; i++) {
                     int finalPage = page++;
-                    results[i - 1] = ((AsyncTaskExecutor) executor).submit(() -> loadFundRTValuesForPage(finalPage));
+                    futures.add(CompletableFuture.supplyAsync(() -> loadFundRTValuesForPage(finalPage), executor));
                 }
-                for (int i = 1; i <= MAX_PARALLEL_TASKS; i++) {
-                    if (results[i - 1].get() == 0) {
-                        allDone = true;
+                allDone = CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).thenApply(v->{
+                    boolean ret = false;
+                    for (CompletableFuture<Integer> future : futures) {
+                        if (future.join() == 0) {
+                            ret = true;
+                        }
                     }
-
-                }
+                    return ret;
+                }).get();
             }
             lastFundRTValueLodeTime = System.currentTimeMillis();
         } catch (InterruptedException e) {
