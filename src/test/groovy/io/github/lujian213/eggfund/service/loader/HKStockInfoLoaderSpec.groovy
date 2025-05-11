@@ -156,12 +156,12 @@ class HKStockInfoLoaderSpec extends Specification {
         with(values[0]) {
             day == "2025-04-01"
             unitValue == 129.8d
-            increaseRate == 1.4063d
+            increaseRate == 0.014063d
         }
         with(values[1]) {
             day == "2025-04-02"
             unitValue == 129.9d
-            increaseRate == 1.4065d
+            increaseRate == 0.014065d
         }
     }
 
@@ -255,12 +255,12 @@ class HKStockInfoLoaderSpec extends Specification {
         with(values["09882"]) {
             time == "2025-05-02 16:08"
             unitValue == 0.65d
-            increaseRate == -12.16217d
+            increaseRate == -0.1216217d
         }
         with(values["09885"]) {
             time == "2025-05-02 16:08"
             unitValue == 7.14d
-            increaseRate == 9.00763d
+            increaseRate == 0.0900763d
         }
     }
 
@@ -277,7 +277,7 @@ class HKStockInfoLoaderSpec extends Specification {
         with(values["09885"]) {
             time == "2025-05-02 16:08"
             unitValue == 7.14d
-            increaseRate == 9.00763d
+            increaseRate == 0.0900763d
         }
     }
 
