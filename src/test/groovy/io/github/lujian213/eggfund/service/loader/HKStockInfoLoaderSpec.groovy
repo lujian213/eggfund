@@ -334,7 +334,7 @@ class HKStockInfoLoaderSpec extends Specification {
             hkloader.@lastFundRTValueLodeTime = System.currentTimeMillis() - HKStockInfoLoader.MAX_LOAD_INTERVAL - 1
             hkloader.executor = executor
             1 * hkloader.loadFundRTValues() >> {
-                Thread.sleep(200)
+                Thread.sleep(500)
                 hkloader.@rtValueMap << ["0001": rtValue]
             }
         }
@@ -343,7 +343,7 @@ class HKStockInfoLoaderSpec extends Specification {
 
         when:
         loader.lastFundRTValueLodeTime = System.currentTimeMillis()
-        Thread.sleep(150)
+        Thread.sleep(700)
         then:
         loader.getFundRTValue("0001") == rtValue
         cleanup:
