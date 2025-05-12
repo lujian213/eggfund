@@ -54,16 +54,20 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
     }
 
     private Authentication validateToken(String jwt) {
-        Environment env = getEnvironment();
-        String secret = env.getProperty(Constants.JWT_SECRET_KEY, Constants.JWT_SECRET_DEFAULT_VALUE);
-        SecretKey secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
-        Claims claims = Jwts.parser().verifyWith(secretKey)
-                .build().parseSignedClaims(jwt).getPayload();
+        Claims claims = parseToken(jwt);
         String username = String.valueOf(claims.get("username"));
         String authorities = String.valueOf(claims.get("authorities"));
         log.debug("Extracted claims - username: {}, authorities: {}", username, authorities);
         return new UsernamePasswordAuthenticationToken(username, null,
                 AuthorityUtils.commaSeparatedStringToAuthorityList(authorities));
+    }
+
+    Claims parseToken(String jwt) {
+        Environment env = getEnvironment();
+        String secret = env.getProperty(Constants.JWT_SECRET_KEY, Constants.JWT_SECRET_DEFAULT_VALUE);
+        SecretKey secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        return Jwts.parser().verifyWith(secretKey)
+                .build().parseSignedClaims(jwt).getPayload();
     }
 
     private String extractJwtFromRequest(HttpServletRequest request) {
