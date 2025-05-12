@@ -1,5 +1,6 @@
 server:
   port: 9011
+  forward-headers-strategy: FRAMEWORK
 #  address: 127.0.0.1
 #  ssl:
 #    key-store: "classpath:keystore.p12"
