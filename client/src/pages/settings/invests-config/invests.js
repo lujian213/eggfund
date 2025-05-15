@@ -33,6 +33,7 @@ export default function Invests() {
   const userInfo = useRecoilValue(userInfoState);
   const refetchInvests = useSetRecoilState(refreshInvestsState);
   const invests = useRecoilValue(investsQuery);
+  debugger
   const setAlert = useSetRecoilState(alertState);
   const selectedInvestor = useRecoilValue(selectedInvestorState);
   const selectedFund = useRecoilValue(selectedFundState);
@@ -64,7 +65,6 @@ export default function Invests() {
       {
         field: "fxRate",
         flex: 1,
-        valueGetter: (p) => formatNumber(p.data.fxRate),
       },
       {
         field: "amount",

@@ -16,7 +16,7 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: "min(800px, 90%)",
+  width: "min(1000px, 90%)",
   boxshadow: 24,
   background: (theme) => theme.palette.background.sidebar,
   p: 4,
@@ -32,10 +32,9 @@ export default function UploadPreviewModal(props) {
 
   const colDefs = useMemo(
     () => [
-      { field: "day", flex: 1 },
+      { field: "day", flex: 1, minWidth: 130 },
       { field: "code", flex: 1 },
-      { field: "name", flex: 1 },
-      { field: "batch", flex: 1 },
+      { field: "name", flex: 1, minWidth: 130 },
       { field: "share", flex: 1 },
       { field: "unitPrice", flex: 1 },
       { field: "type", flex: 1 },
@@ -44,7 +43,6 @@ export default function UploadPreviewModal(props) {
       {
         field: "fxRate",
         flex: 1,
-        valueGetter: (p) => formatNumber(p.data.fxRate),
       },
       {
         field: "amount",
@@ -52,14 +50,13 @@ export default function UploadPreviewModal(props) {
         flex: 1,
         valueGetter: (p) => formatNumber(p.data.amount),
       },
-      { field: "comments", flex: 1 },
     ],
     []
   );
 
   const confirm = async () => {
     const selectedInvests = invests.filter((item) =>
-      selectedRowIds.includes(item.id)
+      selectedRowIds.includes(`${item.code}-${item.day}-${item.type}-${item.unitPrice}-${item.share}`)
     );
     const response = await axios.put(
       `${BASE_URL}/invest/${investor.id}`,
@@ -110,7 +107,7 @@ export default function UploadPreviewModal(props) {
             columnDefs={colDefs}
             rowSelection={{ mode: "multiRow", isRowSelectable: (rowNode) => rowNode.data ? !!rowNode.data.name : false }}
             onSelectionChanged={onSelectionChanged}
-            getRowId={(params) => params.data.id}
+            getRowId={(params) => `${params.data.code}-${params.data.day}-${params.data.type}-${params.data.unitPrice}-${params.data.share}`}
           />
         </Stack>
         <Stack direction={"row"} spacing={2} sx={{ alignSelf: "flex-end" }}>

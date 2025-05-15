@@ -48,7 +48,7 @@ export default function InvestModal(props) {
     unitPrice: "",
     fee: 0,
     tax: 0,
-    fxRate: 1,
+    fxRate: '1.0',
     batch: maxBatch,
     comments: "",
   });
@@ -117,7 +117,7 @@ export default function InvestModal(props) {
       share: "",
       unitPrice: "",
       fee: 0,
-      fxRate: 1,
+      fxRate: '1.0',
       tax: 0,
       batch: maxBatch,
       comments: "",

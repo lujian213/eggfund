@@ -32,6 +32,7 @@ export default function Funds() {
               fundName: item.name,
               alias: item.alias,
               category: item.category,
+              type: item.type,
             };
           }
           return {
@@ -39,6 +40,7 @@ export default function Funds() {
             fundName: item.name,
             alias: item.alias,
             category: item.category,
+            type: item.type,
           };
         });
       });

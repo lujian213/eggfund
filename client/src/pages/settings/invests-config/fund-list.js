@@ -1,14 +1,21 @@
 import { useRecoilState, useRecoilValue } from "recoil";
 import { fundsQuery } from "../../../store/selector";
 import { Chip, Stack, Tooltip, Typography } from "@mui/material";
-import { selectedFundState } from "./store/atom";
+import { selectedFundState, selectedInvestorState } from "./store/atom";
+import { userInfoState } from "../../../store/atom";
 
 export default function CodeList() {
+  const userInfo = useRecoilValue(userInfoState);
   const funds = useRecoilValue(fundsQuery);
   const [selected, setSelected] = useRecoilState(selectedFundState);
+  const [, setSelectedInvestor] = useRecoilState(
+    selectedInvestorState
+  );
 
   const handleClick = (id) => {
     setSelected(id);
+    if (!userInfo?.id) return;
+    setSelectedInvestor(userInfo.id);
   };
 
   return (

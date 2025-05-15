@@ -70,7 +70,7 @@ export default function RtValuesTable() {
           valueGetter: (p) => (p.data.alias ? p.data.alias : p.data.fundName),
         },
         {
-          field: "category",
+          field: "type",
           flex: 1,
         },
         {
