@@ -156,12 +156,12 @@ class HKStockInfoLoaderSpec extends Specification {
         with(values[0]) {
             day == "2025-04-01"
             unitValue == 129.8d
-            increaseRate == 1.4063d
+            increaseRate == 0.014063d
         }
         with(values[1]) {
             day == "2025-04-02"
             unitValue == 129.9d
-            increaseRate == 1.4065d
+            Math.abs(increaseRate - 0.014065d) < 0.00001d
         }
     }
 
@@ -255,12 +255,12 @@ class HKStockInfoLoaderSpec extends Specification {
         with(values["09882"]) {
             time == "2025-05-02 16:08"
             unitValue == 0.65d
-            increaseRate == -12.16217d
+            Math.abs(increaseRate - (-0.1216217d)) < 0.00001d
         }
         with(values["09885"]) {
             time == "2025-05-02 16:08"
             unitValue == 7.14d
-            increaseRate == 9.00763d
+            Math.abs(increaseRate - 0.0900763d) < 0.00001d
         }
     }
 
@@ -277,7 +277,7 @@ class HKStockInfoLoaderSpec extends Specification {
         with(values["09885"]) {
             time == "2025-05-02 16:08"
             unitValue == 7.14d
-            increaseRate == 9.00763d
+            Math.abs(increaseRate - 0.0900763d) < 0.00001d
         }
     }
 
@@ -334,8 +334,8 @@ class HKStockInfoLoaderSpec extends Specification {
             hkloader.@lastFundRTValueLodeTime = System.currentTimeMillis() - HKStockInfoLoader.MAX_LOAD_INTERVAL - 1
             hkloader.executor = executor
             1 * hkloader.loadFundRTValues() >> {
+                Thread.sleep(500)
                 hkloader.@rtValueMap << ["0001": rtValue]
-                Thread.sleep(100)
             }
         }
         expect:
@@ -343,7 +343,7 @@ class HKStockInfoLoaderSpec extends Specification {
 
         when:
         loader.lastFundRTValueLodeTime = System.currentTimeMillis()
-        Thread.sleep(150)
+        Thread.sleep(700)
         then:
         loader.getFundRTValue("0001") == rtValue
         cleanup:

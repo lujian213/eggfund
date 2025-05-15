@@ -80,7 +80,7 @@ public class AsyncActionService {
     @Async("fundValueRetrieveExecutor")
     public CompletableFuture<Map<String, FundRTValue>> getFundRTValueInBatch(FundInfo... funds) {
         if (log.isInfoEnabled()) {
-            log.info("load fund real time value {}", Arrays.toString(funds));
+            log.info("load fund real time value {}", Arrays.stream(funds).map(FundInfo::getId));
         }
         Map<String, FundRTValue> ret = new HashMap<>();
         Arrays.stream(funds).forEach(fund ->

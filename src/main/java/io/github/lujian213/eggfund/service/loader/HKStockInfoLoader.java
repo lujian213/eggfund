@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -25,10 +24,10 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
-import java.util.concurrent.Future;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -134,7 +133,7 @@ public class HKStockInfoLoader implements FundInfoLoader {
             Number unitValue = (Number) map.get("CLOSE_PRICE");
             Number increaseRate = (Number) map.get("CHANGE_RATE");
             if (date != null && unitValue != null && increaseRate != null) {
-                return new FundValue(date, unitValue.doubleValue(), unitValue.doubleValue(), increaseRate.doubleValue());
+                return new FundValue(date, unitValue.doubleValue(), unitValue.doubleValue(), increaseRate.doubleValue()/100);
             }
         } catch (Exception e) {
             log.error("map to fund value failed", e);
@@ -158,6 +157,7 @@ public class HKStockInfoLoader implements FundInfoLoader {
         if (System.currentTimeMillis() - lastFundRTValueLodeTime > MAX_LOAD_INTERVAL) {
             executor.execute(this::loadFundRTValues);
         }
+        log.info("get hk stock {} real time value {}", code, rtValueMap.get(code));
         return rtValueMap.get(code);
     }
 
@@ -167,16 +167,25 @@ public class HKStockInfoLoader implements FundInfoLoader {
             int page = 1;
             boolean allDone = false;
             while (!allDone) {
-                Future<Integer>[] results = new Future[MAX_PARALLEL_TASKS];
+                List<CompletableFuture<Integer>> futures = new ArrayList<>();
                 for (int i = 1; i <= MAX_PARALLEL_TASKS; i++) {
                     int finalPage = page++;
-                    results[i - 1] = ((AsyncTaskExecutor) executor).submit(() -> loadFundRTValuesForPage(finalPage));
+                    futures.add(CompletableFuture.supplyAsync(() ->
+                            loadFundRTValuesForPage(finalPage), executor).
+                            exceptionally(t->{
+                                log.error("load fund real time value page failed", t);
+                                return 0;
+                            }));
                 }
-                for (int i = 1; i <= MAX_PARALLEL_TASKS; i++) {
-                    if (results[i - 1].get() == 0) {
-                        allDone = true;
+                allDone = CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).thenApply(v->{
+                    boolean ret = false;
+                    for (CompletableFuture<Integer> future : futures) {
+                        if (future.join() == 0) {
+                            ret = true;
+                        }
                     }
-                }
+                    return ret;
+                }).get();
             }
             lastFundRTValueLodeTime = System.currentTimeMillis();
         } catch (InterruptedException e) {
@@ -200,6 +209,7 @@ public class HKStockInfoLoader implements FundInfoLoader {
                 String content = response.getBody();
                 Map<String, FundRTValue> rtValues = extractFundRTValue(content);
                 rtValueMap.putAll(rtValues);
+                log.info("load page {} with return size {}", page, rtValues.size());
                 return rtValues.size();
             } else {
                 log.error("load fund real time value failed with code {}", response.getStatusCode());
@@ -231,7 +241,7 @@ public class HKStockInfoLoader implements FundInfoLoader {
             Double change = Optional.ofNullable(map.get("changepercent")).map(Double::parseDouble).orElse(null);
             String time = Optional.ofNullable(map.get("ticktime")).map(v -> Constants.MINUTE_FORMAT.format(Constants.SECOND_FORMAT2.parse(v))).orElse(null);
             if (time != null && value != null && change != null) {
-                return new FundRTValue(time, value, change);
+                return new FundRTValue(time, value, change/100);
             }
         } catch (Exception e) {
             log.error("map to fund real time value failed: {}", map, e);

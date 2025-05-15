@@ -274,6 +274,7 @@ public class FundDataService implements FundValueListener {
     }
 
     FundRTValue getBackupFundRTValue(String code) {
+        log.info("fall back to previous day's fund value for {}", code);
         return Optional.ofNullable(getLatestFundValue(code)).map(value -> new FundRTValue(value.getDay() + " 15:00", value.getUnitValue(), value.getIncreaseRate())).orElse(null);
     }
 

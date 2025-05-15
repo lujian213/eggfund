@@ -48,6 +48,10 @@ class SecurityConfigSpec extends Specification {
         path                     | returnCode
         "/swagger-ui.html"       | 302
         "/swagger-ui/index.html" | 200
+        "/v3/api-docs"           | 200
+        "/v3/api-docs/"          | 404
+        "/v3/api-docs/123"       | 404
+        "/some/v3/api-docs"      | 401
     }
 
     def "should not allow resources endpoints without auth"() {
