@@ -1,6 +1,7 @@
 package io.github.lujian213.eggfund.service.loader
 
 import io.github.lujian213.eggfund.exception.EggFundException
+import io.github.lujian213.eggfund.model.FundInfo
 import io.github.lujian213.eggfund.model.FundRTValue
 import io.github.lujian213.eggfund.model.FundValue
 import io.github.lujian213.eggfund.utils.Constants
@@ -14,7 +15,7 @@ import spock.lang.Specification
 import java.time.LocalDate
 
 class HKStockInfoLoaderSpec extends Specification {
-    def "loadFundName"() {
+    def "loadFund"() {
         given:
         def loader = Spy(HKStockInfoLoader) {
             extractFundName(_) >> "fund1"
@@ -24,12 +25,17 @@ class HKStockInfoLoaderSpec extends Specification {
         }
         loader.setRestTemplate(restTemplate)
         when:
-        def result = loader.loadFundName("1001")
+        def fundInfo = new FundInfo(id: "1001")
+        def result = loader.loadFund(fundInfo)
         then:
-        result == "fund1"
+        with(fundInfo) {
+            id == "1001"
+            name == "fund1"
+            currency == HKStockInfoLoader.CURRENCY
+        }
     }
 
-    def "loadFundName with non-ok status"() {
+    def "loadFund with non-ok status"() {
         given:
         def loader = new HKStockInfoLoader()
         def restTemplate = Mock(RestTemplate) {
@@ -37,12 +43,12 @@ class HKStockInfoLoaderSpec extends Specification {
         }
         loader.setRestTemplate(restTemplate)
         when:
-        def result = loader.loadFundName("1001")
+        loader.loadFund(new FundInfo(id: "1001"))
         then:
         thrown(EggFundException)
     }
 
-    def "loadFundName with bad content"() {
+    def "loadFund with bad content"() {
         def loader = Spy(HKStockInfoLoader) {
             extractFundName(_) >> null
         }
@@ -51,12 +57,12 @@ class HKStockInfoLoaderSpec extends Specification {
         }
         loader.setRestTemplate(restTemplate)
         when:
-        loader.loadFundName("1001")
+        loader.loadFund(new FundInfo(id: "1001"))
         then:
         thrown(EggFundException)
     }
 
-    def "loadFundName with exception in request"() {
+    def "loadFund with exception in request"() {
         given:
         def loader = new HKStockInfoLoader()
         def restTemplate = Mock(RestTemplate) {
@@ -65,7 +71,7 @@ class HKStockInfoLoaderSpec extends Specification {
         loader.setRestTemplate(restTemplate)
 
         when:
-        loader.loadFundName("1001")
+        loader.loadFund(new FundInfo(id: "1001"))
         then:
         thrown(EggFundException)
     }

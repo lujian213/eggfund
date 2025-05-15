@@ -423,11 +423,11 @@ class EggFundControllerTestSpec extends Specification {
     def 'testGenerateInvestSummary'() {
         when:
         def summary = Mock(InvestSummary)
-        eggFundService.generateInvestSummary("user1", "10000", "2020-01-01", "2020-01-05", -1, 1.1f) >> summary
+        eggFundService.generateInvestSummary("user1", "10000", "2020-01-01", "2020-01-05", -1, 1.1f, -1) >> summary
         then:
         graphQlTester.document("""
                     query MyQuery {
-                        generateInvestSummary (id: "user1", code: "10000", from: "2020-01-01", to: "2020-01-05", batch: -1, raiseRate: 1.1) {
+                        generateInvestSummary (id: "user1", code: "10000", from: "2020-01-01", to: "2020-01-05", batch: -1, raiseRate: 1.1, fxRate: -1) {
                             totalLongAmt
                         }
                     }

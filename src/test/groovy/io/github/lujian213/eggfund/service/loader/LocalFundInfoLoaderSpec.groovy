@@ -1,6 +1,7 @@
 package io.github.lujian213.eggfund.service.loader
 
 import io.github.lujian213.eggfund.exception.EggFundException
+import io.github.lujian213.eggfund.model.FundInfo
 import io.github.lujian213.eggfund.model.FundRTValue
 import io.github.lujian213.eggfund.model.FundValue
 import org.springframework.http.HttpStatus
@@ -12,7 +13,7 @@ import spock.lang.Specification
 import java.time.LocalDate
 
 class LocalFundInfoLoaderSpec extends Specification {
-    def "loadFundName"() {
+    def "loadFund"() {
         given:
         def loader = Spy(LocalFundInfoLoader) {
             extractFundName(_) >> "fund1"
@@ -22,12 +23,17 @@ class LocalFundInfoLoaderSpec extends Specification {
         }
         loader.setRestTemplate(restTemplate)
         when:
-        def result = loader.loadFundName("1001")
+        def fundInfo = new FundInfo(id: "1001")
+        loader.loadFund(fundInfo)
         then:
-        result == "fund1"
+        with(fundInfo) {
+            id == "1001"
+            name == "fund1"
+            currency == LocalFundInfoLoader.CURRENCY
+        }
     }
 
-    def "loadFundName with non-ok status"() {
+    def "loadFund with non-ok status"() {
         given:
         def loader = new LocalFundInfoLoader()
         def restTemplate = Mock(RestTemplate) {
@@ -35,12 +41,12 @@ class LocalFundInfoLoaderSpec extends Specification {
         }
         loader.setRestTemplate(restTemplate)
         when:
-        def result = loader.loadFundName("1001")
+        loader.loadFund(new FundInfo(id: "1001"))
         then:
         thrown(EggFundException)
     }
 
-    def "loadFundName with bad content"() {
+    def "loadFund with bad content"() {
         def loader = Spy(LocalFundInfoLoader) {
             extractFundName(_) >> null
         }
@@ -49,12 +55,12 @@ class LocalFundInfoLoaderSpec extends Specification {
         }
         loader.setRestTemplate(restTemplate)
         when:
-        loader.loadFundName("1001")
+        loader.loadFund(new FundInfo(id: "1001"))
         then:
         thrown(EggFundException)
     }
 
-    def "loadFundName with exception in request"() {
+    def "loadFund with exception in request"() {
         given:
         def loader = new LocalFundInfoLoader()
         def restTemplate = Mock(RestTemplate) {
@@ -63,7 +69,7 @@ class LocalFundInfoLoaderSpec extends Specification {
         loader.setRestTemplate(restTemplate)
 
         when:
-        loader.loadFundName("1001")
+        loader.loadFund(new FundInfo(id: "1001"))
         then:
         thrown(EggFundException)
     }

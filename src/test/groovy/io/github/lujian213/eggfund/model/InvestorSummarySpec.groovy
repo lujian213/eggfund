@@ -6,6 +6,7 @@ class InvestorSummarySpec extends Specification {
 
     def "sample case"() {
         when:
+        def fxRateInfo = new FxRateInfo("RMB", 1.0, "2025-05-06")
         def invest1 = Spy(InvestSummary) {
             getFundId() >> "012734"
             getTotalLongAmt() >> 4000
@@ -14,6 +15,7 @@ class InvestorSummarySpec extends Specification {
             getPredictedValue() >> 2678.33
             getEarning() >> 314.14
             getTotalFee() >> 0
+            getFxRateInfo() >> fxRateInfo
         }
         def invest2 = Spy(InvestSummary) {
             getFundId() >> "008888"
@@ -23,6 +25,7 @@ class InvestorSummarySpec extends Specification {
             getPredictedValue() >> 2713.67
             getEarning() >> 547.67
             getTotalFee() >> 7.03
+            getFxRateInfo() >> fxRateInfo
         }
         def investorSummary = new InvestorSummary("user", List.of(invest1, invest2))
 

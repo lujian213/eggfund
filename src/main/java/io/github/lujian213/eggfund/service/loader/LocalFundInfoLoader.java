@@ -38,6 +38,7 @@ public class LocalFundInfoLoader implements FundInfoLoader {
     private static final Pattern TABLE_PATTERN = Pattern.compile("[^<]*(<table.*</table>).*");
     private static final String FUND_RT_VALUE_URL = "https://fundgz.1234567.com.cn/js/%s.js?v=%s";
     private static final Pattern FUND_RT_VALUE_PATTERN = Pattern.compile(".*\"gsz\":\"([^\"]+)\".*\"gszzl\":\"([^\"]+)\".*\"gztime\":\"([^\"]+)\".*");
+    static final String CURRENCY = "RMB";
 
     private RestTemplate restTemplate;
 
@@ -51,21 +52,22 @@ public class LocalFundInfoLoader implements FundInfoLoader {
     }
 
     @Override
-    public String loadFundName(String code) {
-        String url = String.format(FUND_INFO_URL, code, LocalDateTime.now(Constants.ZONE_ID).format(Constants.DATE_TIME_FORMAT));
+    public void loadFund(FundInfo fundInfo) {
+        String url = String.format(FUND_INFO_URL, fundInfo.getId(), LocalDateTime.now(Constants.ZONE_ID).format(Constants.DATE_TIME_FORMAT));
         log.info("load fund info from {}", url);
         try {
             ResponseEntity<String> response = restTemplate.getForEntity(new URI(url), String.class);
             if (response.getStatusCode() == HttpStatus.OK) {
                 String name = extractFundName(response.getBody());
                 if (name != null) {
-                    return name;
+                    fundInfo.setName(name).setCurrency(CURRENCY);
+                    return;
                 }
             }
             log.error("load fund info failed with code {}", response.getStatusCode());
             throw new EggFundException("load fund info failed with code " + response.getStatusCode());
         } catch (URISyntaxException | RestClientException e) {
-            throw new EggFundException("load fund info error: " + code, e);
+            throw new EggFundException("load fund info error: " + fundInfo.getId(), e);
         }
     }
 

@@ -105,9 +105,9 @@ public class Invest extends LocalDateRelated<Invest> {
     public double amount(double price) {
         price = (price < 0 ? unitPrice : price);
         if (share < 0) {
-            return Math.abs(share) * price - fee - tax;
+            return Math.abs(share) * price * fxRate - fee - tax;
         } else {
-            return -(share * price + fee + tax);
+            return -(share * price * fxRate + fee + tax);
         }
     }
 

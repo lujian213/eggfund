@@ -1,7 +1,7 @@
 package io.github.lujian213.eggfund.service.loader
 
-
 import io.github.lujian213.eggfund.config.ExecutorConfig
+import io.github.lujian213.eggfund.model.FundInfo
 import io.github.lujian213.eggfund.utils.Constants
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -11,15 +11,25 @@ import spock.lang.Specification
 
 import java.time.LocalDate
 
-@SpringBootTest(classes = [HKStockInfoLoader.class, LocalFundInfoLoader])
+@SpringBootTest(classes = [HKStockInfoLoader, LocalFundInfoLoader])
 @Import ([RestTemplate, ExecutorConfig])
 class FundInfoLoaderSpec extends Specification{
     @Autowired
     HKStockInfoLoader hkStockInfoLoader
 
+    @Autowired
+    RestTemplate restTemplate
+
     def "load hk 09988 name"() {
-        expect:
-        hkStockInfoLoader.loadFundName("09988") == "阿里巴巴-W"
+        given:
+        def fundInfo = new FundInfo(id: "09988")
+        when:
+        hkStockInfoLoader.loadFund(fundInfo)
+        then:
+        with(fundInfo) {
+            name == "阿里巴巴-W"
+            currency == HKStockInfoLoader.CURRENCY
+        }
     }
 
     def "load hk 09988 value"() {

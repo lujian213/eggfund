@@ -19,7 +19,7 @@ class AsyncActionServiceSpec extends Specification {
         given:
         def dao = Mock(FundDao)
         def registry = Mock(MeterRegistry) {
-            timer(_, _) >> Mock(Timer) {
+            timer(_) >> Mock(Timer) {
                 record(_) >> { Supplier supplier -> supplier.get() }
             }
         }

@@ -309,10 +309,14 @@ class EggFundServiceTestSpec extends Specification {
     }
 
     def "testGenerateInvestSummary"() {
-        expect:
-        mockMvc.perform(post("/summary/{id}/{code)", "user1", "10000")
+        when:
+        1 * investService.generateSummary("user1", "10000", "2025-01-01", "2025-01-05", -1, 1.1f, 0.95f)
+        then:
+        mockMvc.perform(post("/summary/{id}/{code}", "user1", "10000")
                 .param("from", "2025-01-01")
-                .param("to", "2025-01-05").param("raiseRate", "1.1"))
+                .param("to", "2025-01-05")
+                .param("raiseRate", "1.1")
+                .param("fxRate", "0.95"))
                 .andExpect(status().isOk())
     }
 

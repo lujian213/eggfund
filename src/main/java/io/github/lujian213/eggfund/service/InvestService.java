@@ -35,6 +35,7 @@ public class InvestService {
     private InvestDao investDao;
     private InvestAuditDao investAuditDao;
     private FundDataService fundDataService;
+    private FxRateService fxRateService;
     private PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -50,6 +51,11 @@ public class InvestService {
     @Autowired
     public void setFundDataService(FundDataService fundDataService) {
         this.fundDataService = fundDataService;
+    }
+
+    @Autowired
+    public void setFxRateService(FxRateService fxRateService) {
+        this.fxRateService = fxRateService;
     }
 
     @Autowired
@@ -404,24 +410,24 @@ public class InvestService {
         List<String> codes = getUserInvestedFunds(investorId).stream().map(FundInfo::getId).toList();
         List<InvestSummary> allInvests = fundDataService.getFundRTValues(codes).entrySet().stream()
                 .filter(entry -> entry.getValue() != null)
-                .map(entry -> generateSummary(investorId, entry.getKey(), from, to, -1, entry.getValue()))
+                .map(entry -> generateSummary(investorId, entry.getKey(), from, to, -1, entry.getValue(), -1))
                 .toList();
         return new InvestorSummary(investorId, allInvests);
     }
 
-    public InvestSummary generateSummary(String investorId, String code, String from, String to, int batch, float increaseRate) {
+    public InvestSummary generateSummary(String investorId, String code, String from, String to, int batch, float increaseRate, float fxRate) {
         FundRTValue rtValue = new FundRTValue(LocalDateTime.now(Constants.ZONE_ID).format(Constants.MINUTE_FORMAT), -1, increaseRate);
-        return generateSummary(investorId, code, from, to, batch, rtValue);
+        return generateSummary(investorId, code, from, to, batch, rtValue, fxRate);
     }
 
-    public InvestSummary generateSummary(String investorId, String code, String from, String to, int batch, FundRTValue rtValue) {
+    public InvestSummary generateSummary(String investorId, String code, String from, String to, int batch, FundRTValue rtValue, float fxRate) {
         checkInvestor(investorId);
         FundInfo fundInfo = fundDataService.checkFund(code);
         DateRange range = new DateRange(LocalDateUtil.parse(from), LocalDateUtil.parse(to));
         List<FundValue> fundValues = fundDataService.getFundValues(code, range);
         synchronized (investMap) {
             List<Invest> invests = getInvests(investorId, code, range, batch);
-            return new InvestSummary(fundInfo, fundValues, invests, rtValue, range.to() == null ? LocalDate.now(Constants.ZONE_ID) : range.to());
+            return new InvestSummary(fundInfo, fxRateService.getFxRate(fundInfo.getCurrency()), fxRate, fundValues, invests, rtValue, range.to() == null ? LocalDate.now(Constants.ZONE_ID) : range.to());
         }
     }
 
