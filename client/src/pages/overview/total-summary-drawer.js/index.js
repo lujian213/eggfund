@@ -87,6 +87,20 @@ export default function TotalSummaryDrawer(props) {
       valueGetter: (p) => formatNumber(p.data.totalTax),
     },
     {
+      field: "totalFee",
+      flex: 1,
+      valueGetter: (p) => formatNumber(p.data.totalFee),
+    },
+    {
+      headerName: "Fx Rate",
+      flex: 1,
+      valueGetter: (p) =>
+        p.data.fxRateInfo?.fxRate &&
+        `${formatNumber(p.data.fxRateInfo?.fxRate)}(${
+          p.data.fxRateInfo?.currency
+        })${p.data.fxRateInfo?.asOfTime && ` - ${p.data.fxRateInfo?.asOfTime}`}`,
+    },
+    {
       field: "earningRate",
       flex: 1,
       valueGetter: (p) => formatNumberByPercent(p.data.earningRate),

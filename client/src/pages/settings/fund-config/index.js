@@ -139,7 +139,6 @@ export default function FundConfig() {
         data={fundModal.data}
         mode={fundModal.mode}
         handleClose={() => setFundModal((pre) => ({ ...pre, open: false }))}
-        handleSubmit={() => console.log("submit")}
       />
       <ConfirmModal
         open={confirmModal.open}

@@ -87,7 +87,7 @@ export default function RtValuesTable() {
         {
           field: "unitValue",
           flex: 1,
-          valueGetter: (p) => (p.data.unitValue ? p.data.unitValue : "-"),
+          valueGetter: (p) => (p.data.unitValue ? `${p.data.unitValue}(${p.data.currency})` : "-"),
         },
         {
           field: "increaseRate",

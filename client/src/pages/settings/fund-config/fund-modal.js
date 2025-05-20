@@ -28,7 +28,7 @@ const style = {
 };
 
 export default function FundModal(props) {
-  const { open, handleSubmit, handleClose, data, mode } = props;
+  const { open, handleClose, data, mode } = props;
   const refetchFunds = useSetRecoilState(refreshFundState);
   const fundTypes = useRecoilValue(fundTypesState);
   const [form, setForm] = useState({});
@@ -45,7 +45,6 @@ export default function FundModal(props) {
       response = await axios.post(`${BASE_URL}/fund/${form.code}`, form);
     }
     response?.data && handleModalClose();
-    handleSubmit && handleSubmit();
     refetchFunds((pre) => pre + 1);
   };
 

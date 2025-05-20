@@ -53,12 +53,14 @@ export default function TotalDetails(props) {
     lastFundDate,
     lastUnitValue,
     predictedValue,
+    predictedValueRMB,
     raiseRate,
     estPrice,
     estPriceTable,
     totalFee,
-    totalTax,
+    //totalTax,
     totalDividendAmt,
+    fxRateInfo,
   } = summary || {};
 
   const renderNumberColor = (number) => {
@@ -114,6 +116,7 @@ export default function TotalDetails(props) {
           </Box>
           <Box sx={itemStyle}>
             <Typography variant="div">Market Value</Typography>
+            <Box>{formatNumber(predictedValueRMB, 2)}(RMB)</Box>
             <Box>{formatNumber(predictedValue, 2)}</Box>
           </Box>
           <Box sx={itemStyle}>
@@ -196,8 +199,9 @@ export default function TotalDetails(props) {
             <Box>{formatNumber(totalFee, 2)}</Box>
           </Box>
           <Box sx={itemStyle}>
-            <Typography variant="div">Total Tax</Typography>
-            <Box>{formatNumber(totalTax, 2)}</Box>
+            <Typography variant="div">FX Rate</Typography>
+            <Box>{fxRateInfo?.fxRate}&nbsp;&nbsp;{fxRateInfo.currency}</Box>
+            <Box>{fxRateInfo?.asOfTime}</Box>
           </Box>
           <Box sx={itemStyle}>
             <Typography variant="div">Total Dividend AMT</Typography>
