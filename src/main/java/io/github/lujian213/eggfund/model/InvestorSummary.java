@@ -30,7 +30,7 @@ public class InvestorSummary {
             earning += investSummary.getEarning();
             grossEarning += investSummary.getGrossEarning();
             netAmt += investSummary.getNetAmt();
-            predictedValue += investSummary.getPredictedValue();
+            predictedValue += investSummary.getPredictedValueRMB();
         }
     }
 

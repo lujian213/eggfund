@@ -156,8 +156,9 @@ public class EggFundController {
                                                @Argument String from,
                                                @Argument String to,
                                                @Argument int batch,
-                                               @Argument float raiseRate) {
-        return eggFundService.generateInvestSummary(id, code, from, to, batch, raiseRate);
+                                               @Argument float raiseRate,
+                                               @Argument float fxRate) {
+        return eggFundService.generateInvestSummary(id, code, from, to, batch, raiseRate, fxRate);
     }
 
     @QueryMapping

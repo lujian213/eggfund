@@ -48,6 +48,7 @@ public class HKStockInfoLoader implements FundInfoLoader {
     private static final String STOCK_RT_VALUE_URL = "http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHKStockData?page={page}&num={num}&sort={sort}&asc={asc}&node={node}&_s_r_a={sra}";
     static final long MAX_LOAD_INTERVAL = 3 * 60 * 1000;
     static final int MAX_PARALLEL_TASKS = 5;
+    static final String CURRENCY = "HKD";
     private RestTemplate restTemplate;
     private Executor executor;
 
@@ -69,10 +70,10 @@ public class HKStockInfoLoader implements FundInfoLoader {
     }
 
     @Override
-    public String loadFundName(String code) {
+    public void loadFund(FundInfo fundInfo) {
         String to = LocalDateTime.now(Constants.ZONE_ID).format(Constants.DATE_FORMAT);
         String from = LocalDateTime.now(Constants.ZONE_ID).minusMonths(1).format(Constants.DATE_FORMAT);
-        String filter = STOCK_INFO_FILTER.formatted(code, from, to);
+        String filter = STOCK_INFO_FILTER.formatted(fundInfo.getId(), from, to);
         String url = STOCK_INFO_URL.formatted(URLEncoder.encode(filter, StandardCharsets.UTF_8));
         log.info("load fund info from {}", url);
         try {
@@ -80,13 +81,14 @@ public class HKStockInfoLoader implements FundInfoLoader {
             if (response.getStatusCode() == HttpStatus.OK) {
                 String name = extractFundName(response.getBody());
                 if (name != null) {
-                    return name;
+                    fundInfo.setName(name).setCurrency(CURRENCY);
+                    return;
                 }
             }
             log.error("load fund info failed with code {}", response.getStatusCode());
             throw new EggFundException("load fund info failed with code " + response.getStatusCode());
         } catch (URISyntaxException | RestClientException e) {
-            throw new EggFundException("load fund info error: " + code, e);
+            throw new EggFundException("load fund info error: " + fundInfo.getId(), e);
         }
     }
 

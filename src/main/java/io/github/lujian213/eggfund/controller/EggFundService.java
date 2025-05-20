@@ -263,9 +263,10 @@ public class EggFundService {
                                                @RequestParam(required = false) String from,
                                                @RequestParam(required = false) String to,
                                                @RequestParam(required = false, defaultValue = "-1") int batch,
-                                               @RequestParam(required = false, defaultValue = "0") float raiseRate) {
+                                               @RequestParam(required = false, defaultValue = "0") float raiseRate,
+                                               @RequestParam(required = false, defaultValue = "-1") float fxRate) {
         return runWithExceptionHandling("generate invest summary error: " + id + ", " + code,
-                () -> investService.generateSummary(id, code, from, to, batch, raiseRate));
+                () -> investService.generateSummary(id, code, from, to, batch, raiseRate, fxRate));
     }
 
     @Operation(summary = "generate investor summary")

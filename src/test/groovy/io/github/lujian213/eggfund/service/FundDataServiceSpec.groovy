@@ -237,12 +237,17 @@ class FundDataServiceSpec extends Specification {
 
     def "addNewFund"() {
         given:
+        def fund1 = new FundInfo("1001", "fund1")
+        def fund2 = new FundInfo("1002", "fund2")
+        def fund3 = new FundInfo("1003", null)
         def service = Spy(FundDataService) {
-            loadFundName(_) >> "fund3"
+            1 * loadFund(fund3) >> {FundInfo fundInfo ->
+                fundInfo.name = "fund3"
+            }
         }
         def meterRegistry = Mock(MeterRegistry) {
             timer(_ as String) >> Mock(Timer) {
-                record(_ as Supplier) >> { Supplier supp -> supp.get() }
+                record(_ as Runnable) >> { Runnable runnable -> runnable.run() }
             }
         }
         def dao = Mock(FundDao) {
@@ -254,13 +259,12 @@ class FundDataServiceSpec extends Specification {
         service.setFundDao(dao)
         service.setMeterRegistry(meterRegistry)
         service.setAsyncActionService(asyncService)
-        def fund1 = new FundInfo("1001", "fund1")
-        def fund2 = new FundInfo("1002", "fund2")
-        def fund3 = new FundInfo("1003", null)
         service.fundInfoMap << ["1001": fund1]
         service.fundInfoMap << ["1002": fund2]
+
         when:
         def result = service.addNewFund(fund3)
+
         then:
         service.fundInfoMap.size() == 3
         with(service.fundInfoMap["1003"]) {

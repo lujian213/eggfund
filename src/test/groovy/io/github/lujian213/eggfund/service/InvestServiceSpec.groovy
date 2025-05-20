@@ -14,6 +14,7 @@ class InvestServiceSpec extends Specification {
     InvestDao investDao
     InvestAuditDao investAuditDao
     FundDataService fundService
+    FxRateService fxRateService
     InvestService investService
     PasswordEncoder passwordEncoder
 
@@ -21,6 +22,7 @@ class InvestServiceSpec extends Specification {
         investDao = Mock(InvestDao)
         investAuditDao = Mock(InvestAuditDao)
         fundService = Mock(FundDataService)
+        fxRateService = Mock(FxRateService)
         passwordEncoder = Mock(PasswordEncoder)
     }
 
@@ -575,7 +577,7 @@ class InvestServiceSpec extends Specification {
                     new FundInfo(id: "code1", name: "name1"),
                     new FundInfo(id: "code2", name: "name2")
             )
-            generateSummary(_, _, _, _, _, _) >> new InvestSummary()
+            generateSummary(_, _, _, _, _, _, _) >> new InvestSummary(fxRateInfo: new FxRateInfo("RMB", 1.0, "2025-01-01"))
         }
         fundService.getFundRTValues(_) >> [
                 "code1": new FundRTValue("2025-01-01 15:00", 100, 1.1),
@@ -611,12 +613,10 @@ class InvestServiceSpec extends Specification {
         )
 
         investService.setFundDataService(fundService as FundDataService)
+        investService.setFxRateService(fxRateService)
 
         when:
-        investService.generateSummary("Alex",
-                "008888", "2025-01-01", "2025-01-02",
-                0,
-                0)
+        investService.generateSummary("Alex", "008888", "2025-01-01", "2025-01-02", 0, 0, -1)
 
         then:
         thrown(EggFundException)

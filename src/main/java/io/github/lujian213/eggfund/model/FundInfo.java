@@ -15,6 +15,7 @@ public class FundInfo {
     private String url;
     private String category;
     private String alias;
+    private String currency = "RMB";
 
     public FundInfo() {
     }
@@ -100,12 +101,22 @@ public class FundInfo {
         return this;
     }
 
+    public String getCurrency() {
+        return currency;
+    }
+
+    public FundInfo setCurrency(String currency) {
+        this.currency = currency;
+        return this;
+    }
+
     public void update(FundInfo other) {
         this.etf = other.etf;
         this.priority = other.priority;
         this.url = other.url;
         this.category = other.category;
         this.alias = other.alias;
+        this.currency = other.currency;
     }
 
     @Override

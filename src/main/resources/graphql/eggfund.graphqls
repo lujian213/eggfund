@@ -6,6 +6,7 @@ type FundInfo {
     url: String
     category: String
     alias: String
+    currency: String!
 }
 
 input FundInfoInput {
@@ -103,6 +104,12 @@ type PriceTableItem {
     price: Float!
 }
 
+type FxRateInfo {
+    currency: String!
+    fxRate: Float!
+    asOfTime: String!
+}
+
 type InvestSummary {
     totalShortQuota: Float!
     totalLongQuota: Float!
@@ -115,8 +122,10 @@ type InvestSummary {
     lastUnitValue: Float!
     lastFundDate: String!
     predictedValue: Float!
+    predictedValueRMB: Float!
     totalFee: Float!
     totalTax: Float!
+    fxRateInfo: FxRateInfo!
     earning: Float!
     earningRate: Float!
     grossEarning: Float!
@@ -159,7 +168,7 @@ type Query {
     getFundRTValue(codes: String!): [FundRTValueMapEntry]
     getFundRTValueHistory(code: String!): [FundRTValue]
     getInvests(id: String!, code: String!, from: String, to:String, batch: Int = -1): [Invest]
-    generateInvestSummary(id: String!, code: String!, from: String, to: String, batch: Int = -1, raiseRate: Float = 0): InvestSummary!
+    generateInvestSummary(id: String!, code: String!, from: String, to: String, batch: Int = -1, raiseRate: Float = 0, fxRate: Float = -1): InvestSummary!
     getInvestAudits(date: String): [InvestAudit]
     generateInvestorSummary(id: String!, from: String, to: String): InvestorSummary!
 }

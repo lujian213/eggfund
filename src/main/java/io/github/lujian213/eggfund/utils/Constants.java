@@ -13,6 +13,7 @@ public final class Constants {
 
     public static final String FUNDS_FILE_NAME = "funds.json";
     public static final String INVESTORS_FILE_NAME = "investors.json";
+    public static final String FX_RATES_FILE_NAME = "fxrates.json";
     public static final String INVEST_FILE_NAME_PATTERN = "invest_%s.json";
     public static final String INVEST_AUDIT_FILE_NAME_PATTERN = "audit_%s.json";
     public static final ObjectMapper MAPPER = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);

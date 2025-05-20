@@ -1,5 +1,6 @@
 package io.github.lujian213.eggfund.config
 
+import io.github.lujian213.eggfund.service.FxRateService
 import spock.lang.Specification
 import io.github.lujian213.eggfund.service.FundDataService
 import org.spockframework.spring.SpringBean
@@ -14,6 +15,8 @@ class SystemPreparationSpec extends Specification {
     CommandLineRunner runner
     @SpringBean
     FundDataService fundDataService = Mock(FundDataService)
+    @SpringBean
+    FxRateService fxRateService = Mock(FxRateService)
 
     def "register bean"() {
         expect:

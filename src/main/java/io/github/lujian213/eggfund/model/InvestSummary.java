@@ -30,6 +30,8 @@ public class InvestSummary {
     private double estPrice;
     private double totalFee = 0;
     private double totalTax = 0;
+    private FxRateInfo fxRateInfo;
+    private double fxRate = -1;
     private final List<InvestSummaryItem> items = new ArrayList<>();
     private final Map<Double, Double> estPriceTable = new LinkedHashMap<>();
     private final Map<String, List<InvestSummaryItem>> clearanceMap = new LinkedHashMap<>();
@@ -38,11 +40,13 @@ public class InvestSummary {
         //for testing friendly
     }
 
-    public InvestSummary(FundInfo fundInfo, List<FundValue> originFundValues, List<Invest> invests, FundRTValue rtValue, LocalDate endDate) {
+    public InvestSummary(FundInfo fundInfo, FxRateInfo fxRateInfo, float fxRate, List<FundValue> originFundValues, List<Invest> invests, FundRTValue rtValue, LocalDate endDate) {
         if (originFundValues.size() < 2) {
             throw new EggFundException("fund records are too few, at least 2, but was: " + originFundValues.size());
         }
         this.fundId = fundInfo.getId();
+        this.fxRateInfo = fxRateInfo;
+        this.fxRate = fxRate;
         List<FundValue> fundValues = prepareFundValues(originFundValues, endDate, rtValue);
         Map<String, FundValue> valueMap = fundValues.stream().collect(Collectors.toMap(FundValue::getDay, Function.identity()));
         invests.forEach(invest -> {
@@ -177,6 +181,11 @@ public class InvestSummary {
         return getEstPrice() * getNetQuota();
     }
 
+    public double getPredictedValueRMB() {
+        double actualFxRate = (getFxRate() <= 0 ? getFxRateInfo().fxRate() : getFxRate());
+        return getPredictedValue() * actualFxRate;
+    }
+
     public double getTotalFee() {
         return totalFee;
     }
@@ -186,7 +195,7 @@ public class InvestSummary {
     }
 
     public double getEarning() {
-        return getPredictedValue() + getNetAmt();
+        return getPredictedValueRMB() + getNetAmt();
     }
 
     public double getEarningRate() {
@@ -241,5 +250,13 @@ public class InvestSummary {
 
     public double getTotalDividendAmt() {
         return totalDividendAmt;
+    }
+
+    public FxRateInfo getFxRateInfo() {
+        return fxRateInfo;
+    }
+
+    public double getFxRate() {
+        return fxRate;
     }
 }

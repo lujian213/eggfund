@@ -59,7 +59,7 @@ public class FundDataService implements FundValueListener {
 
     @Autowired
     public void setMeterRegistry(MeterRegistry meterRegistry) {
-        loadFundNameTimer = meterRegistry.timer("eggfund. loadFundName");
+        loadFundNameTimer = meterRegistry.timer("eggfund.loadFundName");
     }
 
     @PostConstruct
@@ -141,7 +141,7 @@ public class FundDataService implements FundValueListener {
                 throw new EggFundException("Fund code already exists: " + code);
             }
             try {
-                fundInfo.setName(loadFundNameTimer.record(() -> loadFundName(fundInfo)));
+                loadFundNameTimer.record(() -> loadFund(fundInfo));
                 Map<String, FundInfo> newFundMap = new HashMap<>(fundInfoMap);
                 newFundMap.put(code, fundInfo);
                 fundDao.saveFunds(newFundMap.values());
@@ -202,8 +202,9 @@ public class FundDataService implements FundValueListener {
         }
     }
 
-    protected String loadFundName(FundInfo fundInfo) {
-        return FundInfoLoaderFactory.getInstance().getFundInfoLoader(fundInfo).loadFundName(fundInfo.getId());
+    protected void loadFund(FundInfo fundInfo) {
+        FundInfoLoaderFactory.getInstance().getFundInfoLoader(fundInfo).loadFund(fundInfo);
+//        return fundInfo;
     }
 
     @Override
@@ -229,7 +230,7 @@ public class FundDataService implements FundValueListener {
         }
     }
 
-    @Scheduled(cron = "0 */3 9-15 * * MON-FRI", zone = "${zone.id:Asia/Shanghai}")
+    @Scheduled(cron = "0 */3 9-16 * * MON-FRI", zone = "${zone.id:Asia/Shanghai}")
     public void updateFundRTValues() {
         log.info("Scheduled task started at {}", LocalDateTime.now());
         try {

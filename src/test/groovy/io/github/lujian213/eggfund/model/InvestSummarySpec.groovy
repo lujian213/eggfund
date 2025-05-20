@@ -16,7 +16,7 @@ class InvestSummarySpec extends Specification {
         def result = investSummary.getAverageUnitValue()
         then:
         result > 9.9
-        result - 10 < 0.0001
+        Math.abs(result - 10) < 0.0001
     }
 
     def "getAverageUnitValue with zero quota"() {
@@ -29,6 +29,24 @@ class InvestSummarySpec extends Specification {
         def result = investSummary.getAverageUnitValue()
         then:
         result == 0
+    }
+
+    def "getPredictedValueRMB"() {
+        given:
+        def investSummary = Spy(InvestSummary) {
+            getPredictedValue() >> 1000d
+            getFxRateInfo() >> new FxRateInfo("HKD", 0.95d, "2025-05-06")
+        }
+        when:
+        def result = investSummary.getPredictedValueRMB()
+        then:
+        Math.abs(result - 950) < 0.0001
+
+        when:
+        investSummary.getFxRate() >> 0.94d
+        result = investSummary.getPredictedValueRMB()
+        then:
+        Math.abs(result - 940) < 0.0001
     }
 
     def "prepareFundValues"() {
@@ -57,6 +75,7 @@ class InvestSummarySpec extends Specification {
         when:
         def values = new ArrayList<FundValue>()
         def invests = new ArrayList<Invest>()
+        def fxRateInfo = new FxRateInfo("RMB", 1.0, "2024-11-01")
         values << new FundValue("2024-10-09", 1.3011, 1, -0.058)
         values << new FundValue("2024-10-10", 1.3289, 1, 0.0214)
         values << new FundValue("2024-10-11", 1.3012, 1, -0.0208)
@@ -84,7 +103,7 @@ class InvestSummarySpec extends Specification {
         invests << new Invest(type: Invest.TYPE_TRADE, id: "dummy", code: "001548", day: "2024-10-29", share: 19251.54, unitPrice: 1.2973, fee: 24.98)
         invests << new Invest(type: Invest.TYPE_TRADE, id: "dummy", code: "001548", day: "2024-10-30", share: 19478.26, unitPrice: 1.2822, fee: 24.98)
 
-        def inst = new InvestSummary(new FundInfo("001548", "dummy name"), values, invests, new FundRTValue("2024-11-01 15:00", -1, 0.0087), LocalDate.parse("2024-11-01", Constants.DATE_FORMAT))
+        def inst = new InvestSummary(new FundInfo("001548", "dummy name"), fxRateInfo, -1, values, invests, new FundRTValue("2024-11-01 15:00", -1, 0.0087), LocalDate.parse("2024-11-01", Constants.DATE_FORMAT))
 
         then:
         with(inst) {
