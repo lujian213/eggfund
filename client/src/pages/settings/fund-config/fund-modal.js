@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import { BASE_URL } from "../../../utils/get-baseurl";
 import { fundTypesState } from "../../../store/selector";
+import { refreshInvestsState } from "../invests-config/store/atom";
 
 const style = {
   position: "absolute",
@@ -30,6 +31,7 @@ const style = {
 export default function FundModal(props) {
   const { open, handleClose, data, mode } = props;
   const refetchFunds = useSetRecoilState(refreshFundState);
+  const refetchInvests = useSetRecoilState(refreshInvestsState);
   const fundTypes = useRecoilValue(fundTypesState);
   const [form, setForm] = useState({});
 
@@ -46,6 +48,7 @@ export default function FundModal(props) {
     }
     response?.data && handleModalClose();
     refetchFunds((pre) => pre + 1);
+    refetchInvests((pre) => pre + 1);
   };
 
   const handleChange = (event) => {
@@ -100,7 +103,7 @@ export default function FundModal(props) {
               labelId="type-select-label"
               id="type-select"
               value={String(form?.type)}
-              label="type"
+              label="Fund Type"
               name="type"
               onChange={handleChange}
             >

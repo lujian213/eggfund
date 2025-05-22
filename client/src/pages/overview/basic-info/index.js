@@ -33,6 +33,7 @@ export default function BasicInfo() {
   const [selected, setSelected] = useRecoilState(selectedInvestorState);
   const selectedFund = useRecoilValue(selectedFundState);
   const [form, setForm] = useState({
+    fxRate: "1",
     raiseRate: "",
     from: moment(0).format("YYYY-MM-DD"),
     to: moment().format("YYYY-MM-DD"),
@@ -63,6 +64,7 @@ export default function BasicInfo() {
             (item) => item[0] === selectedFund && item[1] === selected
           )?.[2] || "";
         setSearchForm({
+          fxRate: '1',
           raiseRate:
             findRtvalue.day === moment().format("YYYY-MM-DD")
               ? findRtvalue.increaseRate
@@ -117,6 +119,7 @@ export default function BasicInfo() {
   };
 
   const handleSearch = () => {
+    debugger
     setSearchForm({ ...form, raiseRate: Number(form.raiseRate) / 100 });
   };
 
@@ -194,6 +197,18 @@ export default function BasicInfo() {
           })}
       </Stack>
       <Stack direction={"row"} spacing={1}>
+        <TextField
+          id="standard-fxRate"
+          InputLabelProps={{ shrink: true }}
+          sx={{
+            width: "100px",
+          }}
+          label="Fx Rate"
+          variant="standard"
+          name="fxRate"
+          value={form.fxRate}
+          onChange={handleChange}
+        />
         <TextField
           id="standard-raiseRate"
           InputLabelProps={{ shrink: true }}

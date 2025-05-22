@@ -1,6 +1,6 @@
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { investorsQuery } from "../../../store/selector";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import moment from "moment";
 import { Button, Chip, Stack, TextField } from "@mui/material";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
@@ -18,10 +18,6 @@ export default function InvestorList() {
     batch: "",
   });
   const setSearchForm = useSetRecoilState(searchFormState);
-
-  useEffect(() => {
-    setSelected(investors[0]?.id);
-  }, [investors, setSelected]);
 
   const handleChange = (event) => {
     const value = event.target.value;

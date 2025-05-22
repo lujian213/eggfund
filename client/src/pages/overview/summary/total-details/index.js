@@ -199,8 +199,8 @@ export default function TotalDetails(props) {
             <Box>{formatNumber(totalFee, 2)}</Box>
           </Box>
           <Box sx={itemStyle}>
-            <Typography variant="div">FX Rate</Typography>
-            <Box>{fxRateInfo?.fxRate}&nbsp;&nbsp;{fxRateInfo.currency}</Box>
+            <Typography variant="div">{fxRateInfo.currency} / RMB</Typography>
+            <Box>{fxRateInfo?.fxRate}</Box>
             <Box>{fxRateInfo?.asOfTime}</Box>
           </Box>
           <Box sx={itemStyle}>

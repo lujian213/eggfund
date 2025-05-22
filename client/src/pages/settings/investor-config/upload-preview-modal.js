@@ -76,7 +76,7 @@ export default function UploadPreviewModal(props) {
   };
 
   const onSelectionChanged = (selectedRows) => {
-    const selectedIds = selectedRows.api.getSelectedRows().map((row) => row.id);
+    const selectedIds = selectedRows.api.getSelectedRows().map((row) => `${row.code}-${row.day}-${row.type}-${row.unitPrice}-${row.share}`);
     setSelectedRowIds(selectedIds);
   };
 
