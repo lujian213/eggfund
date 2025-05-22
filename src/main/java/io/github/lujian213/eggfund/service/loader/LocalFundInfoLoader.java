@@ -38,7 +38,6 @@ public class LocalFundInfoLoader implements FundInfoLoader {
     private static final Pattern TABLE_PATTERN = Pattern.compile("[^<]*(<table.*</table>).*");
     private static final String FUND_RT_VALUE_URL = "https://fundgz.1234567.com.cn/js/%s.js?v=%s";
     private static final Pattern FUND_RT_VALUE_PATTERN = Pattern.compile(".*\"gsz\":\"([^\"]+)\".*\"gszzl\":\"([^\"]+)\".*\"gztime\":\"([^\"]+)\".*");
-    static final String CURRENCY = "RMB";
 
     private RestTemplate restTemplate;
 
@@ -60,7 +59,7 @@ public class LocalFundInfoLoader implements FundInfoLoader {
             if (response.getStatusCode() == HttpStatus.OK) {
                 String name = extractFundName(response.getBody());
                 if (name != null) {
-                    fundInfo.setName(name).setCurrency(CURRENCY);
+                    fundInfo.setName(name).setType(FundInfo.FundType.LOCAL_FUND);
                     return;
                 }
             }

@@ -81,7 +81,7 @@ public class HKStockInfoLoader implements FundInfoLoader {
             if (response.getStatusCode() == HttpStatus.OK) {
                 String name = extractFundName(response.getBody());
                 if (name != null) {
-                    fundInfo.setName(name).setCurrency(CURRENCY);
+                    fundInfo.setName(name).setType(FundInfo.FundType.HK_STOCK);
                     return;
                 }
             }

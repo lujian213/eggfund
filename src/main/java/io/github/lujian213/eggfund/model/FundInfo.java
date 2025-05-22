@@ -4,8 +4,24 @@ import java.util.Objects;
 
 public class FundInfo {
     public enum FundType {
-        HK_STOCK,
-        LOCAL_FUND
+        HK_STOCK("HKD", "$"),
+        LOCAL_FUND("RMB", "¥");
+
+        private final String currency;
+        private final String currencySign;
+
+        FundType(String currency, String currencySign) {
+            this.currency = currency;
+            this.currencySign = currencySign;
+        }
+
+        public String getCurrency() {
+            return currency;
+        }
+
+        public String getCurrencySign() {
+            return currencySign;
+        }
     }
     private FundType type = FundType.LOCAL_FUND;
     private String id;
@@ -15,7 +31,6 @@ public class FundInfo {
     private String url;
     private String category;
     private String alias;
-    private String currency = "RMB";
 
     public FundInfo() {
     }
@@ -102,11 +117,20 @@ public class FundInfo {
     }
 
     public String getCurrency() {
-        return currency;
+        return type.currency;
+    }
+
+    public String getCurrencySign() {
+        return type.currencySign;
     }
 
     public FundInfo setCurrency(String currency) {
-        this.currency = currency;
+        //just for json serialize and deserialize
+        return this;
+    }
+
+    public FundInfo setCurrencySign(String currencySign) {
+        //just for json serialize and deserialize
         return this;
     }
 
@@ -116,7 +140,7 @@ public class FundInfo {
         this.url = other.url;
         this.category = other.category;
         this.alias = other.alias;
-        this.currency = other.currency;
+        this.type = other.type;
     }
 
     @Override

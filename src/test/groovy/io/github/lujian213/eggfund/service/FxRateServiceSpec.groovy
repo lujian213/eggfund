@@ -163,7 +163,7 @@ class FxRateServiceSpec extends Specification {
     def "updateFxRate"() {
         given:
         def fundDataService = Mock(FundDataService) {
-            getAllFunds() >> [new FundInfo(currency: "HKD"), new FundInfo(currency: "HKD")]
+            getAllFunds() >> [new FundInfo(type: FundInfo.FundType.HK_STOCK), new FundInfo(type: FundInfo.FundType.HK_STOCK)]
         }
         def registry = Mock(MeterRegistry) {
             timer(_) >> Mock(Timer) {
