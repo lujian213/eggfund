@@ -1,5 +1,5 @@
 import { useRecoilState, useRecoilValue } from "recoil";
-import { investorsForFundQuery } from "../../../store/selector";
+import { investorsForFundQuery, summaryQuery } from "../../../store/selector";
 import {
   rtValuesState,
   searchFormState,
@@ -32,8 +32,9 @@ export default function BasicInfo() {
   const investors = useRecoilValue(investorsForFundQuery);
   const [selected, setSelected] = useRecoilState(selectedInvestorState);
   const selectedFund = useRecoilValue(selectedFundState);
+  const summary = useRecoilValue(summaryQuery);
   const [form, setForm] = useState({
-    fxRate: "1",
+    fxRate: "",
     raiseRate: "",
     from: moment(0).format("YYYY-MM-DD"),
     to: moment().format("YYYY-MM-DD"),
@@ -64,7 +65,7 @@ export default function BasicInfo() {
             (item) => item[0] === selectedFund && item[1] === selected
           )?.[2] || "";
         setSearchForm({
-          fxRate: '1',
+          fxRate: "",
           raiseRate:
             findRtvalue.day === moment().format("YYYY-MM-DD")
               ? findRtvalue.increaseRate
@@ -80,6 +81,15 @@ export default function BasicInfo() {
   }, [findRtvalue, setForm, selected, selectedFund, setSearchForm, rtValues]);
 
   useEffect(() => {
+    if (summary) {
+      setForm((pre) => ({
+        ...pre,
+        fxRate: summary.fxRateInfo?.fxRate,
+      }));
+    }
+  }, [summary]);
+
+  useEffect(() => {
     if (categoryType === "investor") {
       setSelected(selectedInvestorForCategory);
     } else {
@@ -89,10 +99,11 @@ export default function BasicInfo() {
 
   useEffect(() => {
     searchForm &&
-      setForm({
+      setForm(pre => ({
         ...searchForm,
+        fxRate: pre.fxRate,
         raiseRate: roundDecimal(searchForm.raiseRate * 100),
-      });
+      }));
   }, [searchForm]);
 
   const handleChange = (event) => {
@@ -119,7 +130,6 @@ export default function BasicInfo() {
   };
 
   const handleSearch = () => {
-    debugger
     setSearchForm({ ...form, raiseRate: Number(form.raiseRate) / 100 });
   };
 
