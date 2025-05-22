@@ -132,7 +132,9 @@ public class LocalFundInfoLoader implements FundInfoLoader {
             ResponseEntity<String> response = restTemplate.getForEntity(new URI(url), String.class);
             if (response.getStatusCode() == HttpStatus.OK) {
                 String content = response.getBody();
-                return extractFundRTValue(content, code);
+                FundRTValue ret = extractFundRTValue(content, code);
+                log.info("fund {} real time value is {}, @{}", code, ret.getUnitValue(), ret.getTime());
+                return ret;
             }
             throw new IOException("load fund real time value failed with code " + response.getStatusCode());
         } catch (Exception e) {
