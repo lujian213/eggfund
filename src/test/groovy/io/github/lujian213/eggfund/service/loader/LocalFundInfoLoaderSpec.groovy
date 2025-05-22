@@ -29,7 +29,7 @@ class LocalFundInfoLoaderSpec extends Specification {
         with(fundInfo) {
             id == "1001"
             name == "fund1"
-            currency == LocalFundInfoLoader.CURRENCY
+            type == FundInfo.FundType.LOCAL_FUND
         }
     }
 
