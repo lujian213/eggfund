@@ -34,6 +34,7 @@ export default function Funds() {
               category: item.category,
               type: item.type,
               currency: item.currency,
+              currencySign: item.currencySign,
             };
           }
           return {
@@ -43,6 +44,7 @@ export default function Funds() {
             category: item.category,
             type: item.type,
             currency: item.currency,
+            currencySign: item.currencySign,
           };
         });
       });
