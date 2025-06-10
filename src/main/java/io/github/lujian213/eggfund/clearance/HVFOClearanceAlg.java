@@ -12,6 +12,6 @@ public class HVFOClearanceAlg extends FIFOClearanceAlg {
 
     @Override
     protected Comparator<InvestSummaryItem> getComparator() {
-        return Comparator.comparing(InvestSummaryItem::getPrice).reversed();
+        return Comparator.comparing(InvestSummaryItem::getPriceLCC).reversed();
     }
 }

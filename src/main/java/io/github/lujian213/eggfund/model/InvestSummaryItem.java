@@ -94,6 +94,10 @@ public class InvestSummaryItem extends LocalDateRelated<InvestSummaryItem> {
         return price;
     }
 
+    public double getPriceLCC() {
+        return price * fxRate;
+    }
+
     public double getIncreaseRate() {
         return increaseRate;
     }
