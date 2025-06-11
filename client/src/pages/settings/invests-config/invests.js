@@ -121,9 +121,9 @@ export default function Invests() {
       return acc;
     }, {});
     const query = new URLSearchParams(params).toString();
-    const windowBaseURL = window.location.origin;
+    //const windowBaseURL = window.location.origin;
     window.open(
-      `${windowBaseURL}/exportinvests/${selectedInvestor}/${selectedFund}?${query}`
+      `${BASE_URL}/exportinvests/${selectedInvestor}/${selectedFund}?${query}`
     );
   };
 
