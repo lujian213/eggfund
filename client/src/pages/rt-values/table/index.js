@@ -87,15 +87,25 @@ export default function RtValuesTable() {
         {
           field: "unitValue",
           flex: 1,
-          valueGetter: (p) => (p.data.unitValue ? `${p.data.currencySign} ${p.data.unitValue}` : "-"),
+          valueGetter: (p) =>
+            p.data.unitValue
+              ? `${p.data.currencySign} ${p.data.unitValue}`
+              : "-",
         },
         {
           field: "increaseRate",
           flex: 1,
           cellRenderer: RateRenderer,
           cellStyle: (params) => {
-            const backgroundColor =
-              Math.abs(params.value) > 0.01 ? "gold" : "transparent";
+            const rateAbs = Math.abs(params.value);
+            let backgroundColor = "transparent";
+            if (rateAbs > 0.05) {
+              backgroundColor = "gold";
+            } else if (rateAbs > 0.03) {
+              backgroundColor = "rgb(254 254 94)";
+            } else if (rateAbs > 0.01) {
+              backgroundColor = "#fbfbb8";
+            }
             if (params.value < 0) {
               return { color: "green", backgroundColor };
             } else if (params.value > 0) {
@@ -124,12 +134,12 @@ export default function RtValuesTable() {
           cellStyle: (params) => {
             const rateAbs = Math.abs(params.value);
             let backgroundColor = "transparent";
-            if(rateAbs > 0.05) {
+            if (rateAbs > 0.05) {
               backgroundColor = "gold";
-            } else if(rateAbs > 0.03) {
-              backgroundColor = "lightgoldenrodyellow";
+            } else if (rateAbs > 0.03) {
+              backgroundColor = "rgb(254 254 94)";
             } else if (rateAbs > 0.01) {
-              backgroundColor = "lightyellow";
+              backgroundColor = "#fbfbb8";
             }
             if (params.value < 0) {
               return { color: "green", backgroundColor };

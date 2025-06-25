@@ -113,7 +113,7 @@ export default function Invests() {
     refetchInvests((pre) => pre + 1);
   };
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     const params = Object.keys(searchForm || {}).reduce((acc, key) => {
       if (searchForm[key] !== "") {
         acc[key] = searchForm[key];
@@ -122,9 +122,39 @@ export default function Invests() {
     }, {});
     const query = new URLSearchParams(params).toString();
     //const windowBaseURL = window.location.origin;
-    window.open(
-      `${BASE_URL}/exportinvests/${selectedInvestor}/${selectedFund}?${query}`
-    );
+    // window.open(
+    //   `${BASE_URL}/exportinvests/${selectedInvestor}/${selectedFund}?${query}`
+    // );
+    const url = `${BASE_URL}/exportinvests/${selectedInvestor}/${selectedFund}?${query}`;
+
+    try {
+      const response = await axios.get(url, {
+        responseType: "blob",
+      });
+      // Try to get filename from response headers
+      let filename = "export.csv";
+      const disposition = response.headers["content-disposition"];
+      if (disposition && disposition.indexOf("filename=") !== -1) {
+        filename = disposition
+          .split("filename=")[1]
+          .replace(/['"]/g, "")
+          .trim();
+      }
+      const urlBlob = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = urlBlob;
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(urlBlob);
+    } catch (error) {
+      setAlert({
+        open: true,
+        message: "Download failed",
+        type: "error",
+      });
+    }
   };
 
   let containerStyle = {

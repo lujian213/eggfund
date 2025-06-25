@@ -21,7 +21,7 @@ import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { BASE_URL } from "../../../utils/get-baseurl";
 
-export default function DetailsTable({ handleModalOpen, type="items" }) {
+export default function DetailsTable({ handleModalOpen, type = "items" }) {
   const muiTheme = useTheme();
   const isLarge = useMediaQuery(muiTheme.breakpoints.up("md"));
 
@@ -85,6 +85,7 @@ export default function DetailsTable({ handleModalOpen, type="items" }) {
     {
       field: "day",
       flex: 1,
+      minWidth: 150,
     },
     {
       field: "quota",
@@ -175,7 +176,7 @@ export default function DetailsTable({ handleModalOpen, type="items" }) {
     },
   ];
 
-  if(!isLarge) {
+  if (!isLarge) {
     colDefs.splice(0, 1);
   }
 
@@ -191,24 +192,32 @@ export default function DetailsTable({ handleModalOpen, type="items" }) {
 
   return (
     <Stack sx={{ height: "100%" }}>
-      <ButtonGroup aria-label="Basic button group">
-        <Button
-          key={"items"}
-          variant={selectedDataType === "items" ? "contained" : "outlined"}
-          onClick={() => setSelectedDataType("items")}
-        >
-          Default
-        </Button>
-        {Object.keys(clearanceMap || {}).map((key) => (
+      <Stack direction="row" justifyContent="space-between" alignItems={"flex-end"}>
+        <ButtonGroup aria-label="Basic button group">
           <Button
-            key={key}
-            variant={selectedDataType === key ? "contained" : "outlined"}
-            onClick={() => setSelectedDataType(key)}
+            key={"items"}
+            variant={selectedDataType === "items" ? "contained" : "outlined"}
+            onClick={() => setSelectedDataType("items")}
           >
-            {key}
+            Default
           </Button>
-        ))}
-      </ButtonGroup>
+          {Object.keys(clearanceMap || {}).map((key) => (
+            <Button
+              key={key}
+              variant={selectedDataType === key ? "contained" : "outlined"}
+              onClick={() => setSelectedDataType(key)}
+            >
+              {key}
+            </Button>
+          ))}
+        </ButtonGroup>
+        {
+          selectedDataType === "items" && (
+             <Box>Total Count:{datasource?.length}</Box>
+          )
+        }
+      
+      </Stack>
       <Box sx={{ flexGrow: 1, height: "100%" }}>
         <AggridWrapper
           ref={gridRef}
