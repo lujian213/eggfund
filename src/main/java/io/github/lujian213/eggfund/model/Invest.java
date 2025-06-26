@@ -11,6 +11,7 @@ public class Invest extends LocalDateRelated<Invest> {
     private String code;
     private double share;
     private double unitPrice;
+    private double totalSpend;
     private double fee;
     private double tax;
     private double fxRate = 1.0;
@@ -115,10 +116,25 @@ public class Invest extends LocalDateRelated<Invest> {
         return amount(unitPrice);
     }
 
-    /**
-     * @param amount This string may be used for further computation in overriding classes
-     */
     public Invest setAmount(double amount) {
+        //do nothing, it is just for json serialization
+        return this;
+    }
+
+    public double getTotalSpend() {
+        return totalSpend;
+    }
+
+    public Invest setTotalSpend(double totalSpend) {
+        this.totalSpend = totalSpend;
+        return this;
+    }
+
+    public boolean isMisMatchAlert() {
+        return Math.abs(totalSpend - getAmount()) >= 0.1;
+    }
+
+    public Invest setMisMatchAlert(boolean misMatchAlert) {
         //do nothing, it is just for json serialization
         return this;
     }

@@ -26,6 +26,17 @@ class InvestSpec extends Specification {
         -20000   | 1.3157    | 78.94 | 26235.06     | 0.01
     }
 
+    def "isMisMatchAlert"() {
+        def invest = new Invest()
+        invest.setShare(share as double).setUnitPrice(unitPrice).setFee(fee).setTotalSpend(totalSpend)
+        expect:
+        invest.isMisMatchAlert() == misMatchAlert
+        where:
+        share    | unitPrice | fee   | totalSpend | misMatchAlert
+        76781.26 | 1.3011    | 99.9  | -100000.01   | false
+        -20000   | 1.3157    | 78.94 | 26234.06     | true
+    }
+
     def "Invest construct with Invest"() {
         given:
         def anotherInvest = new Invest(type: "trade", id: "001-001", code: "123456", day: "2025-01-01", share: 1000, unitPrice: 1.3, fee: 10)

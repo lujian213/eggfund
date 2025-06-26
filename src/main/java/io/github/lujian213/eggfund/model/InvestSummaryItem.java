@@ -15,6 +15,8 @@ public class InvestSummaryItem extends LocalDateRelated<InvestSummaryItem> {
     private double tax;
     private double fxRate;
     private double investAmt;
+    private double totalSpend;
+    private boolean misMatchAlert;
     private double _var;
     private double earning;
     private int index = 0;
@@ -53,6 +55,8 @@ public class InvestSummaryItem extends LocalDateRelated<InvestSummaryItem> {
         this.tax = item.tax;
         this.fxRate = item.fxRate;
         this.investAmt = item.investAmt;
+        this.totalSpend = item.totalSpend;
+        this.misMatchAlert = item.misMatchAlert;
         this._var = item._var;
         this.earning = item.earning;
         this.index = item.index;
@@ -72,6 +76,8 @@ public class InvestSummaryItem extends LocalDateRelated<InvestSummaryItem> {
         this.fxRate = invest.getFxRate();
         this.batch = invest.getBatch();
         this.investAmt = invest.getAmount();
+        this.totalSpend = invest.getTotalSpend();
+        this.misMatchAlert = invest.isMisMatchAlert();
         if (quota > 0) {
             this._var = (estPrice - price) / price;
             this.earning = -investAmt * _var;
@@ -119,6 +125,14 @@ public class InvestSummaryItem extends LocalDateRelated<InvestSummaryItem> {
             return 0;
         }
         return investAmt / (quota + liquidatedQuota) * quota;
+    }
+
+    public double getTotalSpend() {
+        return totalSpend;
+    }
+
+    public boolean isMisMatchAlert() {
+        return misMatchAlert;
     }
 
     public double getVar() {
