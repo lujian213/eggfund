@@ -34,8 +34,8 @@ class FundInfoLoaderSpec extends Specification{
 
     def "load hk 09988 value"() {
         when:
-        def from = LocalDate.parse("2025-04-01", Constants.DATE_FORMAT)
-        def to = LocalDate.parse("2025-04-02", Constants.DATE_FORMAT)
+        def from = LocalDate.parse("2025-07-02", Constants.DATE_FORMAT)
+        def to = LocalDate.parse("2025-07-03", Constants.DATE_FORMAT)
         def values = hkStockInfoLoader.loadFundValue("09988", from, to)
 
         then:

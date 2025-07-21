@@ -209,6 +209,7 @@ public class HKStockInfoLoader implements FundInfoLoader {
             ResponseEntity<String> response = restTemplate.getForEntity(STOCK_RT_VALUE_URL, String.class, params);
             if (response.getStatusCode() == HttpStatus.OK) {
                 String content = response.getBody();
+                log.info("content = {}", content);
                 Map<String, FundRTValue> rtValues = extractFundRTValue(content);
                 rtValueMap.putAll(rtValues);
                 log.info("load page {} with return size {}", page, rtValues.size());
