@@ -26,6 +26,12 @@ server {
         proxy_set_header X-Forwarded-Prefix /timerecorder;
     }
 
+    location /timerecorder-client/ {
+        root /casetimerecorder/web;
+        index index.html;
+        try_files $uri $uri/ /index.html;
+    }
+
     location / {
         root /eggfund/web;
         index index.html;
