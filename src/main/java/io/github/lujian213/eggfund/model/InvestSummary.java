@@ -157,6 +157,10 @@ public class InvestSummary {
         return totalShortAmt - totalLongAmt;
     }
 
+    public double getNetAmtDisplay() {
+        return getNetQuota() > 0 ? totalShortAmt - totalLongAmt : 0;
+    }
+
     public double getNetQuota() {
         return totalLongQuota - totalShortQuota;
     }

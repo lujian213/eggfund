@@ -42,9 +42,10 @@ export default function TotalDetails(props) {
   const {
     totalLongAmt,
     totalShortAmt,
-    totallongQuota,
+    totalLongQuota,
     totalShortQuota,
     netAmt,
+    netAmtDisplay,
     netQuota,
     earning,
     earningRate,
@@ -145,13 +146,13 @@ export default function TotalDetails(props) {
           <Box sx={{ ...itemStyle, bgcolor: "warning.main" }}>
             <Typography variant="div">Net AMT/Quota</Typography>
             <Box>
-              {formatNumber(netAmt, 2)}/{formatNumber(netQuota)}
+              {formatNumber(netAmtDisplay, 2)}/{formatNumber(netQuota)}
             </Box>
           </Box>
           <Box sx={itemStyle}>
             <Typography variant="div">Total Long AMT/Quota</Typography>
             <Box>
-              {formatNumber(totalLongAmt, 2)}/{formatNumber(totallongQuota)}
+              {formatNumber(totalLongAmt, 2)}/{formatNumber(totalLongQuota)}
             </Box>
           </Box>
           <Box sx={itemStyle}>

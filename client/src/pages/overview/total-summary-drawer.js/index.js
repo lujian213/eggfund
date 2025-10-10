@@ -79,7 +79,7 @@ export default function TotalSummaryDrawer(props) {
     {
       field: "netAmt",
       flex: 1,
-      valueGetter: (p) => formatNumber(p.data.netAmt),
+      valueGetter: (p) => formatNumber(p.data.netAmtDisplay),
     },
     {
       field: "totalTax",
