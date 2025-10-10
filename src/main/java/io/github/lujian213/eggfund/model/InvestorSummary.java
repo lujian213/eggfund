@@ -14,6 +14,7 @@ public class InvestorSummary {
     private double earning;
     private double grossEarning;
     private double netAmt;
+    private double netAmtDisplay;
     private double predictedValue;
     private final List<InvestSummary> investSummaryList;
 
@@ -30,6 +31,7 @@ public class InvestorSummary {
             earning += investSummary.getEarning();
             grossEarning += investSummary.getGrossEarning();
             netAmt += investSummary.getNetAmt();
+            netAmtDisplay += investSummary.getNetAmtDisplay();
             predictedValue += investSummary.getPredictedValueRMB();
         }
     }
@@ -81,6 +83,10 @@ public class InvestorSummary {
 
     public double getNetAmt() {
         return netAmt;
+    }
+
+    public double getNetAmtDisplay() {
+        return netAmtDisplay;
     }
 
     public double getPredictedValue() {

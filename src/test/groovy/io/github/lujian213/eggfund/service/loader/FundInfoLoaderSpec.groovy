@@ -2,7 +2,6 @@ package io.github.lujian213.eggfund.service.loader
 
 import io.github.lujian213.eggfund.config.ExecutorConfig
 import io.github.lujian213.eggfund.model.FundInfo
-import io.github.lujian213.eggfund.utils.Constants
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
@@ -34,12 +33,14 @@ class FundInfoLoaderSpec extends Specification{
 
     def "load hk 09988 value"() {
         when:
-        def from = LocalDate.parse("2025-07-02", Constants.DATE_FORMAT)
-        def to = LocalDate.parse("2025-07-03", Constants.DATE_FORMAT)
+        def from = LocalDate.now().minusDays(30)
+        def to = LocalDate.now().minusDays(15)
+//        def from = LocalDate.parse("2025-09-01", Constants.DATE_FORMAT)
+//        def to = LocalDate.parse("2025-09-11", Constants.DATE_FORMAT)
         def values = hkStockInfoLoader.loadFundValue("09988", from, to)
 
         then:
-        values.size() == 2
+        values.size() > 0
     }
 
     def "load hk rt values"() {

@@ -34,6 +34,7 @@ jobs:
     - name: build client
       run: |
         cd client
+        CI=""
         npm i -legacy-peer-deps
         npm run build
     - name: Set up JDK 17
@@ -68,18 +69,21 @@ jobs:
         name: eggfund-jar
         path: dist/lib/eggfund-1.0.0.jar
         compression-level: 9
+        retention-days: 1
     - name: Temporarily save client zip
       uses: actions/upload-artifact@v4
       with:
        name: client-zip
        path: dist/client/client.zip
        compression-level: 9
+       retention-days: 1
     - name: Temporarily save nginx config
       uses: actions/upload-artifact@v4
       with:
         name: nginx-config
         path: dist/nginx/config.nginx
         compression-level: 9
+        retention-days: 1
 
     - name: Setup Pages
       uses: actions/configure-pages@v5
