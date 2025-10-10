@@ -34,7 +34,7 @@ jobs:
     - name: build client
       run: |
         cd client
-        $env:CI=""
+        CI=""
         npm i -legacy-peer-deps
         npm run build
     - name: Set up JDK 17
