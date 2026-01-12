@@ -32,6 +32,12 @@ export const investsQuery = selector({
             params: paramsWithoutEmptyValue
         });
         const invests = response.data || [];
-        return invests
-    }
-})
+        invests.sort((a, b) => {
+            if(a.day === b.day) {
+                return b.userIndex - a.userIndex;
+            }
+            return new Date(a.day) - new Date(b.day);
+        });
+    return invests;
+  },
+});
