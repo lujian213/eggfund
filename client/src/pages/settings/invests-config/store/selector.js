@@ -36,7 +36,7 @@ export const investsQuery = selector({
             if(a.day === b.day) {
                 return b.userIndex - a.userIndex;
             }
-            return new Date(a.day) - new Date(b.day);
+            return new Date(b.day) - new Date(a.day);
         });
     return invests;
   },
